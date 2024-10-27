@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
 
+from django.utils.translation import gettext_lazy as _
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,9 +53,14 @@ INSTALLED_APPS = [
     "shop.apps.ShopConfig",
 ]
 
+# note from Antonio:
+# The order of middleware classes is very important because each middleware can depend on
+# data set by another middleware that was executed previously. Middleware is applied for
+# requests in order of appearance in MIDDLEWARE, and in reverse order for responses.
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -157,3 +164,11 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 REDIS_DB = 1
+
+# I18N
+LANGUAGES = [
+    ('en', _('English')),
+    ('es', _('Spanish')),
+]
+LANGUAGE_CODE = "en"
+LOCALE_PATHS = [BASE_DIR / "locale"]
