@@ -134,6 +134,7 @@ Of those, almost all of us are using a 64-bit windows, and the static build is l
 ![gettext installer](./img/gettext_iconv_installer_settings.png)
 
 **FINAL NOTE on the ONLINE SHOP Project**
+
 For all of the functions in the online shop example, it is expected that the following are always running:
 1. Docker Desktop
 2. RabbitMQ
