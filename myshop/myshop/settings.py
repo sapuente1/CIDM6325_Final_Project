@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3rd Party
+    "localflavor",
+    "parler",
     "rosetta",
     # Project
     "cart.apps.CartConfig",
@@ -173,3 +175,15 @@ LANGUAGES = [
 ]
 LANGUAGE_CODE = "en"
 LOCALE_PATHS = [BASE_DIR / "locale"]
+
+# django-parler settings
+PARLER_LANGUAGES = {
+    None: (
+        {"code": "en"},
+        {"code": "es"},
+    ),
+    "default": {
+        "fallback": "en",
+        "hide_untranslated": False,
+    },
+}

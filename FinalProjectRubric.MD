@@ -91,7 +91,7 @@ Internationalization (I18N)                 |           |       | x       |
 Code translation                            |           |       | x       |
 Template translation                        |           |       | x       |
 Rosetta                                     |           |       | x       |
-`django-parler`                             |           |       | x       |
+Model translation with `django-parler`      |           |       | x       |
 Localization with `django-localflavor`      |           |       | x       |
 ***Chapter 12***                            |           |       |         |
 TBD                                         | x         |       |         |
