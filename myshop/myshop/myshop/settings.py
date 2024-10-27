@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # 3rd Party
     # Project
     "cart.apps.CartConfig",
+    "coupons.apps.CouponsConfig",
     "orders.apps.OrdersConfig",
     "payment.apps.PaymentConfig",
     "shop.apps.ShopConfig",
@@ -151,3 +152,8 @@ STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_API_VERSION = "2024-09-30.acacia"
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+# Redis settings
+REDIS_HOST = "localhost"
+REDIS_PORT = 6379
+REDIS_DB = 1
