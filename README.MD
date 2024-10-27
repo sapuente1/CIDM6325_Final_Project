@@ -141,7 +141,7 @@ For all of the functions in the online shop example, it is expected that the fol
 3. Celery
 4. A proper Stripe API connection
 
-The shop won't run without these
+The shop won't run without these.  I know these external dependencies are a pain, but they represent a very realistic scenario for you to understand.
 
 ## General Notes ##
 - DO NOT SKIP READING THE BOOK! Most of the tips, and links at the back of the chapter, provide VITAL clues.
