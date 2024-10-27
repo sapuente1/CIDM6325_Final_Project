@@ -88,6 +88,8 @@ Send PDFs via Email (external)              |           |       |         | x
 Recommender Engine with redis               |           |       |         | x
 ***Chapter 11***                            |           |       |         | 
 Internationalization (I18N)                 |           |       | x       |
+Code translation                            |           |       | x       |
+Template translation                        |           |       | x       |
 Rosetta                                     |           |       | x       |
 `django-parler`                             |           |       | x       |
 Localization with `django-localflavor`      |           |       | x       |

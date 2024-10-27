@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3rd Party
+    "rosetta",
     # Project
     "cart.apps.CartConfig",
     "coupons.apps.CouponsConfig",
@@ -167,8 +168,8 @@ REDIS_DB = 1
 
 # I18N
 LANGUAGES = [
-    ('en', _('English')),
-    ('es', _('Spanish')),
+    ("en", _("English")),
+    ("es", _("Spanish")),
 ]
 LANGUAGE_CODE = "en"
 LOCALE_PATHS = [BASE_DIR / "locale"]
