@@ -119,6 +119,20 @@ I think those on OSX will have an easier time.
 
 Do not BOG DOWN.
 
+## I18N and `gettext`
+In chapter 11, we again find ourselves faced with challenges as windows users.  This speaks volumes about how the web is run as most HTTP servers execute in a Unix/Linux environment (of which Mac OSX is a part of).  As windows users, Antonio tells us to:
+
+- Read the documentation about using `gettext` on Windows at the [Django Documentation](https://docs.djangoproject.com/en/5.0/topics/i18n/translation/#gettext-on-windows)
+- Once at the Django documentation, we are encouraged to [download a pre-compiled binary](https://mlocati.github.io/articles/gettext-iconv-windows.html).  Here are there are four choices:
+    - [Shared (relies on system DLLs) 32-bit binary](https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.22.5a-v1.17-r2/gettext0.22.5a-iconv1.17-shared-32.exe)
+    - [Static (no dependencies) 32-bit binary](https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.22.5a-v1.17-r2/gettext0.22.5a-iconv1.17-static-32.exe)
+    - [Shared (relies on system DLLs) 64-bit binary](https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.22.5a-v1.17-r2/gettext0.22.5a-iconv1.17-shared-64.exe)
+    - [Static (no dependencies) 64-bit binary](https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.22.5a-v1.17-r2/gettext0.22.5a-iconv1.17-static-64.exe)
+
+Of those, almost all of us are using a 64-bit windows, and the static build is likely the safest. In all cases, I elected to use the installer as it will put things in the right place and offer this critical dialog with the needed options:
+
+![gettext installer](./img/gettext_iconv_installer_settings.png)
+
 **FINAL NOTE**
 For all of the functions in the online shop example, it is expected that the following are always running:
 1. Docker Desktop

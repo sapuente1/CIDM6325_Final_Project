@@ -85,14 +85,12 @@ Add custom view to admin interface          | x         |       |         |
 PDF Generation                              |           |       |         | x
 Send PDFs via Email (external)              |           |       |         | x
 ***Chapter 10***                            |           |       |         |
-TBD                                         | x         |       |         |
-CSV Generation (export)                     | x         |       |         |
-Graphs and Visualizations                   | x         |       |         |
+Recommender Engine with redis               |           |       |         | x
 ***Chapter 11***                            |           |       |         | 
-TBD                                         | x         |       |         |
-Testing Models                              | x         |       |         |
-Testing Views                               |           | x     |         |
-Django RequestFactory                       |           | x     |         |
+Internationalization (I18N)                 |           |       | x       |
+Rosetta                                     |           |       | x       |
+`django-parler`                             |           |       | x       |
+Localization with `django-localflavor`      |           |       | x       |
 ***Chapter 12***                            |           |       |         |
 TBD                                         | x         |       |         |
 `dj-database-url`                           |           | x     |         |
