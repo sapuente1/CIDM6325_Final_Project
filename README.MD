@@ -145,6 +145,23 @@ For all of the functions in the online shop example, it is expected that the fol
 
 The shop won't run without these.  I know these external dependencies are a pain, but they represent a very realistic scenario for you to understand.
 
+# Educa Notes
+
+Structure of project:
+```
+Subject 1
+  Course 1
+    Module 1
+      Content 1 (image)
+      Content 2 (text)
+    Module 2
+      Content 3 (text)
+      Content 4 (file)
+      Content 5 (video)
+      ...
+
+```
+
 ## General Notes ##
 - DO NOT SKIP READING THE BOOK! Most of the tips, and links at the back of the chapter, provide VITAL clues.
 - DO use Antonio's [GitHub Repostitory](https://github.com/PacktPublishing/Django-5-By-Example) for book code.

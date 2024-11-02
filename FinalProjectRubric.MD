@@ -94,10 +94,10 @@ Rosetta                                     |           |       | x       |
 Model translation with `django-parler`      |           |       | x       |
 Localization with `django-localflavor`      |           |       | x       |
 ***Chapter 12***                            |           |       |         |
-TBD                                         | x         |       |         |
-`dj-database-url`                           |           | x     |         |
-`django-crispy-forms`                       | x         |       |         |
-`django-allauth`                            |           |       | x       |
+Fixtures                                    | x         |       |         |
+Model Inheritance                           | x         |       |         |
+Authentication and Authorization            | x         |       |         |
+Custom Model Fields                         | x         |       |         |
 ***Chapter 13***                            |           |       |         |
 TBD                                         | x         |       |         |
 ***Chapter 14***                            |           |       |         |
