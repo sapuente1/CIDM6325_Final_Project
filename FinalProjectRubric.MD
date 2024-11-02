@@ -99,7 +99,12 @@ Model Inheritance                           | x         |       |         |
 Authentication and Authorization            | x         |       |         |
 Custom Model Fields                         | x         |       |         |
 ***Chapter 13***                            |           |       |         |
-TBD                                         | x         |       |         |
+Content Management System                   | x         |       |         |
+HTML5 drag and drop                         |           | x     |         |
+HTML5 sortable                              |           | x     |         |
+Neapolitan for CRUD Views                   |           |       |         | x
+Django Formset                              | x         |       |         |
+Additial CBV Mixins with `django-braces`    | x         |       |         |
 ***Chapter 14***                            |           |       |         |
 TBD                                         | x         |       |         |
 ***Chapter 15***                            |           |       |         |
