@@ -1,6 +1,6 @@
 # Guide to Book Topics for Final Project (Baseline, Good, Better, Best)
 
-NOTE: Updated 10/27/2024
+NOTE: Updated 10/27/2024 - ***STILL NOT FINALIZED!!!***
 
 I have classified the learning objectives from Antonio's book according to the following scheme.  Each category is relative to the following requirements for your final project:
 
