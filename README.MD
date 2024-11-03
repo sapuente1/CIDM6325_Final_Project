@@ -1,9 +1,9 @@
 # CIDM6325 - Fall 2024 #
 README Outline:
-- Chapters 1-3 build the blog
-- Chapters 4-7 build the bookmarks social website
-- Chapters 8-11 build an ecommerce application
-- Chapters 12-18 build a CMS for an online elearning platform
+- Chapters 1-3 build the blog (assignment)
+- Chapters 4-7 build the bookmarks social website (assignment)
+- Chapters 8-11 build an ecommerce application (assignment)
+- Chapters 12-18 build a CMS for an online elearning platform (basis of final project)
 
 ## Video Notes ##
 - Technical Notes CH 2 - 7 - Published October 2024
