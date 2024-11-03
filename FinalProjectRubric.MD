@@ -106,7 +106,7 @@ Neapolitan for CRUD Views                   |           |       |         | x
 Django Formset                              | x         |       |         |
 Additial CBV Mixins with `django-braces`    | x         |       |         |
 ***Chapter 14***                            |           |       |         |
-TBD                                         | x         |       |         |
+Django caching with `memchached/redis`      |           |       |         | x
 ***Chapter 15***                            |           |       |         |
 TBD                                         | x         |       |         |
 ***Chapter 16***                            |           |       |         |

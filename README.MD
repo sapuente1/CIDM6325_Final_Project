@@ -162,6 +162,18 @@ Subject 1
 
 ```
 
+## Docker Stuff
+
+I don't specify a version of memchached, so it defaults to `latest`:
+
+`docker pull memcached` - defaults to ***latest***
+
+`docker run -it --rm --name memcached -p 11211:11211 memcached:latest -m 64`
+
+Also for ***redis***:
+
+`docker run -it --rm --name redis -p 6379:6379 redis:latest`
+
 ## General Notes ##
 - DO NOT SKIP READING THE BOOK! Most of the tips, and links at the back of the chapter, provide VITAL clues.
 - DO use Antonio's [GitHub Repostitory](https://github.com/PacktPublishing/Django-5-By-Example) for book code.
