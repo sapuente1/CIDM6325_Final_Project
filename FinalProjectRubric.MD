@@ -5,9 +5,9 @@ NOTE: Updated 10/27/2024 - ***STILL NOT FINALIZED!!!***
 I have classified the learning objectives from Antonio's book according to the following scheme.  Each category is relative to the following requirements for your final project:
 
 * You must implement *all* **Baseline** components - Gets you to 70% of the value
-* You will implement *at least* six **Good** components - Gets you to 80% of the vaue
+* You will implement *at least* four **Good** components - Gets you to 80% of the vaue
 * You will implement *at least* two **Better** components - Gets you to 85% of the value
-* You will implement *at least* two **Best** components - Gets you to 90% of the value
+* You will implement *at least* one **Best** components - Gets you to 90% of the value
 
 Where is the remaining 10%? It comes from the synthesis and service to your implementation approach.
 
@@ -100,19 +100,22 @@ Authentication and Authorization            | x         |       |         |
 Custom Model Fields                         | x         |       |         |
 ***Chapter 13***                            |           |       |         |
 Content Management System                   | x         |       |         |
-HTML5 drag and drop                         |           | x     |         |
-HTML5 sortable                              |           | x     |         |
+HTML5 drag and drop                         |           |       | x       |
+HTML5 sortable                              |           |       |         |
 Neapolitan for CRUD Views                   |           |       |         | x
 Django Formset                              | x         |       |         |
-Additial CBV Mixins with `django-braces`    | x         |       |         |
+Additial CBV Mixins with `django-braces`    |           | x     |         |
 ***Chapter 14***                            |           |       |         |
 Django caching with `memchached/redis`      |           |       |         | x
 ***Chapter 15***                            |           |       |         |
-TBD                                         | x         |       |         |
+Django Rest Framework for APIs              | x         |       |         |
 ***Chapter 16***                            |           |       |         |
-TBD                                         | x         |       |         |
+Implement Daphne ASGI                       | x         |       |         |
+Django Channels                             | x         |       |         |
+Web Sockets                                 | x         |       |         |
+Python/Django Async programming             | x         |       |         |
 ***Chapter 17***                            |           |       |         |
-TBD                                         | x         |       |         |
+Docker Deployment (optional)                | x         |       |         |
 
 ### Optional 3rd Party Tools to consider***
 * [Django admin](https://github.com/wsvincent/awesome-django#admin)
