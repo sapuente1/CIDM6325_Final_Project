@@ -38,13 +38,13 @@ Canonical Urls for SEO                      | x         |       |         |
 Pagination                                  | x         |       |         |
 Class-Based Views                           |           | x     |         |
 Sending email (internal in console)         | x         |       |         |
-Sending email (with 3rd party)              | x         |       | x       |
+Sending email (with 3rd party)              |           |       | x       |
 One-to-Many Model Relationships             | x         |       |         |
 ***Chapter 3***                             |           |       |         | 
 Django Taggit for Categorization            | x         |       |         |
-Aggregate model quiries                     |           | x     |         |
+Aggregate model quiries                     | x         |       |         |
 Django Template Language                    | x         |       |         |
-Custom template tags                        | x         | x     |         |
+Custom template tags                        |           | x     |         |
 Custom template filters                     |           | x     |         |
 Sitemap                                     |           | x     |         |
 Site feeds                                  |           | x     |         |
@@ -70,23 +70,23 @@ Many-to-Many Model Relationships            | x         |       |         |
 Django Forms Classes                        | x         |       |         |
 Django ModelForm Class                      | x         |       |         |
 Form data validation and retreival          | x         |       |         |
-Front-end JavaScript (see note A below)     |           |       |         | x
+Front-end JavaScript (see note A below)     | x         |       |         | 
 ***Chapter 7***                             |           |       |         |
-Activity Streams                            |           | x     |         |
+Activity Streams                            |           |       | x       |
 Advanced QuerySet operations                |           | x     |         |
 Django Signals                              |           |       | x       |
 Django Debug Toolbar                        | x         |       |         | 
 Redis                                       |           |       | x       | 
 ***Chapter 8***                             |           |       |         |
-Pillow Image processing                     | x         |       |         |
-Django Sessions                             | x         |       |         |
-Custom context processors                   | x         |       |         |
+Pillow Image processing                     |           | x     |         |
+Django Sessions                             |           | x     |         |
+Custom context processors                   |           | x     |         |
 Django and RabbitMQ/Celery/Flower           |           |       |         | x
 ***Chapter 9***                             |           |       |         |
 Stripe Payments                             |           |       | x       |
 Webhook Handlers                            |           |       | x       |
-CSV export                                  | x         |       |         |
-Add custom view to admin interface          | x         |       |         |
+CSV export                                  |           | x     |         |
+Add custom view to admin interface          |           | x     |         |
 PDF Generation                              |           |       |         | x
 Send PDFs via Email (external)              |           |       |         | x
 ***Chapter 10***                            |           |       |         |
@@ -99,14 +99,14 @@ Rosetta                                     |           |       | x       |
 Model translation with `django-parler`      |           |       | x       |
 Localization with `django-localflavor`      |           |       | x       |
 ***Chapter 12***                            |           |       |         |
-Fixtures                                    | x         |       |         |
+Fixtures                                    |           | x     |         |
 Model Inheritance                           | x         |       |         |
 Authentication and Authorization            | x         |       |         |
-Custom Model Fields                         | x         |       |         |
+Custom Model Fields                         |           | x     |         |
 ***Chapter 13***                            |           |       |         |
 Content Management System                   | x         |       |         |
 HTML5 drag and drop                         |           |       | x       |
-HTML5 sortable                              |           |       |         |
+HTML5 sortable                              |           |       | x       |
 Neapolitan for CRUD Views                   |           |       |         | x
 Django Formset                              | x         |       |         |
 Additial CBV Mixins with `django-braces`    |           | x     |         |
