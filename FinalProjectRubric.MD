@@ -1,6 +1,11 @@
 # Guide to Book Topics for Final Project (Baseline, Good, Better, Best)
 
-NOTE: Updated 10/27/2024 - ***STILL NOT FINALIZED!!!***
+***NOTE***: Updated 11/10/2024 
+Finalized for Fall 2024.  
+
+***NOTE***: You **MUST** document and identify which of the Good, Better, Best features you are using in your project in your project's readme.
+
+## How to use this List
 
 I have classified the learning objectives from Antonio's book according to the following scheme.  Each category is relative to the following requirements for your final project:
 
