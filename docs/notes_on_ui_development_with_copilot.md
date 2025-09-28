@@ -35,14 +35,14 @@ Define the contract **before coding**. This keeps the team aligned and helps Cop
 ### UI Contract Template (copy/paste)
 
 ``` text
-Page: <route-name>
-URL: /<path>
-View: <App>.views.<Name>View
+Page: {{route-name}}
+URL: /{{path}}
+View: {{App}}.views.{{Name}}View
 Layout: base.html
 Blocks used: content, scripts (plus any custom blocks)
 Partials: _navbar.html, _flash.html, _card_item.html
 Data needed: { items: List[CardItem], user: User, messages: List[str] }
-Actions: { search: GET /items?query=…, like: POST /items/<id>/like }
+Actions: { search: GET /items?query=…, like: POST /items/{{id}}/like }
 States: { loading, empty, error, populated }
 HTMX: { search hx-get="/items", hx-target="#results", hx-indicator="#spinner" }
 ```

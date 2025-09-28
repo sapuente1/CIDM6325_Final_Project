@@ -32,35 +32,33 @@ README Outline:
   - unlock web resources
   - provide the pathways into a static site as well as a dynamic web app
   - specify value and semantic paths
-Views:
+- Views:
   - Are the Python logic that "answers" when a URL ushers a visitor to it
     - [Views as Python functions](https://docs.djangoproject.com/en/5.2/topics/http/views/)
     - [Views as Python classes](https://docs.djangoproject.com/en/5.2/topics/class-based-views/)
       - [CBVs](https://ccbv.co.uk/)
       - Decorators and Mixins
   - Curate [responses](https://docs.djangoproject.com/en/5.2/ref/request-response/#django.http.HttpResponse) to [requests](https://docs.djangoproject.com/en/5.2/ref/request-response/#django.http.HttpRequest)
-Django Templates:
+- Django Templates:
   - Intersperse HTML markup and Data/Logic using [DTL](https://docs.djangoproject.com/en/5.2/topics/templates/).
   - Pass context (the data you want to use in the rendered page) from View to Template
   - Reuse with Template Inheritance
   - Use an [extensive toolkit](https://docs.djangoproject.com/en/5.2/ref/templates/builtins/) of helpers to extend template capabilities.
-Forms:
+- Forms:
   - Use common HTML/HTTP structures to obtain user input
   - The form is both the HTML plus a Django class to maintain data/state about the form
   - Django helps with Form validation to ensure data consistency and safety.
-Models:
+- Models:
   - As a web application, Django's power is its assumption that we will use a database to store data rendered in pages.
   - Models represent data schema in the database (or any persistence store)
   - Models and the O/RM are how we save/read to/from the database.
   - Take care when you design/model your datases and entities.
-
-Videos:
-
-- Django 1: Django Basics
-- Django 2:
-  - GitHub Repos, Copilot, and PRs
-  - Copilot structures
-  - Copilot Demo and Explanation
+- Videos:
+  - Django 1: Django Basics
+  - Django 2:
+    - GitHub Repos, Copilot, and PRs
+    - Copilot structures
+    - Copilot Demo and Explanation
 
 [back to outline](#cidm6325---fall-2025)
 
