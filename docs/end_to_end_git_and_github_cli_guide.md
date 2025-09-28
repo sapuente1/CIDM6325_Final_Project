@@ -17,7 +17,7 @@ A comprehensive, example‑heavy tutorial covering the **common pathways** stude
 
 ## 1) One‑time setup (fork, clone, remotes)
 
-```
+``` bash
 gh auth login
 
 # Fork the course repo and clone your fork locally
@@ -57,6 +57,8 @@ Why: prevents drifting far behind upstream and avoids painful conflicts later.
 * Use **conventional** commit messages: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
 
 **Example**
+
+``` bash
 # edit files
 git add -p
 git commit -m "feat: add search form to items page"
@@ -65,13 +67,13 @@ Run tests locally **before** pushing:
 # pure Python
 python -m unittest -v
 
-```
+
 # Django
 python manage.py test -v 2
-```
 
-Push to your fork:
+#Push to your fork:
 git push origin main
+```
 
 ---
 
@@ -88,10 +90,10 @@ Head = `<your-username>:main` → Base = `<course-org>:main`
 3. Title + description (use PR template). Link PRD/ADR. Create PR.
 
 **CLI**
-gh pr create 
---base main 
---head <your-username>:main 
---title "feat: add search form" 
+gh pr create
+--base main
+--head <your-username>:main
+--title "feat: add search form"
 --body-file .github/pull_request_template.md
 
 Iterate by pushing more commits to your fork’s `main`.
@@ -184,7 +186,9 @@ git push origin main
 git add -p
 git commit -m "..."
 git push origin main
+
 # if needed
+
 git fetch upstream
 git checkout main
 git merge --ff-only upstream/main
@@ -240,7 +244,9 @@ git reset --hard HEAD~1
 
 **Stash WIP while you switch tasks**
 git stash push -m "wip: edit items form"
+
 # later
+
 git stash list
 git stash pop
 
@@ -311,8 +317,8 @@ PRD §<id>, ADR-<id>, Closes #<issue>
 
 ## Testing (MANDATORY)
 
-- MUST use python -m unittest for pure Python modules.
-- MUST use Django’s built‑in test runner: python manage.py test.
-- MUST NOT add or suggest pytest or plugins; convert examples to unittest/Django TestCase.
+* MUST use python -m unittest for pure Python modules.
+* MUST use Django’s built‑in test runner: python manage.py test.
+* MUST NOT add or suggest pytest or plugins; convert examples to unittest/Django TestCase.
 
 ---
