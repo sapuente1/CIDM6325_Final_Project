@@ -95,9 +95,19 @@ Commands (create venv, install build tools, install the project)
 1. Create and activate a virtual environment
 
 ```bash
+# make the venv
 python -m venv .venv
+
+# activate the venv
+
+# on Windows: option 1
 source .venv/Scripts/activate    # Git-Bash/WSL (bash)
+
+# on Windows: option 2
 # PowerShell: .\.venv\Scripts\Activate.ps1
+
+# on Mac/*nix
+# source ./.venv/bin/activate
 ```
 
 1. Upgrade pip and install build helpers
