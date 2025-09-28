@@ -1,29 +1,152 @@
-# CIDM6325 - Fall 2024 #
+# CIDM6325 - Fall 2025 #
+
 README Outline:
-- Chapters 1-3 build the blog (assignment)
-- Chapters 4-7 build the bookmarks social website (assignment)
-- Chapters 8-11 build an ecommerce application (assignment)
-- Chapters 12-18 build a CMS for an online elearning platform (basis of final project)
+
+- Matt Layman
+  - [Chapter 1 - From Browser To Django](https://www.mattlayman.com/understand-django/browser-to-django/)
+  - [Chapter 2 - URLs Lead The Way](https://www.mattlayman.com/understand-django/urls-lead-way/)
+  - [Chapter 3 - Views On Views](https://www.mattlayman.com/understand-django/views-on-views/)
+  - [Chapter 4 - Templates For User Interfaces](https://www.mattlayman.com/understand-django/templates-user-interfaces/)
+  - [Chapter 5 - User Interaction With Forms](https://www.mattlayman.com/understand-django/user-interaction-forms/)
+  - [Chapter 6 - Store Data With Models](https://www.mattlayman.com/understand-django/store-data-with-models/)
+  - [Chapter 7 - Administer All The Things](https://www.mattlayman.com/understand-django/administer-all-the-things/)
+  - [Chapter 8 - Anatomy Of An Application](https://www.mattlayman.com/understand-django/anatomy-of-an-application/)
+  - [Chapter 9 - User Authentication](https://www.mattlayman.com/understand-django/user-authentication/)
+  - [Chapter 10 - Middleware Do You Go?](https://www.mattlayman.com/understand-django/middleware-do-you-go/)
+  - [Chapter 11 - Serving Static Files](https://www.mattlayman.com/understand-django/serving-static-files/)
+  - [Chapter 12 - Test Your Apps](https://www.mattlayman.com/understand-django/test-your-apps/)
+  - [Chapter 13 - Deploy A Site Live](https://www.mattlayman.com/understand-django/deploy-site-live/)
+  - [Chapter 14 - Per-visitor Data With Sessions](https://www.mattlayman.com/understand-django/sessions/)
+  - [Chapter 15 - Making Sense Of Settings](https://www.mattlayman.com/understand-django/settings/)
+  - [Chapter 16 - User File Use](https://www.mattlayman.com/understand-django/media-files/)
+  - [Chapter 17 - Command Your App](https://www.mattlayman.com/understand-django/command-apps/)
+  - [Chapter 18 - Go Fast With Django](https://www.mattlayman.com/understand-django/go-fast/)
+  - [Chapter 19 - Security And Django](https://www.mattlayman.com/understand-django/secure-apps/)
+  - [Chapter 20 - Debugging Tips And Techniques](https://www.mattlayman.com/understand-django/debugging-tips-techniques/)
 
 ## Video Notes ##
-- Technical Notes CH 2 - 7 - Published October 2024
-    - Docker - Part 1
-    - Emails and Email Backends - Part 2
-    - Docker and Postgres - Part 3
-    - Social SSO - Part 4
-- Methods to implement Recipe (ch 1 - 3) - Not published yet
-- Working with Bootstrap - Not published yet
-- Technical Notes CH 8 - 11
-    - Celery and Rabbit MQ - Part 1
 
-## SendGrid and Anymail ##
-Steps from https://anymail.dev/en/v12.0/esps/sendgrid/
-1. `pip install "django-anymail[sendgrid]"`
-2. add `anymail` to INSTALLED_APPS
+- Django 1: Django Basics
+- Django 2:
+  - GitHub Repos, Copilot, and PRs
+  - Copilot structures
+  - Copilot Demo and Explanation
 
-[back to outline](#cidm6325---fall-2024)
+[back to outline](#cidm6325---fall-2025)
+
+## Install & Packaging (pyproject.toml) ##
+
+Treating this repo as a fresh workspace, here's a minimal `pyproject.toml` and step-by-step, copy-paste-ready commands to create an environment and install the project. The `pyproject.toml` below declares only Django 5.2.6 as the runtime dependency.
+
+Minimal `pyproject.toml` (place at the repository root):
+
+```toml
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cidm6325"
+version = "0.1.0"
+description = "Minimal project declaring Django 5.2.6 as the sole dependency"
+readme = "README.MD"
+requires-python = ">=3.12"
+authors = [{ name = "Your Name" }]
+license = "MIT"
+keywords = ["django"]
+dependencies = [
+  "Django==5.2.6"
+]
+
+[project.urls]
+Homepage = "https://example.com/"
+```
+
+Commands (create venv, install build tools, install the project)
+
+1. Create and activate a virtual environment
+
+```bash
+python -m venv .venv
+source .venv/Scripts/activate    # Git-Bash/WSL (bash)
+# PowerShell: .\.venv\Scripts\Activate.ps1
+```
+
+1. Upgrade pip and install build helpers
+
+```bash
+python -m pip install --upgrade pip build
+```
+
+1. Install the local project (this will install Django 5.2.6 as declared)
+
+```bash
+python -m pip install .
+# or editable/development mode
+python -m pip install -e .
+```
+
+Verification
+
+```bash
+python -c "import django; print(django.get_version())"
+# expected: 5.2.6
+```
+
+Quick troubleshooting
+
+- If setuptools can't find packages to include when building, add package discovery (adjust if you use a `src/` layout):
+
+```toml
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["yourpackagename*"]
+# or for a src layout: where = ["src"]
+```
+
+- If you see a deprecation warning about `project.license` being a table, replace it with a short SPDX string, e.g. `license = "MIT"` (this README's example uses that form).
+- To debug build-time failures, run `python -m build` and read the sdist/wheel output — it often shows missing metadata or packaging errors.
+- If you want a pinned pip-style snapshot for CI, create it from an isolated env after installing: `pip freeze > requirements.txt`.
+
+If you'd like, I can add a small GitHub Actions workflow that runs `python -m build` and verifies the Django version on push.
+
+[back to outline](#cidm6325---fall-2025)
+
+## Why this felt harder than `pip install -r requirements.txt` and troubleshooting ##
+
+Short version: `requirements.txt` is just a list of packages for pip to install. `pyproject.toml` is a package manifest used by build tools (setuptools, wheel, etc.) and requires minimal package metadata (name, version) and sometimes package-discovery configuration so setuptools knows what to include in a wheel. That extra metadata is why you saw extra steps.
+
+Quick checklist when migrating from `requirements.txt` to `pyproject.toml`:
+
+- Make sure `pyproject.toml` lists your runtime dependencies under `[project].dependencies` (you have this).
+- Tell setuptools how to find your packages if they live at the repo root (example already in this repo):
+
+  [tool.setuptools.packages.find]
+  where = ["."]
+  include = ["blog*", "blogsite*"]
+
+- Build and install using the venv Python to avoid mixing environments:
+
+```bash
+python -m venv .venv
+source .venv/Scripts/activate    # on Git-Bash/WSL; on PowerShell use .venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip build
+python -m pip install .          # installs dependencies and your package
+# or editable (dev) mode:
+python -m pip install -e .
+```
+
+Common issues & quick fixes
+
+- "setuptools couldn't find packages / set py_modules or packages": add a [tool.setuptools.packages.find] section with correct patterns (see example above). If your packages are under a `src/` directory, use `where = ["src"]`.
+- Deprecation warnings about `project.license` as a TOML table: replace the table with an SPDX short string, e.g. `license = "MIT"` (done in this repo).
+- If pip install fails during the build step, run `python -m build` to see the full build output and fix metadata errors.
+- If you need a pip-style frozen file for CI, generate it from an isolated environment after install: `pip freeze > requirements.txt`.
+
+If you'd like I can add a short GitHub Actions workflow that runs `python -m build` and `python -m pip install .` on push so the repo stays installable in CI.
 
 ## Docker Stuff ##
+
 WSL2 is probably the best option for Windows.
 ![WSL2](./img/docker_install_dialog.png)
 
@@ -33,10 +156,10 @@ You can use the shell from within the Docker Interface
 Or, if on Windows, use PowerShell. If on Mac, Terminal is fine.
 ![PowerShell](./img/PowerShell.png)
 
-docker run --name=blog_db2 -e POSRGRES_DB=blog -e POSTGRES_USER=blog -e POSTGRES_PASSWORD=xxxxx -p 5432:5432 -d postgres:latest
-
+`docker run --name=blog_db2 -e POSRGRES_DB=blog -e POSTGRES_USER=blog -e POSTGRES_PASSWORD=xxxxx -p 5432:5432 -d postgres:latest`
 
 steps:
+
 1. `docker pull postgres` - I left the version off, so it gets the latest
 2. `docker run --name=blog_db -e POSRGRES_DB=blog -e POSTGRES_USER=blog -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:latest` - note, you will realize the best results if you just stick to what Antonio is showing.
 3. Although running `pip install psycopg` is a safe approach, it may not work entirely when doing a Docker container with Postgres, this mainly due to Postgres being virtualized where none of the resources used by Postgres are actually on your local system (Docker is). Your likely error message here will be "psycopg or psycopg2 not installed/found."
@@ -47,15 +170,18 @@ steps:
 8. You can run/pause/stop the Postgres Docker container using the desktop application.
 
 ## Social Auth Notes ##
+
 Clearly, the screens at the Developer Console for Google's Cloud Services are slightly different than the book.  However, the screens are similar.
 
 Other notes:
+
 1. It is CRITICAL that, in Windows, the hosts file is edited with a text editor that is started with evelated permissions  (right click and "Run as Administrator")
 2. the Client ID from the "Client ID for Web Application" screen is the GOOGLE_OAUTH2_KEY
 3. the Client secrete from from the "Client ID for Web Application" is the GOOGLE_OAUTH2_SECRET
 4. django social auth is doing the rest of the "magic"
 
-### Google Cloud: ###
+### Google Cloud ###
+
 1. The URL for the overall cloud developer console is: [Google Cloud Console](https://console.cloud.google.com/)
 2. A new project screen: ![New Project](./img/GC_new_project.png)
 3. Select your project: ![Select Project](./img/GC_Select_Project.png)
@@ -70,17 +196,21 @@ Other notes:
 
 ## RabbitMQ and Celery in Python ##
 
-**RabbitMQ**
+### RabbitMQ ###
+
 RabbitMQ will run via Docker.  The commands in the book are straightforward:
+
 1. Make sure Docker Desktop is running
 2. grab the latest rabbitmq-management image: `docker pull rabbitmq:management`
 3. run the image in a container: `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management`
 
-**Celery**
+### Celery ###
+
 1. On Windows, you will likely need to run a separate Git-Bash session with administrative rights (right-click and "Run as Administrator")
 2. If not you will likely get this error `[WinError 5] Access Is Denied`, however, that is not the only source of this error on windows.
 
 Let's look further into this:
+
 1. For now, don't run Celery within VS Code (on windows) until I find a VS Code setting for you.
 2. You WILL need to activiate the virtual environment in this new (separate) Git-Bash or PowerShell terminal
 3. You will also want to limit the number of concurrent worker to something small for our testing purposes.  
@@ -90,7 +220,7 @@ Let's look further into this:
 
 You will be left with output that looks like the book, but the outlet is on the SEPARATE "Run As Admin" window.
 
-```
+``` shell
 pip install gevent
 
 celery -A myshop worker --loglevel=info -P gevent
@@ -98,46 +228,10 @@ celery -A myshop worker --loglevel=info -P gevent
 
 In the end, sending an email via a message queue like celery and RabbitMQ is going to be a "nice to have" feature in the project.
 
-## WeasyPrint and Windows
-Again, in many cases, getting things to work on Windows can be, different.  This is because most web deployment environments are not Windows based but rather *nix (Linux/Unix/OSX) based.
-
-Doing the `pip install WeasyPrint` from the book is not going to work for Windows folks.
-
-The truth is that the steps at the [WeasyPrint website's documentation](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows) are the way to go. 
-
-At issue with these instructions is a vital additional set of steps discussed here: [https://stackoverflow.com/a/78715011](https://stackoverflow.com/a/78715011)
-
-1. Install MSYS2 https://www.msys2.org/#installation
-2. After installation MSYS2 execute the following command in MSYS2 shell:
-`pacman -S mingw-w64-x86_64-pango`
-3. Then add path `C:\msys64\mingw64\bin` to enviroment variables and of course add weasyprint to your project.  If you don't have experience with this, there are ["how to" resouces](https://www.c-sharpcorner.com/article/how-to-addedit-path-environment-variable-in-windows-11/).
-4. You will find this now works and the easy way to check is (with your virtual environment activated): `python manage.py check`
-
-Again, we are faced with the following question: so, is WeasyPrint and the ability to print to PDF wor it worth it? It depends, but I'm putting it as a "nice to have" feature.  The trick here is to skip those parts.
-
-I think those on OSX will have an easier time.
-
-Do not BOG DOWN.
-
-## I18N and `gettext`
-In chapter 11, we again find ourselves faced with challenges as windows users.  This speaks volumes about how the web is run as most HTTP servers execute in a Unix/Linux environment (of which Mac OSX is a part of).  As windows users, Antonio tells us to:
-
-- Read the documentation about using `gettext` on Windows at the [Django Documentation](https://docs.djangoproject.com/en/5.0/topics/i18n/translation/#gettext-on-windows)
-- Once at the Django documentation, we are encouraged to [download a pre-compiled binary](https://mlocati.github.io/articles/gettext-iconv-windows.html).  Here are there are four choices:
-    - [Shared (relies on system DLLs) 32-bit binary](https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.22.5a-v1.17-r2/gettext0.22.5a-iconv1.17-shared-32.exe)
-    - [Static (no dependencies) 32-bit binary](https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.22.5a-v1.17-r2/gettext0.22.5a-iconv1.17-static-32.exe)
-    - [Shared (relies on system DLLs) 64-bit binary](https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.22.5a-v1.17-r2/gettext0.22.5a-iconv1.17-shared-64.exe)
-    - [Static (no dependencies) 64-bit binary](https://github.com/mlocati/gettext-iconv-windows/releases/download/v0.22.5a-v1.17-r2/gettext0.22.5a-iconv1.17-static-64.exe)
-
-Of those, almost all of us are using a 64-bit windows, and the static build is likely the safest. In all cases, I elected to use the installer as it will put things in the right place and offer this critical dialog with the needed options:
-
-![gettext installer](./img/gettext_iconv_installer_settings.png)
-
-Sometimes, most of the time, it is a good idea to reboot your computer now as even though this installer should have included the installation directory into your PATH variable, this may not take effect until a reboot.  I talk above setting the PATH in an earlier section of this README. ***NOTE***: Rebooting is what made `django-admin makemessages --all` work for me after failing before a reboot.
-
-**FINAL NOTE on the ONLINE SHOP Project**
+## FINAL NOTE on the Blog ##
 
 For all of the functions in the online shop example, it is expected that the following are always running:
+
 1. Docker Desktop
 2. RabbitMQ
 3. Celery
@@ -145,24 +239,7 @@ For all of the functions in the online shop example, it is expected that the fol
 
 The shop won't run without these.  I know these external dependencies are a pain, but they represent a very realistic scenario for you to understand.
 
-# Educa Notes
-
-Structure of project:
-```
-Subject 1
-  Course 1
-    Module 1
-      Content 1 (image)
-      Content 2 (text)
-    Module 2
-      Content 3 (text)
-      Content 4 (file)
-      Content 5 (video)
-      ...
-
-```
-
-## Docker Stuff
+## MOre Docker Stuff ##
 
 I don't specify a version of memchached, so it defaults to `latest`:
 
@@ -175,31 +252,30 @@ Also for ***redis***:
 `docker run -it --rm --name redis -p 6379:6379 redis:latest`
 
 ## General Notes ##
-- DO NOT SKIP READING THE BOOK! Most of the tips, and links at the back of the chapter, provide VITAL clues.
-- DO use Antonio's [GitHub Repostitory](https://github.com/PacktPublishing/Django-5-By-Example) for book code.
-- We eventually start running the Django debug server wit this command: `python manage.py runserver_plus --cert-file cert.crt`
+
+- DO NOT SKIP READING THE BOOK! As it is Free, [Matt Layman's Book](https://www.mattlayman.com/understand-django/browser-to-django/) is a little sparse, but it has the concepts we need.
 - [The Django Secret Key Generator](https://django-secret-key-generator.netlify.app/) - [Source Code for the curious](https://github.com/RealOrangeOne/django-secret-key-generator) - you need this because the default secret key is not meant for deployment.
 - Commands to run when checking for outdated packages in your Virtual Environment (VE):
-    * Be sure that your VE is activated (`source .venv/Scripts/activate`)
-    * check for outdated packages `python -m pip --outdated`
-    * update package(s) as appropriate `python -m pip install --upgrade <name-of-package>`
-
+  - Be sure that your VE is activated (`source .venv/Scripts/activate`)
+  - check for outdated packages `python -m pip --outdated`
+  - update package(s) as appropriate `python -m pip install --upgrade <name-of-package>`
 - In addition to the book, this is a good resource: [W3Schools Django](https://www.w3schools.com/django/index.php)
 - A [Git Cheat Sheet](https://training.github.com/downloads/github-git-cheat-sheet/) is available as a quick reference for common `git` commands.
 - Boostrap Crash Course (freecodecamp): [Full Bootstrap 5 Tutorial for Beginners](https://www.freecodecamp.org/news/full-bootstrap-5-tutorial-for-beginners/)
 
-[back to outline](#cidm6325---fall-2024)
+[back to outline](#cidm6325---fall-2025)
 
 ## Miscellaneous Notes ##
+
 - **Templates and Bootstrap** - I will strongly recommend that you use and develop familiarity with [Bootstrap](https://getbootstrap.com/) as a CSS framework for all of your work in this class.
 - **Classy Class-Based Views** - Should you wish to go in this direction: [https://ccbv.co.uk/](https://ccbv.co.uk/)
-- **Environment Variables** - I have used [python-dotenv](https://pypi.org/project/python-dotenv/) forever and have done so in my code - Antonio uses [python-decouple](https://pypi.org/project/python-decouple/).
+- **Environment Variables** - I have used [python-dotenv](https://pypi.org/project/python-dotenv/) forever and have done so in my code./
 - **Candidate Heroku Replacements** - Heroku used to be the best free Django deployment platform - it is no longer free.  Here are some replacement services.
-    * render.io
-    * python anywhere
-    * Fly.io
-    * [Railway](https://railway.app/)
+  - render.io
+  - python anywhere
+  - Fly.io
+  - [Railway](https://railway.app/)
 
 This README file is constructed using [MarkDown](https://www.markdownguide.org/basic-syntax).  Here is another good [Markdown reference](https://commonmark.org/help/).
 
-[back to outline](#cidm6325---fall-2024)
+[back to outline](#cidm6325---fall-2025)
