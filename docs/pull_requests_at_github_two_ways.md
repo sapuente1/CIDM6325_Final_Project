@@ -26,11 +26,11 @@ A complete, copy‑paste‑ready tutorial for a **trunk‑only** workflow. You d
 gh auth login
 
 # Fork the course repo into your account and clone your fork locally
-gh repo fork <course-org>/<repo> --clone
-cd <repo>
+gh repo fork {course-org}/{repo} --clone
+cd {repo}
 
 # Add the upstream remote (the course repository)
-git remote add upstream https://github.com/<course-org>/<repo>.git
+git remote add upstream https://github.com/{course-org}/{repo}.git
 git remote -v
 
 # Optional: set your Git identity
@@ -125,7 +125,7 @@ git push origin main
 git fetch upstream
 git checkout main
 git merge upstream/main     # resolve conflicts
-git add <resolved-files>
+git add {resolved-files}
 git commit                  # commit the merge
 git push origin main
 ```
@@ -189,9 +189,9 @@ git commit -m "fix: tighten validation and tests"
 git push origin main
 
 # discuss and check status from terminal
-gh pr comment <number> -b "Please review the validation changes."
+gh pr comment {number} -b "Please review the validation changes."
 gh pr status
-gh pr checks <number>
+gh pr checks {number}
 ```
 
 ### B5) Update your PR if upstream `main` moved
@@ -207,7 +207,7 @@ git push origin main
 git fetch upstream
 git checkout main
 git merge upstream/main     # resolve conflicts
-git add <resolved-files>
+git add {resolved-files}
 git commit
 git push origin main
 ```
@@ -215,8 +215,8 @@ git push origin main
 ### B7) Merge (maintainer action, for reference)
 
 ``` bash
-gh pr ready <number>        # if it was a draft
-gh pr merge <number> --squash
+gh pr ready {number}        # if it was a draft
+gh pr merge {number} --squash
 ```
 
 ### B8) Post‑merge hygiene
@@ -238,12 +238,10 @@ Website
 CLI
 
 * Request reviews and assign: `gh pr create --assignee @me`, `--reviewer user1,user2`
-* Inspect CI quickly: `gh pr checks <number>`, `gh pr status`
-* Review a teammate’s PR locally: `gh pr checkout <number>`
+* Inspect CI quickly: `gh pr checks {number}`, `gh pr status`
+* Review a teammate’s PR locally: `gh pr checkout {number}`
 
 ## Troubleshooting (trunk‑only)
 
 * PR shows no changes: make sure you pushed commits to your fork’s `main` and that compare is `<your-username>:main` → `<course-org>:main`.
 * Fork behind upstream: sync first (Path A1 or B1), push, and the PR updates automatically.
-
-End of tutorial.
