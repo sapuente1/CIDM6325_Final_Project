@@ -47,8 +47,17 @@ Follow these steps start‑to‑finish using local Git plus GitHub’s website.
 ### A1) Sync your fork’s `main` before starting
 
 ``` bash
-# Option A: GitHub CLI
-gh repo sync --source upstream --force
+# Option A: GitHub CLI - note: the curly braces are for the placeholder, don't leave them in
+gh repo sync --source {org}/{repo} --force
+
+# be careful with --force, it you are ahead of upstream (org), it will pull you back
+gh repo sync --source {org}/{repo} --force
+
+# remedy
+git pull origin main
+git push -u origin main
+
+# if all is well, push (copy to) origin/main
 git push origin main
 
 # Option B: Git
@@ -63,7 +72,7 @@ git push origin main
 ``` bash
 git checkout main
 # edit files
-git add -p
+git add -A
 git commit -m "feat: <concise summary>"
 git push origin main
 ```
@@ -89,7 +98,7 @@ git push origin main
 
 ``` bash
 # keep committing on your fork’s main
-git add -p
+git add -A
 git commit -m "fix: address reviewer feedback"
 git push origin main
 ```
@@ -152,7 +161,7 @@ git push origin main
 ``` bash
 git checkout main
 # edit files
-git add -p
+git add -A
 git commit -m "feat: <concise summary>"
 git push origin main
 ```
@@ -175,7 +184,7 @@ gh pr create --web       # open the prefilled PR in the browser
 
 ``` bash
 # push new commits; PR updates automatically
-git add -p
+git add -A
 git commit -m "fix: tighten validation and tests"
 git push origin main
 
