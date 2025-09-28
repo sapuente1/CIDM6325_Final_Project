@@ -88,7 +88,7 @@
 
 ### 2.1 Create a PR from your current branch
 
-```
+``` bash
 # From the repo root, on your feature branch with upstream set
 gh pr create \
   --base main \
@@ -108,7 +108,7 @@ gh pr create --reviewer user1,user2 # Request reviews
 
 ### 2.2 View, check, and iterate
 
-```
+``` bash
 gh pr view --web          # open PR in browser
 gh pr status              # see current branch PR, CI status
 gh pr checks              # view status checks (if enabled)
@@ -118,7 +118,7 @@ gh pr comment {{num}} -b "Please review the HTMX fragment pattern."
 * Push new commits; the PR updates.
 * To fetch & switch to a teammate’s PR branch: `gh pr checkout {{num}}`.
 
-```
+``` bash
 # Mark ready (if draft)
 gh pr ready {{num}}
 
@@ -130,7 +130,7 @@ Other merge modes: `--merge` (merge commit), `--rebase` (rebase + merge). For cl
 
 ### 2.4 Update from main (if needed)
 
-```
+``` bash
 git fetch origin
 git rebase origin/main
 git push --force-with-lease
