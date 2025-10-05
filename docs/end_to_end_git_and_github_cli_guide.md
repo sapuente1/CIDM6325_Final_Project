@@ -8,10 +8,10 @@ A comprehensive, example‑heavy tutorial covering the **common pathways** stude
 
 ## 0) Mental model in 90 seconds
 
-* **Local repo** (your working directory) ←→ **Remotes** (`origin` = your fork, `upstream` = course repo)
-* **Commits**: snapshots you make locally. **Push** sends them to a remote. **Pull** fetches remote commits to you.
-* **Branches**: pointers to commit histories. In this course we emphasize **trunk‑only** PRs (fork’s `main` → upstream `main`), but we also show feature‑branch patterns so you recognize them.
-* **PRs**: a request to merge one line of history into another, with review + checks.
+- **Local repo** (your working directory) ←→ **Remotes** (`origin` = your fork, `upstream` = course repo)
+- **Commits**: snapshots you make locally. **Push** sends them to a remote. **Pull** fetches remote commits to you.
+- **Branches**: pointers to commit histories. In this course we emphasize **trunk‑only** PRs (fork’s `main` → upstream `main`), but we also show feature‑branch patterns so you recognize them.
+- **PRs**: a request to merge one line of history into another, with review + checks.
 
 ---
 
@@ -53,10 +53,10 @@ Why: prevents drifting far behind upstream and avoids painful conflicts later.
 
 ## 3) Make changes the right way (atomic commits)
 
-* Work in **small, coherent steps**. Each commit should do one thing.
-* Use **conventional** commit messages: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
+- Work in **small, coherent steps**. Each commit should do one thing.
+- Use **conventional** commit messages: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
 
-**Example**
+### Example
 
 ``` bash
 # edit files
@@ -83,18 +83,21 @@ git push origin main
 
 Head = `<your-username>:main` → Base = `<course-org>:main`
 
-**Web**
+#### Web
 
 1. Go to **your fork** → **Contribute** → **Open pull request**
 2. Confirm compare/base: base `<course-org>:main`, compare `<your-username>:main`
 3. Title + description (use PR template). Link PRD/ADR. Create PR.
 
-**CLI**
+#### CLI
+
+```bash
 gh pr create
 --base main
 --head <your-username>:main
 --title "feat: add search form"
 --body-file .github/pull_request_template.md
+```
 
 Iterate by pushing more commits to your fork’s `main`.
 
@@ -110,10 +113,10 @@ Create a branch, commit, push, PR. (Omitted here—use trunk in class.)
 
 ### Website
 
-* Reply to comments, push fixes, click **Resolve conversation** when done.
-* Use **Viewed** checkboxes on Files changed to track your sweep.
+- Reply to comments, push fixes, click **Resolve conversation** when done.
+- Use **Viewed** checkboxes on Files changed to track your sweep.
 
-### CLI
+### CLI (review loop)
 
 ``` bash
 gh pr comment <number> -b "Explained validation path; new test covers edge case."
@@ -151,21 +154,15 @@ Your open PR updates automatically.
 
 ## 7) Resolve merge conflicts (step‑by‑step)
 
-```
-
-# ensure you have the latest upstream
-
 ```bash
+# ensure you have the latest upstream
 git fetch upstream
 git checkout main
-```
 
 # merge upstream/main into your main and resolve conflicts
+git merge upstream/main`
 
-`git merge upstream/main`
 # open conflict files, choose correct hunks
-
-``` bash
 git add <resolved-file1> <resolved-file2>
 git commit   # commit the merge resolution
 git push origin main
@@ -177,9 +174,9 @@ PR will re‑evaluate and conflicts should clear.
 
 ## 8) Merge policies (what happens when approved)
 
-* **Squash and merge** (class default): creates one clean commit in upstream `main` regardless of how many commits you made. Great for history.
-* **Merge commit**: preserves your commits and adds a merge node. Not recommended here.
-* **Rebase and merge**: linearizes commits. Advanced; not needed for trunk‑only in class.
+- **Squash and merge** (class default): creates one clean commit in upstream `main` regardless of how many commits you made. Great for history.
+- **Merge commit**: preserves your commits and adds a merge node. Not recommended here.
+- **Rebase and merge**: linearizes commits. Advanced; not needed for trunk‑only in class.
 
 Maintainers perform the merge. You then **sync your fork** again.
 
@@ -196,7 +193,7 @@ Maintainers perform the merge. You then **sync your fork** again.
 7. Maintainer **Squash and merge**
 8. Post‑merge hygiene: sync fork → push
 
-**All commands you’ll run locally**
+### All commands you’ll run locally
 
 ``` bash
 gh repo sync --source upstream --force
@@ -204,11 +201,8 @@ git push origin main
 git add -p
 git commit -m "..."
 git push origin main
-```
 
 # if needed
-
-```bash
 git fetch upstream
 git checkout main
 git merge --ff-only upstream/main
@@ -228,7 +222,7 @@ git push origin main
 7. Maintainer merges
 8. Post‑merge hygiene
 
-**Commands**
+### Commands
 
 ```bash
 gh repo sync --source upstream --force
@@ -258,7 +252,7 @@ git fetch upstream && git checkout main && git merge upstream/main && git push o
 **Throw away local changes in a file**
 ```git restore --source=HEAD -- path/to/file```
 
-**Revert a bad commit that has been pushed**
+### Revert a bad commit that has been pushed
 
 ```bash
 git log --oneline
@@ -293,9 +287,9 @@ Maintainers can turn tags into GitHub Releases.
 
 ## 13) Linking work (Issues, PRD, ADRs)
 
-* In PR descriptions, reference issues using `Closes #123`.
-* Link the relevant PRD section and ADR IDs so reviewers see context.
-* Keep ADRs small and specific; one decision per record.
+- In PR descriptions, reference issues using `Closes #123`.
+- Link the relevant PRD section and ADR IDs so reviewers see context.
+- Keep ADRs small and specific; one decision per record.
 
 ---
 
@@ -314,40 +308,42 @@ Maintainers can turn tags into GitHub Releases.
 
 ## 15) Troubleshooting quick hits
 
-* **PR shows no changes**: Did you push to your fork’s `main`? Compare must be `<your-username>:main` → `<course-org>:main`.
-* **Auth errors**: run `gh auth status`; if needed, `gh auth login`.
-* **Permission denied (publickey)**: confirm SSH keys or use HTTPS URL for remotes.
-* **Merge conflict panic**: open the files shown by Git, choose correct sections, `git add` them, then `git commit`.
+- **PR shows no changes**: Did you push to your fork’s `main`? Compare must be `<your-username>:main` → `<course-org>:main`.
+- **Auth errors**: run `gh auth status`; if needed, `gh auth login`.
+- **Permission denied (publickey)**: confirm SSH keys or use HTTPS URL for remotes.
+- **Merge conflict panic**: open the files shown by Git, choose correct sections, `git add` them, then `git commit`.
 
 ---
 
 ## 16) Appendix: Minimal file templates
 
-**.github/pull_request_template.md**
+### .github/pull_request_template.md
 
-## Summary <what and why>
+## Summary {what and why}
 
-```
 ## Changes
-- <bullets>
+
+- {bullets}
 
 ## How to Test
-1) <steps>
+
+1) {steps}
 
 ## Risks / Rollback
+
 - Risk: Low / Medium / High
-- Rollback: git revert <merge-commit>
+- Rollback: git revert {merge-commit}
 
 ## Links
-PRD §<id>, ADR-<id>, Closes #<issue>
-```
 
-**.github/copilot-instructions.md** (testing policy excerpt)
+```PRD §<id>, ADR-<id>, Closes #<issue>```
+
+### .github/copilot-instructions.md** (testing policy excerpt)
 
 ## Testing (MANDATORY)
 
-* MUST use python -m unittest for pure Python modules.
-* MUST use Django’s built‑in test runner: python manage.py test.
-* MUST NOT add or suggest pytest or plugins; convert examples to unittest/Django TestCase.
+- MUST use `python -m unittest` for pure Python modules.
+- MUST use Django’s built‑in test runner: python manage.py test.
+- MUST NOT add or suggest pytest or plugins; convert examples to unittest/Django TestCase.
 
 ---
