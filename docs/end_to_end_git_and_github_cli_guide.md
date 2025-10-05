@@ -108,15 +108,18 @@ Create a branch, commit, push, PR. (Omitted here—use trunk in class.)
 
 ## 5) Review loop: comments, checks, revisions
 
-**Website**
+### Website
 
 * Reply to comments, push fixes, click **Resolve conversation** when done.
 * Use **Viewed** checkboxes on Files changed to track your sweep.
 
-**CLI**
+### CLI
+
+``` bash
 gh pr comment <number> -b "Explained validation path; new test covers edge case."
 gh pr status
 gh pr checks <number>
+```
 
 > Keep commits small; reviewers approve faster.
 
@@ -127,14 +130,20 @@ gh pr checks <number>
 Trunk‑only uses **fast‑forward merges** to move your fork’s `main` ahead.
 
 **Using `gh`**
+
+``` bash
 gh repo sync --source upstream --force
 git push origin main
+```
 
 **Using `git`**
+
+``` bash
 git fetch upstream
 git checkout main
 git merge --ff-only upstream/main
 git push origin main
+```
 
 Your open PR updates automatically.
 
@@ -143,13 +152,20 @@ Your open PR updates automatically.
 ## 7) Resolve merge conflicts (step‑by‑step)
 
 ```
+
 # ensure you have the latest upstream
+
+```bash
 git fetch upstream
 git checkout main
+```
 
 # merge upstream/main into your main and resolve conflicts
-git merge upstream/main
+
+`git merge upstream/main`
 # open conflict files, choose correct hunks
+
+``` bash
 git add <resolved-file1> <resolved-file2>
 git commit   # commit the merge resolution
 git push origin main
@@ -181,18 +197,23 @@ Maintainers perform the merge. You then **sync your fork** again.
 8. Post‑merge hygiene: sync fork → push
 
 **All commands you’ll run locally**
+
+``` bash
 gh repo sync --source upstream --force
 git push origin main
 git add -p
 git commit -m "..."
 git push origin main
+```
 
 # if needed
 
+```bash
 git fetch upstream
 git checkout main
 git merge --ff-only upstream/main
 git push origin main
+```
 
 ---
 
@@ -208,6 +229,8 @@ git push origin main
 8. Post‑merge hygiene
 
 **Commands**
+
+```bash
 gh repo sync --source upstream --force
 git push origin main
 git add -p
@@ -220,43 +243,49 @@ gh pr checks <number>
 gh repo sync --source upstream --force
 git push origin main
 git fetch upstream && git checkout main && git merge upstream/main && git push origin main
+```
 
 ---
 
 ## 11) Undo and recovery (common rescues)
 
 **Amend the last commit message**
-git commit --amend -m "fix: clearer message"
+```git commit --amend -m "fix: clearer message"```
 
 **Unstage a file you accidentally added**
-git restore --staged path/to/file
+```git restore --staged path/to/file```
 
 **Throw away local changes in a file**
-git restore --source=HEAD -- path/to/file
+```git restore --source=HEAD -- path/to/file```
 
 **Revert a bad commit that has been pushed**
+
+```bash
 git log --oneline
 git revert <bad-commit-sha>
 git push origin main
+```
 
 **Reset a local oops (before pushing)**
-git reset --hard HEAD~1
+```git reset --hard HEAD~1```
 
 **Stash WIP while you switch tasks**
-git stash push -m "wip: edit items form"
+```git stash push -m "wip: edit items form"```
 
-# later
+### later
 
+``` bash
 git stash list
 git stash pop
+```
 
 ---
 
 ## 12) Tags and releases (optional, useful for milestones)
 
 Create a tag locally and push:
-git tag -a v0.2.0 -m "Milestone: items search delivered"
-git push origin v0.2.0
+```git tag -a v0.2.0 -m "Milestone: items search delivered"```
+```git push origin v0.2.0```
 
 Maintainers can turn tags into GitHub Releases.
 
@@ -273,13 +302,13 @@ Maintainers can turn tags into GitHub Releases.
 ## 14) Collaboration recipes (fast reference)
 
 **Assign yourself or request review (CLI)**
-gh pr create --assignee @me --reviewer user1,user2
+```gh pr create --assignee @me --reviewer user1,user2```
 
 **Check out a teammate’s PR branch locally**
-gh pr checkout <number>
+```gh pr checkout <number>```
 
 **Open the PR in your browser (from CLI)**
-gh pr view --web
+```gh pr view --web```
 
 ---
 
