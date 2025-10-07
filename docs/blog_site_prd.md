@@ -3,7 +3,7 @@
 ## 1. Document Information
 
 - Product/Feature Name: Django Personal Blog Example
-- Author(s): Jeffry Babb
+- Author(s): ahuimanu
 - Date Created: 2025-10-07
 - Last Updated: 2025-10-07
 - Version: 0.1 (Draft)
