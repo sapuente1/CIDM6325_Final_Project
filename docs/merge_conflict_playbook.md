@@ -60,7 +60,7 @@
    - If you mis-resolve, undo the step:
      - `git rebase --edit-todo` or `git rebase --abort` to restart
 5) Run tests and linters  
-   - `pytest -q` or project script  
+   - `python -m unittest -q` or project script  
    - fix, commit as needed during rebase (`git commit --amend` if same step)
 6) Push with rewrite  
    - `git push --force-with-lease`
