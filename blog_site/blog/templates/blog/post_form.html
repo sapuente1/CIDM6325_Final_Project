@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{% if post %}Edit{% else %}New{% endif %} Post</title>
-</head>
-<body>
+{% extends "blog/base.html" %}
+{% block title %}{% if post %}Edit{% else %}New{% endif %} Post{% endblock %}
+{% block content %}
     <h1>{% if post %}Edit{% else %}New{% endif %} Post</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save</button>
+        <button class="btn btn-primary" type="submit">Save</button>
     </form>
-    <a href="{% url 'blog:post_list' %}">Back to list</a>
-</body>
-</html>
+    <a class="btn btn-link" href="{% url 'blog:post_list' %}">Back to list</a>
+{% endblock %}
