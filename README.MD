@@ -318,4 +318,4 @@ This README file is constructed using [MarkDown](https://www.markdownguide.org/b
 
 [back to outline](#cidm6325---fall-2025)
 
-This will be a conflict with the FALL2025 branch.
+This will be a conflict with the FALL2024 branch.
