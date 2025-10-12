@@ -1,6 +1,6 @@
 {% extends "blog/base.html" %}
 
-{% block title %}All Posts{% endblock %}
+{% block title %}All Posts{% endblock title %}
 
 {% block content %}
     <h1>All Posts</h1>
@@ -15,4 +15,4 @@
             <li class="list-group-item">No posts yet.</li>
         {% endfor %}
     </ul>
-{% endblock %}
+{% endblock content %}

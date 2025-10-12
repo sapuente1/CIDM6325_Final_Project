@@ -3,6 +3,7 @@ from django.http import HttpRequest, HttpResponse
 from .models import Post
 from .forms import PostForm
 
+
 def post_list(request: HttpRequest) -> HttpResponse:
     """
     Display a list of all blog posts, newest first.
@@ -10,12 +11,14 @@ def post_list(request: HttpRequest) -> HttpResponse:
     posts = Post.objects.all()
     return render(request, "blog/post_list.html", {"posts": posts})
 
+
 def post_detail(request: HttpRequest, slug: str) -> HttpResponse:
     """
     Display a single blog post by slug.
     """
     post = get_object_or_404(Post, slug=slug)
     return render(request, "blog/post_detail.html", {"post": post})
+
 
 def post_create(request: HttpRequest) -> HttpResponse:
     """
@@ -29,6 +32,7 @@ def post_create(request: HttpRequest) -> HttpResponse:
     else:
         form = PostForm()
     return render(request, "blog/post_form.html", {"form": form})
+
 
 def post_update(request: HttpRequest, slug: str) -> HttpResponse:
     """
@@ -44,6 +48,7 @@ def post_update(request: HttpRequest, slug: str) -> HttpResponse:
         form = PostForm(instance=post)
     return render(request, "blog/post_form.html", {"form": form, "post": post})
 
+
 def post_delete(request: HttpRequest, slug: str) -> HttpResponse:
     """
     Delete a blog post.
@@ -53,4 +58,3 @@ def post_delete(request: HttpRequest, slug: str) -> HttpResponse:
         post.delete()
         return redirect("blog:post_list")
     return render(request, "blog/post_confirm_delete.html", {"post": post})
-
