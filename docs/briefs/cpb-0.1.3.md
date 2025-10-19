@@ -12,6 +12,17 @@ Goal
 
 - Provide syndication (RSS + Atom), discoverability (sitemap.xml, robots.txt), and SEO metadata (canonical URLs, Open Graph/Twitter cards) for posts.
 
+Bootstrap wireframes and blog structure
+
+- Establish a consistent Bootstrap layout and navigation to serve as the baseline for SEO/meta additions:
+  - Layout: `blog/base.html` uses Bootstrap 5 CDN, container, responsive navbar/footer, `{% block content %}` and `{% block extra_js %}`.
+  - Navbar: Brand (Blog), links to Home (list), About, Projects, and Search form (GET) placeholder.
+  - Post list: Card/list group layout with title, date, excerpt, and “Read more”.
+  - Post detail: Article layout with title, date, tag list area (future), and sanitized Markdown body.
+  - Forms: Use `.form-control`, `.btn`, spacing utilities; ensure consistent form group spacing.
+  - Meta region: `<head>` space reserved for canonical and OG tags; ensure `{% block meta %}` can be extended.
+  - Accessibility: Use proper heading order (h1 on page title) and nav landmarks.
+
 Scope (single PR; ≲300 LOC)
 
 - Feeds: Latest 10 published posts as RSS and Atom. Use Django syndication framework.
@@ -33,7 +44,7 @@ Files to touch (anticipated)
 - blog/sitemaps.py (new)
 - blog/urls.py (add feed/sitemap routes)
 - myblog/urls.py (include sitemap/robots)
-- blog/templates/blog/post_detail.html and base.html (meta tags)
+- blog/templates/blog/post_detail.html and base.html (wireframe polish + meta tags)
 - blog/tests.py (new tests for feeds/sitemap/canonical)
 
 Migration plan
