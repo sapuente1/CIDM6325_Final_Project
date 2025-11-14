@@ -18,6 +18,16 @@ Acceptance
 - Docs updated.
 - Migration included if models change.
 
+Deliverables (Completed)
+- ✅ Schema mapping module with type definitions (`schema_mapping.py`)
+- ✅ `normalize_csv_row()` function with full type conversions
+- ✅ Field mapping documentation (10 mapped, 8 unmapped fields)
+- ✅ Comprehensive documentation (`docs/travelmathlite/schema-mapping-airports.md`)
+- ✅ 17 schema mapping tests (complete/minimal rows, conversions, validation, integration)
+- ✅ All tests passing (44 total airport tests)
+- ✅ ADR updated with schema mapping section
+- ✅ No migration needed (model already supports mapping)
+
 Prompts for Copilot
 - "Generate schema mapping for airport/city datasets."
 - "Normalize fields and document mapping logic."

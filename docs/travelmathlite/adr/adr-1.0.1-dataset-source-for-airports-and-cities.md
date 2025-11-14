@@ -146,10 +146,35 @@ Behavioral tests
 
 ---
 
+## Schema mapping and normalization
+
+Field mapping documentation
+
+- Comprehensive schema mapping in `apps/airports/schema_mapping.py`
+- Documentation in `docs/travelmathlite/schema-mapping-airports.md`
+- 10 mapped fields from OurAirports CSV to Airport model
+- 8 unmapped fields explicitly documented with rationale
+
+Normalization function
+
+- `normalize_csv_row()` converts CSV strings to model types
+- Type conversions: coordinates (str→float), elevation (str→int/None)
+- Field name mapping: CSV 'type' → model 'airport_type'
+- Validation: coordinate ranges, required fields
+
+Test coverage
+
+- 17 schema mapping tests in `tests_schema_mapping.py`
+- Tests for complete/minimal rows, conversions, validation, edge cases
+- Integration tests verify model compatibility
+
+---
+
 ## Documentation updates
 
 - Add docs/datasets/ourairports.md with fields used and filters applied
 - README quickstart for running the import
+- Schema mapping documentation: docs/travelmathlite/schema-mapping-airports.md
 
 ---
 
