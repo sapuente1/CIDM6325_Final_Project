@@ -279,6 +279,72 @@ Test coverage
 
 ---
 
+## Licensing and compliance
+
+OurAirports license
+
+- **License**: Public Domain
+- **Terms**: All data released to Public Domain with no restrictions
+- **Source**: https://ourairports.com/data/
+- **Official Statement**: "All data is released to the Public Domain, and comes with no guarantee of accuracy or fitness for use."
+
+Permitted uses
+
+- ✅ Commercial use without restriction
+- ✅ Modification and derivative works
+- ✅ Redistribution in any format
+- ✅ No attribution required (but appreciated)
+- ✅ No API keys or registration needed
+
+Warranty disclaimer
+
+- ❌ No warranty of accuracy
+- ❌ No warranty of fitness for purpose
+- ❌ No liability for errors or omissions
+- ✅ TravelMathLite implements validation and error handling to mitigate risks
+
+Attribution practice
+
+- **Provided**: Optional attribution included in documentation as best practice
+- **Text**: "Airport data sourced from OurAirports (https://ourairports.com/data/), released to the Public Domain."
+- **Locations**: ADR documentation, README, code comments
+- **Rationale**: Respects open data norms, builds trust, aids transparency
+
+Risk assessment
+
+- **License Risk**: Very Low (Public Domain is irrevocable for released data)
+- **Data Quality Risk**: Low (validation checks, dry-run testing, error handling)
+- **Operational Risk**: Very Low (error handling, local caching, no rate limits)
+- **Overall Status**: ✅ Compliant with low risk profile
+
+Compliance obligations
+
+- **Legal Requirements**: None (Public Domain dedication removes all obligations)
+- **Best Practices**: Attribution provided, accuracy disclaimers noted, license documented
+- **Monitoring**: Annual review of license status (no changes expected)
+- **Documentation**: Comprehensive compliance review in `docs/travelmathlite/licensing-compliance-airports.md`
+
+Alternative sources considered
+
+- **OpenFlights**: ODbL license (attribution + share-alike) - more restrictive
+- **Commercial APIs**: Proprietary terms, costs, rate limits - higher complexity
+- **Government sources**: Variable licensing, less comprehensive coverage
+
+Compliance checklist
+
+- [x] Verify Public Domain status of OurAirports data
+- [x] Document license terms in ADR
+- [x] Create comprehensive compliance documentation
+- [x] Provide attribution in documentation
+- [x] Implement data validation (validate_airports)
+- [x] Add error handling for data quality issues
+- [x] Test with dry-run mode
+- [x] Review and accept "no warranty" implications
+- [ ] Consider user-facing attribution (About page, API metadata)
+- [ ] Add disclaimers to Terms of Service (if created)
+
+---
+
 ## Attestation plan
 
 Human witness
