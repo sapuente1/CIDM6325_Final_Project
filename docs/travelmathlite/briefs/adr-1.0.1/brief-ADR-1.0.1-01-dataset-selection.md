@@ -17,6 +17,12 @@ Acceptance
 - Include migration? no
 - Update docs & PR checklist.
 
+Deliverables (Completed)
+- ✅ Dataset evaluation completed (OurAirports, OpenFlights, GeoNames)
+- ✅ Decision documented in ADR-1.0.1 with clear rationale
+- ✅ Licensing review completed (permissive license confirmed)
+- ✅ ADR Status: Accepted
+
 Prompts for Copilot
 - "List and compare open datasets for airports and cities."
 - "Summarize licensing and update recommendations."

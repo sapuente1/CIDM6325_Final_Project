@@ -169,6 +169,23 @@ Data and config safety
 
 ---
 
+## Validation and data quality
+
+Validation command
+
+- `validate_airports` management command provides data quality reporting
+- Validates required fields, coordinate ranges, uniqueness, and format rules
+- Reports anomalies with optional verbose mode for detailed diagnostics
+- Checks: latitude (-90 to 90), longitude (-180 to 180), IATA code format (3 letters), ISO country code format (2 letters)
+
+Test coverage
+
+- Model validation tests in `tests_validation.py` (9 tests)
+- Command validation tests in `tests_validate_command.py` (9 tests)
+- Coverage includes edge cases, anomaly detection, and reporting
+
+---
+
 ## Attestation plan
 
 Human witness
@@ -183,9 +200,11 @@ Attestation record
 
 ## Checklist seed
 
-- [ ] CSV import dry-run and commit paths implemented
-- [ ] Indexes created and migration added
-- [ ] Admin search tested
+- [x] CSV import dry-run and commit paths implemented
+- [x] Indexes created and migration added
+- [x] Admin search tested
+- [x] Data validation command implemented
+- [x] Validation tests with 100% coverage
 
 ---
 

@@ -17,6 +17,14 @@ Acceptance
 - Include migration? no
 - Update docs & PR checklist.
 
+Deliverables (Completed)
+- ✅ `validate_airports` management command with --verbose flag
+- ✅ Validation rules: required fields, latitude/longitude ranges, IATA format, ISO country codes
+- ✅ Anomaly detection and reporting with summary
+- ✅ Model validation tests (9 tests in tests_validation.py)
+- ✅ Command validation tests (9 tests in tests_validate_command.py)
+- ✅ ADR updated with validation section
+
 Prompts for Copilot
 - "Generate validation logic for airport/city data."
 - "Create Django TestCase for validation rules."
