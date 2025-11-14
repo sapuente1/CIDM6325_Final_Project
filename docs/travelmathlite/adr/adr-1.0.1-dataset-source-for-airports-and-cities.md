@@ -194,6 +194,74 @@ Data and config safety
 
 ---
 
+## Update automation and sync strategy
+
+Update automation command
+
+- `update_airports` management command provides scheduled update capability
+- Wraps `import_airports` with timing, logging, error handling, and reporting
+- Supports `--dry-run` for testing update logic without database changes
+- Transaction-safe: rollback on failure, commit only on success
+
+Scheduling strategies
+
+- **Cron**: Daily/weekly scheduled updates via system cron or django-crontab
+- **Celery Beat**: For applications with existing Celery infrastructure
+- **Manual**: On-demand updates during development or maintenance windows
+
+Update frequency recommendations
+
+- Production: Weekly updates (OurAirports changes infrequently)
+- IATA-only: Daily updates (more stable subset)
+- Development: On-demand as needed
+
+Error handling and monitoring
+
+- Network failures caught and logged; database unchanged on error
+- Validation errors skip invalid rows; valid data still imported
+- Summary reporting: initial/final counts, net change, duration, error counts
+- Logging to Python logging system for centralized monitoring
+- Alert on: failed updates, excessive duration, high error rate, data staleness
+
+Idempotent updates
+
+- Uses `update_or_create()` for upsert operations
+- Existing airports updated with latest data
+- New airports created in database
+- Removed airports preserved (no deletions)
+
+Performance considerations
+
+- Processes 70K airports in ~2-3 minutes
+- Row-by-row processing with minimal memory footprint
+- Single transaction for consistency
+- Filter by `--filter-iata` for focused updates on relevant airports
+
+Backup and rollback
+
+- Pre-update backups recommended for production
+- Dry-run testing before production updates
+- Database restore procedure documented for emergency rollback
+
+Security and compliance
+
+- HTTPS by default for data source downloads
+- OurAirports data is public domain (attribution appreciated)
+- No API keys or credentials required
+- Data validation prevents malformed data
+
+Test coverage
+
+- Update command tests in `tests_update_command.py` (10 tests)
+- Coverage includes: dry-run mode, filtering, error handling, timing, integration
+
+Documentation
+
+- Comprehensive update automation guide: `docs/travelmathlite/update-automation-airports.md`
+- Includes: cron examples, monitoring strategies, troubleshooting, performance tips
+
+---
+
 ## Validation and data quality
 
 Validation command
