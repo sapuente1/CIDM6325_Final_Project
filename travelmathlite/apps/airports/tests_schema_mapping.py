@@ -1,5 +1,7 @@
 """Tests for schema mapping and normalization."""
 
+from typing import Any, cast
+
 from django.test import TestCase
 
 from apps.airports.schema_mapping import (
@@ -92,7 +94,7 @@ class NormalizeCsvRowTests(TestCase):
             "iata_code": "DEN",
         }
 
-        result = normalize_csv_row(csv_row)
+        result = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         self.assertEqual(result["ident"], "KDEN")
         self.assertEqual(result["iata_code"], "DEN")
@@ -115,7 +117,7 @@ class NormalizeCsvRowTests(TestCase):
             "iso_country": "US",
         }
 
-        result = normalize_csv_row(csv_row)
+        result = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         self.assertEqual(result["ident"], "TEST")
         self.assertEqual(result["name"], "Test Airport")
@@ -141,7 +143,7 @@ class NormalizeCsvRowTests(TestCase):
             "municipality": "",
         }
 
-        result = normalize_csv_row(csv_row)
+        result = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         self.assertEqual(result["iata_code"], "")
         self.assertEqual(result["airport_type"], "")
@@ -159,7 +161,7 @@ class NormalizeCsvRowTests(TestCase):
             "iso_country": "US",
         }
 
-        result = normalize_csv_row(csv_row)
+        result = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         self.assertIsInstance(result["latitude_deg"], float)
         self.assertIsInstance(result["longitude_deg"], float)
@@ -177,7 +179,7 @@ class NormalizeCsvRowTests(TestCase):
             "elevation_ft": "5280.5",  # Float string
         }
 
-        result = normalize_csv_row(csv_row)
+        result = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         self.assertIsInstance(result["elevation_ft"], int)
         self.assertEqual(result["elevation_ft"], 5280)
@@ -193,7 +195,7 @@ class NormalizeCsvRowTests(TestCase):
             "elevation_ft": "invalid",
         }
 
-        result = normalize_csv_row(csv_row)
+        result = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         self.assertIsNone(result["elevation_ft"])
 
@@ -237,7 +239,7 @@ class NormalizeCsvRowTests(TestCase):
             "iso_country": "GL",
         }
 
-        result = normalize_csv_row(csv_row)
+        result = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         self.assertEqual(result["latitude_deg"], 90.0)
         self.assertEqual(result["longitude_deg"], 180.0)
@@ -253,7 +255,7 @@ class NormalizeCsvRowTests(TestCase):
             "iso_country": "US",
         }
 
-        result = normalize_csv_row(csv_row)
+        result = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         self.assertEqual(result["airport_type"], "small_airport")
         self.assertNotIn("type", result)
@@ -268,7 +270,7 @@ class NormalizeCsvRowTests(TestCase):
             "iso_country": "US",
         }
 
-        result = normalize_csv_row(csv_row)
+        result = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         expected_fields = [
             "ident",
@@ -307,7 +309,7 @@ class SchemaIntegrationTests(TestCase):
             "iata_code": "DEN",
         }
 
-        normalized = normalize_csv_row(csv_row)
+        normalized = cast(dict[str, Any], normalize_csv_row(csv_row))
 
         # Create airport using normalized data
         airport = Airport.objects.create(
