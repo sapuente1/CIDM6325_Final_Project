@@ -45,7 +45,7 @@ Summary
 - Status: Completed — fuel cost calculation with settings defaults and unit conversions implemented.
 - Files: `apps/calculators/costs.py`, `apps/calculators/tests.py`.
 - Tests: 33 tests passing at completion for this slice.
-- Commit: bae1798 (implementation + brief completion).
+ - Commit: [bae1798](https://github.com/ahuimanu/CIDM6325/commit/bae1798) (implementation + brief completion).
 - Issue: #46.
 
 ---

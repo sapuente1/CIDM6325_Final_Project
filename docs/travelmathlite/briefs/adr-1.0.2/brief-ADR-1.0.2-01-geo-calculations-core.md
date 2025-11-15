@@ -43,7 +43,7 @@ Summary
 - Status: Completed — core geodesic/haversine distance, unit conversions, and driving estimate delivered.
 - Files: `apps/calculators/geo.py`, `apps/calculators/tests.py`.
 - Tests: 24 tests passing at completion for this slice.
-- Commits: 8991c6a (implementation), 4ec4480 (brief completion update).
+ - Commits: [8991c6a](https://github.com/ahuimanu/CIDM6325/commit/8991c6a) (implementation), [4ec4480](https://github.com/ahuimanu/CIDM6325/commit/4ec4480) (brief completion update).
 - Issue: #44.
 
 ---
