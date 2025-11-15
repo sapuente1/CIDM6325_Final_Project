@@ -20,17 +20,17 @@ Acceptance
 - Include migration? no (forms only)
 - Update docs & PR checklist.
 
-Deliverables
-- [ ] `calculators/forms.py` with forms:
+Deliverables (Completed)
+- [x] `calculators/forms.py` with forms:
   - `DistanceCalculatorForm`: fields for origin/destination (text or lat/long), unit selection (km/miles), route factor override
   - `CostCalculatorForm`: inherits or includes distance fields, adds fuel economy, fuel price, unit preferences
-- [ ] Validation logic:
+- [x] Validation logic:
   - Accept city names and resolve to coordinates (via airports model lookup or hardcoded city list)
   - Accept airport IATA codes and resolve to coordinates
   - Accept direct lat/long input (e.g., "40.7128,-74.0060")
   - Validate numeric ranges (lat: -90 to 90, lon: -180 to 180)
-- [ ] Populate defaults from Django settings
-- [ ] Unit tests:
+- [x] Populate defaults from Django settings
+- [x] Unit tests:
   - Valid city/airport/coordinate inputs
   - Invalid inputs (bad coords, unknown city)
   - Default value population
@@ -43,7 +43,14 @@ Prompts for Copilot
 - "Create Django TestCase for form validation: test valid inputs (city, airport, coords), test invalid inputs, test default value population."
 - "Propose commit messages for forms and validation implementation."
 
+Summary
+- Status: Completed — forms for distance and cost with validation and defaults.
+- Files: `apps/calculators/forms.py`, `apps/calculators/tests.py`.
+- Tests: 39 tests passing at completion for this slice.
+- Commit: <to be filled on commit>.
+- Issue: #47.
+
 ---
 ADR: adr-1.0.2-geo-calculation-methods.md
 PRD: §4 F-001, F-003, FR-F-001-2
-Issue: #TODO
+Issue: #47

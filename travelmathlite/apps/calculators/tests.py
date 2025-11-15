@@ -17,6 +17,9 @@ from .costs import (
     l_per_100km_to_mpg,
     mpg_to_l_per_100km,
 )
+from django.core.exceptions import ValidationError
+from apps.airports.models import Airport
+from .forms import DistanceCalculatorForm, CostCalculatorForm
 
 
 class CalculatorsURLsAndTemplatesTests(TestCase):
@@ -230,6 +233,104 @@ class CalculateDistanceBetweenPointsTests(TestCase):
             route_factor=1.5,
         )
         self.assertAlmostEqual(driving / flight, 1.5, places=10)
+
+
+class FormsValidationTests(TestCase):
+    def setUp(self) -> None:
+        # Minimal airport records for lookups
+        Airport.objects.create(
+            ident="KJFK",
+            iata_code="JFK",
+            name="John F. Kennedy International",
+            airport_type="large_airport",
+            latitude_deg=40.6413,
+            longitude_deg=-73.7781,
+            iso_country="US",
+            municipality="new york",
+        )
+        Airport.objects.create(
+            ident="LFPG",
+            iata_code="CDG",
+            name="Charles de Gaulle International",
+            airport_type="large_airport",
+            latitude_deg=49.0097,
+            longitude_deg=2.5479,
+            iso_country="FR",
+            municipality="paris",
+        )
+
+    def test_direct_coordinates_parsing(self) -> None:
+        form = DistanceCalculatorForm(
+            data={
+                "origin": "40.7128,-74.0060",
+                "destination": "34.0522,-118.2437",
+                "unit": "km",
+                "route_factor": settings.ROUTE_FACTOR,
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors.as_text())
+        self.assertAlmostEqual(form.origin_coords[0], 40.7128, places=4)
+        self.assertAlmostEqual(form.origin_coords[1], -74.0060, places=4)
+
+    def test_iata_code_lookup(self) -> None:
+        form = DistanceCalculatorForm(
+            data={
+                "origin": "JFK",
+                "destination": "40.7128,-74.0060",
+                "unit": "miles",
+                "route_factor": settings.ROUTE_FACTOR,
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors.as_text())
+        self.assertAlmostEqual(form.origin_coords[0], 40.6413, places=3)
+        self.assertAlmostEqual(form.origin_coords[1], -73.7781, places=3)
+
+    def test_city_lookup_via_airports_municipality(self) -> None:
+        form = DistanceCalculatorForm(
+            data={
+                "origin": "paris",
+                "destination": "london",
+                "unit": "km",
+                "route_factor": settings.ROUTE_FACTOR,
+            }
+        )
+        # Destination 'london' not in airports.municipality test data but exists in fallback map
+        self.assertTrue(form.is_valid(), form.errors.as_text())
+        self.assertAlmostEqual(form.origin_coords[0], 49.0097, places=3)
+        self.assertAlmostEqual(form.origin_coords[1], 2.5479, places=3)
+
+    def test_invalid_coordinate_range(self) -> None:
+        form = DistanceCalculatorForm(
+            data={
+                "origin": "200,10",
+                "destination": "0,0",
+                "unit": "km",
+                "route_factor": settings.ROUTE_FACTOR,
+            }
+        )
+        self.assertFalse(form.is_valid())
+
+    def test_unknown_iata_rejected(self) -> None:
+        form = DistanceCalculatorForm(
+            data={
+                "origin": "ZZZ",
+                "destination": "0,0",
+                "unit": "km",
+                "route_factor": settings.ROUTE_FACTOR,
+            }
+        )
+        self.assertFalse(form.is_valid())
+
+    def test_defaults_populated_from_settings(self) -> None:
+        form = DistanceCalculatorForm()
+        self.assertAlmostEqual(form.fields["route_factor"].initial, settings.ROUTE_FACTOR)
+        cost_form = CostCalculatorForm()
+        self.assertAlmostEqual(
+            cost_form.fields["fuel_economy_l_per_100km"].initial, settings.FUEL_ECONOMY_L_PER_100KM
+        )
+        self.assertAlmostEqual(
+            cost_form.fields["fuel_price_per_liter"].initial, settings.FUEL_PRICE_PER_LITER
+        )
 
 
 class CostUnitConversionTests(TestCase):
