@@ -99,7 +99,8 @@ class Command(BaseCommand):
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Update failed: {e}"))
-            logger.exception("Airport data update failed")
+            # Log a concise error without a traceback to avoid noisy test output
+            logger.error("Airport data update failed: %s", e)
             return
 
         # Get updated counts
