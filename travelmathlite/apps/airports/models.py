@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 
 from django.db import models
+from typing import Literal
 
 from apps.base.models import City, Country
 
@@ -54,8 +55,13 @@ class AirportQuerySet(models.QuerySet["Airport"]):
         limit: int = 3,
         radius_km: float = 2000,
         iso_country: str | None = None,
+        unit: Literal["km", "mi"] = "km",
     ) -> list["Airport"]:
-        """Return the closest airports ordered by haversine distance."""
+        """Return the closest airports ordered by haversine distance.
+
+        Always attaches `distance_km` to returned Airport instances.
+        When `unit="mi"`, also attaches `distance_mi`.
+        """
         filters = self._bounding_box_filters(latitude, longitude, radius_km)
         qs = self.active().filter(**filters)
         if iso_country:
@@ -63,8 +69,13 @@ class AirportQuerySet(models.QuerySet["Airport"]):
 
         candidates = list(qs)
         for airport in candidates:
-            # Add type: ignore or use setattr
-            setattr(airport, 'distance_km', _haversine_km(latitude, longitude, airport.latitude_deg, airport.longitude_deg))
+            # Always compute and attach km distance
+            d_km = _haversine_km(latitude, longitude, airport.latitude_deg, airport.longitude_deg)
+            setattr(airport, "distance_km", d_km)
+            if unit == "mi":
+                from apps.base.utils.units import km_to_mi
+
+                setattr(airport, "distance_mi", km_to_mi(d_km))
         candidates.sort(key=lambda airport: getattr(airport, "distance_km", math.inf))
         return candidates[:limit]
 

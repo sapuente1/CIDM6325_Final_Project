@@ -199,6 +199,50 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.SUCCESS("   ✓ All ISO country codes have valid format"))
 
+        # Normalized country links
+        self.stdout.write("")
+        self.stdout.write("9. Checking normalized Country links...")
+        linked_countries = Airport.objects.filter(country__isnull=False).count()
+        missing_country_links = total_count - linked_countries
+        if missing_country_links:
+            pct = (linked_countries / total_count) * 100 if total_count else 0
+            self.stdout.write(
+                self.style.WARNING(
+                    f"   ⚠ {linked_countries} linked / {total_count} total ({pct:.1f}% linkage)"
+                )
+            )
+            if verbose:
+                for airport in Airport.objects.filter(country__isnull=True)[:10]:
+                    self.stdout.write(
+                        f"      - {airport.ident}: {airport.name} missing Country link (iso_country={airport.iso_country})"
+                    )
+        else:
+            self.stdout.write(self.style.SUCCESS("   ✓ All airports linked to normalized Country records"))
+
+        # Normalized city links
+        self.stdout.write("")
+        self.stdout.write("10. Checking normalized City links...")
+        airports_with_municipality = Airport.objects.exclude(municipality="")
+        total_with_municipality = airports_with_municipality.count()
+        linked_cities = airports_with_municipality.filter(city__isnull=False).count()
+        missing_city_links = total_with_municipality - linked_cities
+        if missing_city_links:
+            pct = (linked_cities / total_with_municipality) * 100 if total_with_municipality else 0
+            self.stdout.write(
+                self.style.WARNING(
+                    f"   ⚠ {linked_cities} linked / {total_with_municipality} with municipality ({pct:.1f}% linkage)"
+                )
+            )
+            if verbose:
+                for airport in airports_with_municipality.filter(city__isnull=True)[:10]:
+                    self.stdout.write(
+                        f"      - {airport.ident}: {airport.name} missing City link (municipality={airport.municipality or 'N/A'})"
+                    )
+        else:
+            self.stdout.write(
+                self.style.SUCCESS("   ✓ All airports with municipality values linked to normalized City records")
+            )
+
         # Summary
         self.stdout.write("")
         self.stdout.write("=" * 60)

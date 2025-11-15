@@ -1,10 +1,10 @@
 # ADR-1.0.16 Core data models (City, Airport, Country)
 
 Date: 2025-11-02  
-Status: Proposed  
+Status: Accepted (Brief ADR-1.0.1-07, Issue #39)  
 Version: 1.0  
 Authors: Course Staff  
-Reviewers: TODO
+Reviewers: Completed via Brief ADR-1.0.1-07
 
 ---
 
@@ -13,7 +13,7 @@ Reviewers: TODO
 PRD link: docs/travelmathlite/prd/travelmathlite_prd_v1.0.0.md#4-scope-items-and-checklist-seeds (Scope)  
 Scope IDs from PRD: F-004, F-002  
 Functional requirements: FR-F-004-1, FR-F-002-1  
-Related issues or PRs: #TODO
+Related issues or PRs: #39
 
 ---
 
@@ -119,6 +119,7 @@ Denied paths
 Artifacts to update
 
 - `apps/airports/models.py`, `apps/core/models.py`, admin, migrations
+  - Delivered as `apps/base/models.py`, `apps/base/admin.py`, `apps/airports/models.py`, with migrations `base/0001_initial.py`, `airports/0002_airport_core_integrations.py`
 
 ---
 
@@ -142,6 +143,7 @@ Behavioral tests
 ## Documentation updates
 
 - docs/data-models/airports.md
+- `docs/travelmathlite/data-model-integration.md` (new runbook)
 
 ---
 
@@ -173,11 +175,17 @@ Attestation record
 
 ---
 
+## Implementation results (2025-11-15)
+
+- Models & migrations landed for `Country`/`City` plus Airport FK + `active` flag; admin dashboards expose filters/search + read-only timestamps.
+- Importer updated with `AirportLocationIntegrator`, typed QuerySet helpers (`active()`, `search()`, `nearest()`), and validation now reports normalized linkage coverage.
+- Tests cover Country/City normalization, importer FK creation, QuerySet behavior, and command regression; docs updated with integration playbook.
+
 ## Checklist seed
 
-- [ ] Models and migrations created
-- [ ] Admin search/filters configured
-- [ ] Indexes present on codes and lat/lon
+- [x] Models and migrations created
+- [x] Admin search/filters configured
+- [x] Indexes present on codes and lat/lon
 
 ---
 

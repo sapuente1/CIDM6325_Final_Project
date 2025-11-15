@@ -9,6 +9,8 @@ from urllib.request import urlopen
 from django.core.management.base import BaseCommand, CommandParser
 
 from apps.airports.models import Airport
+from apps.base.models import City, Country
+from apps.airports.services import AirportLocationIntegrator, LocationLink
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +51,16 @@ class Command(BaseCommand):
             type=int,
             help="Limit number of airports to import (for testing)",
         )
+        parser.add_argument(
+            "--skip-country-link",
+            action="store_true",
+            help="Skip creating/linking normalized Country rows",
+        )
+        parser.add_argument(
+            "--skip-city-link",
+            action="store_true",
+            help="Skip creating/linking normalized City rows",
+        )
 
     def handle(self, *args: Any, **options: Any) -> None:
         """Execute the import command."""
@@ -57,6 +69,12 @@ class Command(BaseCommand):
         limit = options.get("limit")
         local_file = options.get("file")
         url = options["url"]
+        skip_country_link = options.get("skip_country_link", False)
+        skip_city_link = options.get("skip_city_link", False)
+
+        integrator: AirportLocationIntegrator | None = None
+        if not dry_run and not (skip_country_link and skip_city_link):
+            integrator = AirportLocationIntegrator()
 
         self.stdout.write(self.style.SUCCESS("Starting airport import..."))
 
@@ -89,6 +107,10 @@ class Command(BaseCommand):
             "updated": 0,
             "skipped": 0,
             "errors": 0,
+            "country_links": 0,
+            "countries_created": 0,
+            "city_links": 0,
+            "cities_created": 0,
         }
 
         try:
@@ -122,7 +144,27 @@ class Command(BaseCommand):
                             f"({row.get('iata_code') or row.get('ident')})"
                         )
                     else:
-                        created = self._upsert_airport(row)
+                        country = None
+                        city = None
+                        location_link: LocationLink | None = None
+                        if integrator:
+                            location_link = integrator.link_location(
+                                iso_country=row.get("iso_country"),
+                                municipality=row.get("municipality"),
+                                latitude=self._safe_float(row.get("latitude_deg")),
+                                longitude=self._safe_float(row.get("longitude_deg")),
+                                link_country=not skip_country_link,
+                                link_city=not skip_city_link,
+                            )
+                            country, city = location_link.country, location_link.city
+                            self._update_integration_stats(stats, location_link)
+
+                        created = self._upsert_airport(
+                            row,
+                            country=country,
+                            city=city,
+                            active=self._is_active(row),
+                        )
                         if created:
                             stats["created"] += 1
                         else:
@@ -142,6 +184,21 @@ class Command(BaseCommand):
         self.stdout.write(f"Updated: {stats['updated']}")
         self.stdout.write(f"Skipped: {stats['skipped']}")
         self.stdout.write(f"Errors: {stats['errors']}")
+
+        processed_rows = max(stats["total"] - stats["skipped"] - stats["errors"], 0)
+        if processed_rows and not dry_run:
+            country_pct = (stats["country_links"] / processed_rows) * 100 if processed_rows else 0
+            city_pct = (stats["city_links"] / processed_rows) * 100 if processed_rows else 0
+            self.stdout.write(
+                f"Country links: {stats['country_links']}/{processed_rows} ({country_pct:.1f}%) "
+                f"(created {stats['countries_created']})"
+            )
+            self.stdout.write(
+                f"City links: {stats['city_links']}/{processed_rows} ({city_pct:.1f}%) "
+                f"(created {stats['cities_created']})"
+            )
+        elif dry_run:
+            self.stdout.write(self.style.WARNING("Location linking skipped during dry-run"))
 
         if dry_run:
             self.stdout.write(self.style.WARNING("\n[DRY RUN] No changes saved to database"))
@@ -166,7 +223,44 @@ class Command(BaseCommand):
         except (ValueError, TypeError) as e:
             raise ValueError(f"Invalid coordinates: {e}") from e
 
-    def _upsert_airport(self, row: dict[str, str]) -> bool:
+    def _unsafe_float(self, value: str | None) -> float | None:
+        """Convert value to float if possible."""
+        if value is None or value == "":
+            return None
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return None
+
+    def _safe_float(self, value: str | None) -> float | None:
+        """Wrapper for compatibility (public helper)."""
+        return self._unsafe_float(value)
+
+    def _is_active(self, row: dict[str, str]) -> bool:
+        """Determine whether the airport should be marked active."""
+        return row.get("type", "").lower() != "closed"
+
+    def _update_integration_stats(self, stats: dict[str, int], link: LocationLink | None) -> None:
+        """Update counters for normalized Country/City linkage."""
+        if not link:
+            return
+        if link.country:
+            stats["country_links"] += 1
+        if link.city:
+            stats["city_links"] += 1
+        if link.created_country:
+            stats["countries_created"] += 1
+        if link.created_city:
+            stats["cities_created"] += 1
+
+    def _upsert_airport(
+        self,
+        row: dict[str, str],
+        *,
+        country: Country | None = None,
+        city: City | None = None,
+        active: bool = True,
+    ) -> bool:
         """
         Upsert airport from CSV row.
 
@@ -193,6 +287,9 @@ class Command(BaseCommand):
             "iso_country": row["iso_country"],
             "iso_region": row.get("iso_region", ""),
             "municipality": row.get("municipality", ""),
+            "country": country,
+            "city": city,
+            "active": active,
         }
 
         # Upsert

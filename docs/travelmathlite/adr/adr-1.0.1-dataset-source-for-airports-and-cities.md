@@ -152,7 +152,7 @@ Field mapping documentation
 
 - Comprehensive schema mapping in `apps/airports/schema_mapping.py`
 - Documentation in `docs/travelmathlite/schema-mapping-airports.md`
-- 10 mapped fields from OurAirports CSV to Airport model
+- 13 mapped fields from OurAirports CSV to Airport model (including normalized FK placeholders and active flag)
 - 8 unmapped fields explicitly documented with rationale
 
 Normalization function
@@ -167,6 +167,15 @@ Test coverage
 - 17 schema mapping tests in `tests_schema_mapping.py`
 - Tests for complete/minimal rows, conversions, validation, edge cases
 - Integration tests verify model compatibility
+
+---
+
+## Integration with core models
+
+- **Normalized models**: Created `Country`/`City` in `apps/base/models.py` with admin coverage and migrations (`base/0001_initial.py`), extending Airport via `airports/0002_airport_core_integrations.py`.
+- **Linking service**: `apps/airports/services/integration.py` links dataset rows to normalized models, caches lookups, and powers the enhanced importer stats plus new guard flags (`--skip-country-link`, `--skip-city-link`).
+- **Command + validation updates**: `import_airports` now reports linkage coverage and `validate_airports` surfaces normalized FK health; QuerySet helpers expose `nearest()` distance calculations with bounding-box pre-filters.
+- **Documentation & tests**: Added `docs/travelmathlite/data-model-integration.md` runbook, expanded `schema-mapping-airports.md` with FK heuristics, and added Django tests covering importer linking + manager behavior (`apps/base/tests/test_models.py`, `apps/airports/tests_city_country_integration.py`).
 
 ---
 

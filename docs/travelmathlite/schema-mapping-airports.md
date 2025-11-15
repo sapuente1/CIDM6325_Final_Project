@@ -31,6 +31,9 @@ The following fields from the OurAirports CSV are mapped to our Airport model:
 | `iso_country` | `iso_country` | str | Yes | ISO 3166-1 alpha-2 country code | US |
 | `iso_region` | `iso_region` | str | No | ISO 3166-2 region code | US-CO |
 | `municipality` | `municipality` | str | No | City or town name | Denver |
+| `country` | Derived from `iso_country` | FK (apps.base.Country) | No | Normalized Country row linked via integrator | Country(id=US) |
+| `city` | Derived from (`municipality`, `iso_country`) | FK (apps.base.City) | No | Normalized City row linked via integrator | City(name=Denver) |
+| `active` | Derived from `type` | bool | No | Indicates whether airport is operational (`type != "closed"`) | True |
 
 ### Unmapped Fields
 
@@ -69,6 +72,12 @@ The following OurAirports CSV fields are intentionally **not** mapped to our mod
 3. **Whitespace**: No special trimming; values are stored as provided in CSV
 4. **Case Sensitivity**: Values are case-sensitive and stored as-is
 
+### Normalized Country/City linkage
+
+- `apps/airports/services/integration.py` reads `iso_country` + `municipality` to create/link `apps.base.Country` and `apps.base.City` records (with lightweight caching and optional `downloads/countries.csv` lookup).
+- Import stats now surface linkage coverage along with creation counts; guard flags `--skip-country-link` / `--skip-city-link` keep debugging flexible.
+- When municipalities are blank we skip city linking; coverage ratios are reported via `manage.py validate_airports` to highlight orphaned rows.
+
 ## Airport Types
 
 Common values found in the `airport_type` field:
@@ -102,6 +111,9 @@ id,ident,type,name,latitude_deg,longitude_deg,elevation_ft,continent,iso_country
     "iso_country": "US",
     "iso_region": "US-CO",
     "municipality": "Denver",
+    "country": "United States (US)",
+    "city": "Denver, US",
+    "active": True,
 }
 ```
 
@@ -146,6 +158,9 @@ python manage.py import_airports --filter-iata
 
 # Limit import for testing
 python manage.py import_airports --limit 100
+
+# Skip normalized linkage (debugging only)
+python manage.py import_airports --skip-country-link --skip-city-link
 ```
 
 ### Programmatic Usage
@@ -172,6 +187,20 @@ airport, created = Airport.objects.update_or_create(
     ident=normalized["ident"],
     defaults=normalized
 )
+
+# Link normalized Country/City (normally handled by import_airports)
+from apps.airports.services import AirportLocationIntegrator
+
+integrator = AirportLocationIntegrator()
+location = integrator.link_location(
+    iso_country=normalized["iso_country"],
+    municipality=normalized["municipality"],
+    latitude=normalized["latitude_deg"],
+    longitude=normalized["longitude_deg"],
+)
+airport.country = location.country
+airport.city = location.city
+airport.save()
 ```
 
 ## Testing
@@ -192,3 +221,4 @@ python manage.py test apps.airports
 - OurAirports Data: https://ourairports.com/data/
 - ISO 3166 Country Codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 - IATA Airport Codes: https://en.wikipedia.org/wiki/IATA_airport_code
+- Data model integration runbook: `docs/travelmathlite/data-model-integration.md`

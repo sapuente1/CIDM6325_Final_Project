@@ -8,7 +8,10 @@ Dataset: OurAirports (https://davidmegginson.github.io/ourairports-data/)
 License: Public Domain
 """
 
-from typing import TypedDict
+from typing import TYPE_CHECKING, TypedDict
+
+if TYPE_CHECKING:
+    from apps.base.models import City, Country
 
 
 class OurAirportsCSVRow(TypedDict, total=False):
@@ -48,6 +51,9 @@ class AirportModelFields(TypedDict, total=False):
     iso_country: str
     iso_region: str
     municipality: str
+    country: "Country | None"
+    city: "City | None"
+    active: bool
 
 
 # Field mapping from OurAirports CSV to Airport model
@@ -121,6 +127,25 @@ FIELD_MAPPING: dict[str, dict[str, str | bool | list[str]]] = {
         "description": "City or town name",
         "example": "Denver",
     },
+    "country": {
+        "csv_field": "iso_country",
+        "required": False,
+        "description": "Normalized Country FK (apps.base.Country) derived from iso_country",
+        "notes": "Created via AirportLocationIntegrator",
+    },
+    "city": {
+        "csv_field": "municipality",
+        "required": False,
+        "description": "Normalized City FK (apps.base.City) derived from municipality + iso_country",
+        "notes": "Created via AirportLocationIntegrator",
+    },
+    "active": {
+        "csv_field": "type",
+        "required": False,
+        "description": "Boolean flag derived from airport type (closed airports become inactive)",
+        "example": "True",
+        "values": ["True", "False"],
+    },
 }
 
 
@@ -173,6 +198,9 @@ def normalize_csv_row(row: dict[str, str]) -> AirportModelFields:
         "iso_country": row["iso_country"],
         "iso_region": row.get("iso_region", ""),
         "municipality": row.get("municipality", ""),
+        "country": None,
+        "city": None,
+        "active": row.get("type", "").lower() != "closed",
     }
 
     return normalized
