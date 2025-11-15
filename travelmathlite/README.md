@@ -48,6 +48,31 @@ Visit http://127.0.0.1:8000 to see the application.
 - **[PRD](../docs/travelmathlite/prd/)** - Product Requirements Document
 - **[Briefs](../docs/travelmathlite/briefs/)** - Task-level implementation guides
 
+### Calculators
+
+- **[Distance, Time, and Cost Algorithms](../docs/travelmathlite/algorithms/distance-and-cost.md)**
+	- Explains formulas, defaults, unit conversions, examples, and limitations used by the calculators.
+
+#### Try the calculators locally
+
+Start the dev server (`uv run python manage.py runserver`) and open:
+
+- Distance: `http://127.0.0.1:8000/calculators/distance/`
+- Cost: `http://127.0.0.1:8000/calculators/cost/`
+
+Example inputs:
+
+```
+Origin: JFK
+Destination: CDG
+Unit: km
+Route Factor: 1.2 (default)
+Fuel Economy (L/100km): 7.5 (default)
+Fuel Price (/L): 1.50 (default)
+```
+
+These pages use HTMX to update results in-place without a full page reload.
+
 ## Project Structure
 
 ```
