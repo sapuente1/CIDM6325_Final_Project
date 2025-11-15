@@ -41,6 +41,13 @@ Prompts for Copilot
 - "Ensure cost calculation is deterministic and returns float rounded to 2 decimal places."
 - "Propose commit messages for cost calculations implementation."
 
+Summary
+- Status: Completed — fuel cost calculation with settings defaults and unit conversions implemented.
+- Files: `apps/calculators/costs.py`, `apps/calculators/tests.py`.
+- Tests: 33 tests passing at completion for this slice.
+- Commit: bae1798 (implementation + brief completion).
+- Issue: #46.
+
 ---
 ADR: adr-1.0.2-geo-calculation-methods.md
 PRD: §4 F-003, FR-F-003-1

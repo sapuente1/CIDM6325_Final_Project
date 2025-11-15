@@ -34,6 +34,13 @@ Prompts for Copilot
 - "Generate example .env entries for these settings with explanatory comments."
 - "Propose commit message for settings configuration."
 
+Summary
+- Status: Completed — calculator defaults added with env overrides, tests, and README docs.
+- Files: `travelmathlite/core/settings.py`, `apps/calculators/tests.py`, `travelmathlite/README.md`.
+- Tests: 26 tests passing at completion for this slice.
+- Commits: b570b02 (settings + tests), 1d7ebc7 (README + brief completion).
+- Issue: #45.
+
 ---
 ADR: adr-1.0.2-geo-calculation-methods.md
 PRD: §4 F-001, F-003

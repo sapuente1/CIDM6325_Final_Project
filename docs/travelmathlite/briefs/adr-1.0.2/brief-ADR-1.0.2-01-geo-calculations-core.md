@@ -39,6 +39,13 @@ Prompts for Copilot
 - "Implement estimate_driving_distance function that applies a route factor to straight-line distance."
 - "Propose commit messages for geo calculations core implementation."
 
+Summary
+- Status: Completed — core geodesic/haversine distance, unit conversions, and driving estimate delivered.
+- Files: `apps/calculators/geo.py`, `apps/calculators/tests.py`.
+- Tests: 24 tests passing at completion for this slice.
+- Commits: 8991c6a (implementation), 4ec4480 (brief completion update).
+- Issue: #44.
+
 ---
 ADR: adr-1.0.2-geo-calculation-methods.md
 PRD: §4 F-001, FR-F-001-1
