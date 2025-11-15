@@ -21,7 +21,7 @@ Acceptance
 - Include migration? no
 - Update docs & PR checklist.
 
-Deliverables
+Deliverables (Completed)
 - [x] `calculators/geo.py` module with functions:
   - `haversine_distance(lat1, lon1, lat2, lon2) -> float` (returns km)
   - `geodesic_distance(lat1, lon1, lat2, lon2) -> float` (returns km, using geopy or similar)
