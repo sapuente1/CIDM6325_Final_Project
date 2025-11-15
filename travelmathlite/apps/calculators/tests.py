@@ -399,3 +399,129 @@ class SettingsDefaultsTests(TestCase):
         self.assertAlmostEqual(settings.AVG_SPEED_KMH, 80.0, places=6)
         self.assertAlmostEqual(settings.FUEL_PRICE_PER_LITER, 1.50, places=6)
         self.assertAlmostEqual(settings.FUEL_ECONOMY_L_PER_100KM, 7.5, places=6)
+
+
+class CalculatorsViewAndHTMXTests(TestCase):
+    def setUp(self) -> None:
+        # Seed minimal airports for lookups
+        Airport.objects.create(
+            ident="KJFK",
+            iata_code="JFK",
+            name="John F. Kennedy International",
+            airport_type="large_airport",
+            latitude_deg=40.6413,
+            longitude_deg=-73.7781,
+            iso_country="US",
+            municipality="new york",
+        )
+        Airport.objects.create(
+            ident="LFPG",
+            iata_code="CDG",
+            name="Charles de Gaulle International",
+            airport_type="large_airport",
+            latitude_deg=49.0097,
+            longitude_deg=2.5479,
+            iso_country="FR",
+            municipality="paris",
+        )
+
+    def test_distance_view_get_renders(self) -> None:
+        url = reverse("calculators:distance")
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/distance_calculator.html")
+        # Form should post to the partial endpoint via HTMX
+        self.assertContains(resp, reverse("calculators:distance-partial"))
+
+    def test_cost_view_get_renders(self) -> None:
+        url = reverse("calculators:cost")
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/cost_calculator.html")
+        self.assertContains(resp, reverse("calculators:cost-partial"))
+
+    def test_distance_partial_post_valid_htmx(self) -> None:
+        url = reverse("calculators:distance-partial")
+        data = {
+            "origin": "JFK",
+            "destination": "CDG",
+            "unit": "km",
+            "route_factor": settings.ROUTE_FACTOR,
+        }
+        resp = self.client.post(url, data, HTTP_HX_REQUEST="true")
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/partials/distance_result.html")
+        self.assertContains(resp, "Flight distance")
+
+    def test_distance_partial_post_invalid_returns_400(self) -> None:
+        url = reverse("calculators:distance-partial")
+        data = {
+            "origin": "ZZZ",  # invalid code given our seed data
+            "destination": "not-a-place",
+            "unit": "km",
+            "route_factor": settings.ROUTE_FACTOR,
+        }
+        resp = self.client.post(url, data, HTTP_HX_REQUEST="true")
+        self.assertEqual(resp.status_code, 400)
+        # Should re-render the form page with errors
+        self.assertTemplateUsed(resp, "calculators/distance_calculator.html")
+
+    def test_cost_partial_post_valid_htmx(self) -> None:
+        url = reverse("calculators:cost-partial")
+        data = {
+            "origin": "JFK",
+            "destination": "CDG",
+            "unit": "km",
+            "route_factor": settings.ROUTE_FACTOR,
+            "fuel_economy_l_per_100km": settings.FUEL_ECONOMY_L_PER_100KM,
+            "fuel_price_per_liter": settings.FUEL_PRICE_PER_LITER,
+        }
+        resp = self.client.post(url, data, HTTP_HX_REQUEST="true")
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/partials/cost_result.html")
+        self.assertContains(resp, "Estimated fuel cost")
+
+    def test_cost_partial_post_invalid_returns_400(self) -> None:
+        url = reverse("calculators:cost-partial")
+        data = {
+            "origin": "bad-origin",
+            "destination": "bad-dest",
+            "unit": "km",
+            "route_factor": settings.ROUTE_FACTOR,
+            "fuel_economy_l_per_100km": -1,  # invalid
+            "fuel_price_per_liter": -1,  # invalid
+        }
+        resp = self.client.post(url, data, HTTP_HX_REQUEST="true")
+        self.assertEqual(resp.status_code, 400)
+        self.assertTemplateUsed(resp, "calculators/cost_calculator.html")
+
+    def test_distance_cbv_post_without_htmx_renders_full_page_with_results(self) -> None:
+        url = reverse("calculators:distance")
+        data = {
+            "origin": "JFK",
+            "destination": "CDG",
+            "unit": "km",
+            "route_factor": settings.ROUTE_FACTOR,
+        }
+        resp = self.client.post(url, data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/distance_calculator.html")
+        self.assertContains(resp, "Distance Calculator")
+        # The page should include the partial content when valid
+        self.assertContains(resp, "Flight distance")
+
+    def test_cost_cbv_post_without_htmx_renders_full_page_with_results(self) -> None:
+        url = reverse("calculators:cost")
+        data = {
+            "origin": "JFK",
+            "destination": "CDG",
+            "unit": "km",
+            "route_factor": settings.ROUTE_FACTOR,
+            "fuel_economy_l_per_100km": settings.FUEL_ECONOMY_L_PER_100KM,
+            "fuel_price_per_liter": settings.FUEL_PRICE_PER_LITER,
+        }
+        resp = self.client.post(url, data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/cost_calculator.html")
+        self.assertContains(resp, "Trip Cost Calculator")
+        self.assertContains(resp, "Estimated fuel cost")
