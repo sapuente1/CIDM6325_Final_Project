@@ -332,9 +332,7 @@ class SchemaIntegrationTests(TestCase):
 
         # Get model fields (excluding auto fields)
         model_fields = {
-            f.name
-            for f in Airport._meta.get_fields()
-            if not f.auto_created and f.name not in ["id", "created_at", "updated_at"]
+            f.name for f in Airport._meta.get_fields() if not f.auto_created and f.name not in ["id", "created_at", "updated_at"]
         }
 
         # Get documented fields

@@ -132,9 +132,6 @@ class Command(BaseCommand):
 
         if not dry_run:
             self.stdout.write(self.style.SUCCESS("✓ Airport data updated successfully!"))
-            logger.info(
-                f"Airport data updated: {initial_count} → {final_count} "
-                f"(net: {net_change:+d}) in {duration:.2f}s"
-            )
+            logger.info(f"Airport data updated: {initial_count} → {final_count} (net: {net_change:+d}) in {duration:.2f}s")
         else:
             self.stdout.write(self.style.SUCCESS("✓ Dry run completed"))

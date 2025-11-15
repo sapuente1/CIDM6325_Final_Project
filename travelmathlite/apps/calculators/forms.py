@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Optional, Tuple
+from typing import Any
 
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
 from apps.airports.models import Airport
-
 
 UNITS = (
     ("km", "Kilometers"),
@@ -31,7 +30,7 @@ CITY_COORDS = {
 }
 
 
-def _parse_lat_lon(value: str) -> Optional[Coordinates]:
+def _parse_lat_lon(value: str) -> Coordinates | None:
     try:
         if "," not in value:
             return None
@@ -75,8 +74,8 @@ class DistanceCalculatorForm(forms.Form):
         help_text="Multiplier applied to straight-line distance to estimate driving distance.",
     )
 
-    origin_coords: Tuple[float, float]
-    destination_coords: Tuple[float, float]
+    origin_coords: tuple[float, float]
+    destination_coords: tuple[float, float]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -122,9 +121,5 @@ class CostCalculatorForm(DistanceCalculatorForm):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["fuel_economy_l_per_100km"].initial = float(
-            getattr(settings, "FUEL_ECONOMY_L_PER_100KM", 7.5)
-        )
-        self.fields["fuel_price_per_liter"].initial = float(
-            getattr(settings, "FUEL_PRICE_PER_LITER", 1.50)
-        )
+        self.fields["fuel_economy_l_per_100km"].initial = float(getattr(settings, "FUEL_ECONOMY_L_PER_100KM", 7.5))
+        self.fields["fuel_price_per_liter"].initial = float(getattr(settings, "FUEL_PRICE_PER_LITER", 1.50))

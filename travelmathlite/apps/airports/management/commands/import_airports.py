@@ -9,8 +9,8 @@ from urllib.request import urlopen
 from django.core.management.base import BaseCommand, CommandParser
 
 from apps.airports.models import Airport
-from apps.base.models import City, Country
 from apps.airports.services import AirportLocationIntegrator, LocationLink
+from apps.base.models import City, Country
 
 logger = logging.getLogger(__name__)
 
@@ -139,10 +139,7 @@ class Command(BaseCommand):
 
                     # Process row
                     if dry_run:
-                        self.stdout.write(
-                            f"[DRY RUN] Would process: {row.get('name')} "
-                            f"({row.get('iata_code') or row.get('ident')})"
-                        )
+                        self.stdout.write(f"[DRY RUN] Would process: {row.get('name')} ({row.get('iata_code') or row.get('ident')})")
                     else:
                         country = None
                         city = None
@@ -190,13 +187,9 @@ class Command(BaseCommand):
             country_pct = (stats["country_links"] / processed_rows) * 100 if processed_rows else 0
             city_pct = (stats["city_links"] / processed_rows) * 100 if processed_rows else 0
             self.stdout.write(
-                f"Country links: {stats['country_links']}/{processed_rows} ({country_pct:.1f}%) "
-                f"(created {stats['countries_created']})"
+                f"Country links: {stats['country_links']}/{processed_rows} ({country_pct:.1f}%) (created {stats['countries_created']})"
             )
-            self.stdout.write(
-                f"City links: {stats['city_links']}/{processed_rows} ({city_pct:.1f}%) "
-                f"(created {stats['cities_created']})"
-            )
+            self.stdout.write(f"City links: {stats['city_links']}/{processed_rows} ({city_pct:.1f}%) (created {stats['cities_created']})")
         elif dry_run:
             self.stdout.write(self.style.WARNING("Location linking skipped during dry-run"))
 

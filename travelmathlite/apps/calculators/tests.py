@@ -1,7 +1,17 @@
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
-from django.conf import settings
 
+from apps.airports.models import Airport
+
+from .costs import (
+    calculate_fuel_cost,
+    gallons_to_liters,
+    l_per_100km_to_mpg,
+    liters_to_gallons,
+    mpg_to_l_per_100km,
+)
+from .forms import CostCalculatorForm, DistanceCalculatorForm
 from .geo import (
     calculate_distance_between_points,
     estimate_driving_distance,
@@ -10,16 +20,6 @@ from .geo import (
     km_to_miles,
     miles_to_km,
 )
-from .costs import (
-    calculate_fuel_cost,
-    gallons_to_liters,
-    liters_to_gallons,
-    l_per_100km_to_mpg,
-    mpg_to_l_per_100km,
-)
-from django.core.exceptions import ValidationError
-from apps.airports.models import Airport
-from .forms import DistanceCalculatorForm, CostCalculatorForm
 
 
 class CalculatorsURLsAndTemplatesTests(TestCase):
@@ -325,12 +325,8 @@ class FormsValidationTests(TestCase):
         form = DistanceCalculatorForm()
         self.assertAlmostEqual(form.fields["route_factor"].initial, settings.ROUTE_FACTOR)
         cost_form = CostCalculatorForm()
-        self.assertAlmostEqual(
-            cost_form.fields["fuel_economy_l_per_100km"].initial, settings.FUEL_ECONOMY_L_PER_100KM
-        )
-        self.assertAlmostEqual(
-            cost_form.fields["fuel_price_per_liter"].initial, settings.FUEL_PRICE_PER_LITER
-        )
+        self.assertAlmostEqual(cost_form.fields["fuel_economy_l_per_100km"].initial, settings.FUEL_ECONOMY_L_PER_100KM)
+        self.assertAlmostEqual(cost_form.fields["fuel_price_per_liter"].initial, settings.FUEL_PRICE_PER_LITER)
 
 
 class CostUnitConversionTests(TestCase):
@@ -403,4 +399,3 @@ class SettingsDefaultsTests(TestCase):
         self.assertAlmostEqual(settings.AVG_SPEED_KMH, 80.0, places=6)
         self.assertAlmostEqual(settings.FUEL_PRICE_PER_LITER, 1.50, places=6)
         self.assertAlmostEqual(settings.FUEL_ECONOMY_L_PER_100KM, 7.5, places=6)
-

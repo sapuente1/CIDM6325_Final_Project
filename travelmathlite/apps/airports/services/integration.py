@@ -5,7 +5,6 @@ from __future__ import annotations
 import csv
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Tuple
 
 from django.db import transaction
 from django.utils.text import slugify
@@ -33,14 +32,14 @@ class AirportLocationIntegrator:
     during the same import run avoid redundant database queries.
     """
 
-    def __init__(self, *, country_lookup: Dict[str, str] | None = None):
+    def __init__(self, *, country_lookup: dict[str, str] | None = None):
         self.country_lookup = country_lookup or self._load_country_lookup()
         self._country_cache: dict[str, Country] = {}
-        self._city_cache: dict[Tuple[str, str], City] = {}
+        self._city_cache: dict[tuple[str, str], City] = {}
 
-    def _load_country_lookup(self) -> Dict[str, str]:
+    def _load_country_lookup(self) -> dict[str, str]:
         """Load optional ISO country names from downloads/countries.csv."""
-        lookup: Dict[str, str] = {}
+        lookup: dict[str, str] = {}
         if not COUNTRIES_CSV_PATH.exists():
             return lookup
 

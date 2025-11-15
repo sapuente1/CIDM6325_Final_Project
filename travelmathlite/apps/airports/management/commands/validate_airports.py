@@ -40,12 +40,7 @@ class Command(BaseCommand):
         # Validate required fields
         self.stdout.write("1. Checking required fields...")
         missing_fields = Airport.objects.filter(
-            Q(ident="")
-            | Q(name="")
-            | Q(airport_type="")
-            | Q(latitude_deg__isnull=True)
-            | Q(longitude_deg__isnull=True)
-            | Q(iso_country="")
+            Q(ident="") | Q(name="") | Q(airport_type="") | Q(latitude_deg__isnull=True) | Q(longitude_deg__isnull=True) | Q(iso_country="")
         )
         if missing_fields.exists():
             count = missing_fields.count()
@@ -62,20 +57,14 @@ class Command(BaseCommand):
         # Validate latitude range (-90 to 90)
         self.stdout.write("")
         self.stdout.write("2. Checking latitude coordinate range...")
-        invalid_lat = Airport.objects.filter(
-            Q(latitude_deg__lt=-90) | Q(latitude_deg__gt=90)
-        )
+        invalid_lat = Airport.objects.filter(Q(latitude_deg__lt=-90) | Q(latitude_deg__gt=90))
         if invalid_lat.exists():
             count = invalid_lat.count()
             anomalies.append(f"Invalid latitude: {count} records")
-            self.stdout.write(
-                self.style.WARNING(f"   ⚠ {count} records with latitude out of range (-90 to 90)")
-            )
+            self.stdout.write(self.style.WARNING(f"   ⚠ {count} records with latitude out of range (-90 to 90)"))
             if verbose:
                 for airport in invalid_lat[:10]:
-                    self.stdout.write(
-                        f"      - {airport.ident}: {airport.name} (lat={airport.latitude_deg})"
-                    )
+                    self.stdout.write(f"      - {airport.ident}: {airport.name} (lat={airport.latitude_deg})")
                 if count > 10:
                     self.stdout.write(f"      ... and {count - 10} more")
         else:
@@ -84,20 +73,14 @@ class Command(BaseCommand):
         # Validate longitude range (-180 to 180)
         self.stdout.write("")
         self.stdout.write("3. Checking longitude coordinate range...")
-        invalid_lon = Airport.objects.filter(
-            Q(longitude_deg__lt=-180) | Q(longitude_deg__gt=180)
-        )
+        invalid_lon = Airport.objects.filter(Q(longitude_deg__lt=-180) | Q(longitude_deg__gt=180))
         if invalid_lon.exists():
             count = invalid_lon.count()
             anomalies.append(f"Invalid longitude: {count} records")
-            self.stdout.write(
-                self.style.WARNING(f"   ⚠ {count} records with longitude out of range (-180 to 180)")
-            )
+            self.stdout.write(self.style.WARNING(f"   ⚠ {count} records with longitude out of range (-180 to 180)"))
             if verbose:
                 for airport in invalid_lon[:10]:
-                    self.stdout.write(
-                        f"      - {airport.ident}: {airport.name} (lon={airport.longitude_deg})"
-                    )
+                    self.stdout.write(f"      - {airport.ident}: {airport.name} (lon={airport.longitude_deg})")
                 if count > 10:
                     self.stdout.write(f"      ... and {count - 10} more")
         else:
@@ -106,9 +89,7 @@ class Command(BaseCommand):
         # Check for null coordinates (should not happen if required fields check passes)
         self.stdout.write("")
         self.stdout.write("4. Checking for null coordinates...")
-        null_coords = Airport.objects.filter(
-            Q(latitude_deg__isnull=True) | Q(longitude_deg__isnull=True)
-        )
+        null_coords = Airport.objects.filter(Q(latitude_deg__isnull=True) | Q(longitude_deg__isnull=True))
         if null_coords.exists():
             count = null_coords.count()
             anomalies.append(f"Null coordinates: {count} records")
@@ -126,11 +107,7 @@ class Command(BaseCommand):
         self.stdout.write("5. Checking ident uniqueness...")
         from django.db.models import Count
 
-        duplicate_idents = (
-            Airport.objects.values("ident")
-            .annotate(count=Count("ident"))
-            .filter(count__gt=1)
-        )
+        duplicate_idents = Airport.objects.values("ident").annotate(count=Count("ident")).filter(count__gt=1)
         if duplicate_idents.exists():
             count = duplicate_idents.count()
             anomalies.append(f"Duplicate idents: {count} values")
@@ -146,20 +123,14 @@ class Command(BaseCommand):
         # Check IATA code format (3 letters when present)
         self.stdout.write("")
         self.stdout.write("6. Checking IATA code format...")
-        invalid_iata = Airport.objects.exclude(iata_code="").exclude(
-            iata_code__regex=r"^[A-Z]{3}$"
-        )
+        invalid_iata = Airport.objects.exclude(iata_code="").exclude(iata_code__regex=r"^[A-Z]{3}$")
         if invalid_iata.exists():
             count = invalid_iata.count()
             anomalies.append(f"Invalid IATA codes: {count} records")
-            self.stdout.write(
-                self.style.WARNING(f"   ⚠ {count} records with invalid IATA code format")
-            )
+            self.stdout.write(self.style.WARNING(f"   ⚠ {count} records with invalid IATA code format"))
             if verbose:
                 for airport in invalid_iata[:10]:
-                    self.stdout.write(
-                        f"      - {airport.ident}: {airport.name} (IATA={airport.iata_code})"
-                    )
+                    self.stdout.write(f"      - {airport.ident}: {airport.name} (IATA={airport.iata_code})")
                 if count > 10:
                     self.stdout.write(f"      ... and {count - 10} more")
         else:
@@ -173,9 +144,7 @@ class Command(BaseCommand):
         has_iata = total_count - missing_count
         if total_count > 0:
             coverage = (has_iata / total_count) * 100
-            self.stdout.write(
-                f"   ℹ {has_iata} of {total_count} airports have IATA codes ({coverage:.1f}%)"
-            )
+            self.stdout.write(f"   ℹ {has_iata} of {total_count} airports have IATA codes ({coverage:.1f}%)")
         else:
             self.stdout.write("   ℹ No airports in database")
 
@@ -186,14 +155,10 @@ class Command(BaseCommand):
         if invalid_country.exists():
             count = invalid_country.count()
             anomalies.append(f"Invalid country codes: {count} records")
-            self.stdout.write(
-                self.style.WARNING(f"   ⚠ {count} records with invalid ISO country code format")
-            )
+            self.stdout.write(self.style.WARNING(f"   ⚠ {count} records with invalid ISO country code format"))
             if verbose:
                 for airport in invalid_country[:10]:
-                    self.stdout.write(
-                        f"      - {airport.ident}: {airport.name} (country={airport.iso_country})"
-                    )
+                    self.stdout.write(f"      - {airport.ident}: {airport.name} (country={airport.iso_country})")
                 if count > 10:
                     self.stdout.write(f"      ... and {count - 10} more")
         else:
@@ -206,16 +171,10 @@ class Command(BaseCommand):
         missing_country_links = total_count - linked_countries
         if missing_country_links:
             pct = (linked_countries / total_count) * 100 if total_count else 0
-            self.stdout.write(
-                self.style.WARNING(
-                    f"   ⚠ {linked_countries} linked / {total_count} total ({pct:.1f}% linkage)"
-                )
-            )
+            self.stdout.write(self.style.WARNING(f"   ⚠ {linked_countries} linked / {total_count} total ({pct:.1f}% linkage)"))
             if verbose:
                 for airport in Airport.objects.filter(country__isnull=True)[:10]:
-                    self.stdout.write(
-                        f"      - {airport.ident}: {airport.name} missing Country link (iso_country={airport.iso_country})"
-                    )
+                    self.stdout.write(f"      - {airport.ident}: {airport.name} missing Country link (iso_country={airport.iso_country})")
         else:
             self.stdout.write(self.style.SUCCESS("   ✓ All airports linked to normalized Country records"))
 
@@ -229,9 +188,7 @@ class Command(BaseCommand):
         if missing_city_links:
             pct = (linked_cities / total_with_municipality) * 100 if total_with_municipality else 0
             self.stdout.write(
-                self.style.WARNING(
-                    f"   ⚠ {linked_cities} linked / {total_with_municipality} with municipality ({pct:.1f}% linkage)"
-                )
+                self.style.WARNING(f"   ⚠ {linked_cities} linked / {total_with_municipality} with municipality ({pct:.1f}% linkage)")
             )
             if verbose:
                 for airport in airports_with_municipality.filter(city__isnull=True)[:10]:
@@ -239,9 +196,7 @@ class Command(BaseCommand):
                         f"      - {airport.ident}: {airport.name} missing City link (municipality={airport.municipality or 'N/A'})"
                     )
         else:
-            self.stdout.write(
-                self.style.SUCCESS("   ✓ All airports with municipality values linked to normalized City records")
-            )
+            self.stdout.write(self.style.SUCCESS("   ✓ All airports with municipality values linked to normalized City records"))
 
         # Summary
         self.stdout.write("")

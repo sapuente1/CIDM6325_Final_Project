@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import math
+from typing import Literal
 
 from django.db import models
-from typing import Literal
 
 from apps.base.models import City, Country
 
@@ -13,11 +13,11 @@ from apps.base.models import City, Country
 class AirportQuerySet(models.QuerySet["Airport"]):
     """Typed queryset helpers for airports."""
 
-    def active(self) -> "AirportQuerySet":
+    def active(self) -> AirportQuerySet:
         """Return active airports."""
         return self.filter(active=True)
 
-    def search(self, term: str | None) -> "AirportQuerySet":
+    def search(self, term: str | None) -> AirportQuerySet:
         """Case-insensitive search across name, codes, and municipality."""
         if not term:
             return self.active()
@@ -30,9 +30,7 @@ class AirportQuerySet(models.QuerySet["Airport"]):
             | models.Q(country__name__icontains=normalized)
         )
 
-    def _bounding_box_filters(
-        self, latitude: float, longitude: float, radius_km: float
-    ) -> dict[str, float]:
+    def _bounding_box_filters(self, latitude: float, longitude: float, radius_km: float) -> dict[str, float]:
         """Return coordinate filters to pre-restrict the queryset."""
         radius_deg = radius_km / 111.0
         lat_min = latitude - radius_deg
@@ -56,7 +54,7 @@ class AirportQuerySet(models.QuerySet["Airport"]):
         radius_km: float = 2000,
         iso_country: str | None = None,
         unit: Literal["km", "mi"] = "km",
-    ) -> list["Airport"]:
+    ) -> list[Airport]:
         """Return the closest airports ordered by haversine distance.
 
         Always attaches `distance_km` to returned Airport instances.
@@ -71,11 +69,11 @@ class AirportQuerySet(models.QuerySet["Airport"]):
         for airport in candidates:
             # Always compute and attach km distance
             d_km = _haversine_km(latitude, longitude, airport.latitude_deg, airport.longitude_deg)
-            setattr(airport, "distance_km", d_km)
+            airport.distance_km = d_km
             if unit == "mi":
                 from apps.base.utils.units import km_to_mi
 
-                setattr(airport, "distance_mi", km_to_mi(d_km))
+                airport.distance_mi = km_to_mi(d_km)
         candidates.sort(key=lambda airport: getattr(airport, "distance_km", math.inf))
         return candidates[:limit]
 
@@ -87,10 +85,7 @@ def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     lat2_rad, lon2_rad = math.radians(lat2), math.radians(lon2)
     dlat = lat2_rad - lat1_rad
     dlon = lon2_rad - lon1_rad
-    a = (
-        math.sin(dlat / 2) ** 2
-        + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
-    )
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return radius * c
 

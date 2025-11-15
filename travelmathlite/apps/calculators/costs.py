@@ -4,9 +4,11 @@ Cost-of-driving calculations and unit conversion helpers.
 Implements fuel cost computation using distance, fuel economy, and fuel price;
 includes conversions between common units.
 """
+
 from __future__ import annotations
 
 from typing import Final
+
 from django.conf import settings
 
 # Unit conversion constants
@@ -76,16 +78,8 @@ def calculate_fuel_cost(
     if distance_km < 0:
         raise ValueError("distance_km must be >= 0")
 
-    eff_economy = (
-        fuel_economy_l_per_100km
-        if fuel_economy_l_per_100km is not None
-        else float(settings.FUEL_ECONOMY_L_PER_100KM)
-    )
-    price = (
-        fuel_price_per_liter
-        if fuel_price_per_liter is not None
-        else float(settings.FUEL_PRICE_PER_LITER)
-    )
+    eff_economy = fuel_economy_l_per_100km if fuel_economy_l_per_100km is not None else float(settings.FUEL_ECONOMY_L_PER_100KM)
+    price = fuel_price_per_liter if fuel_price_per_liter is not None else float(settings.FUEL_PRICE_PER_LITER)
 
     fuel_used_l = (distance_km / 100.0) * eff_economy
     cost = fuel_used_l * price

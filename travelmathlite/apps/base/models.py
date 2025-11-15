@@ -21,11 +21,11 @@ class TimestampedModel(models.Model):
 class CountryQuerySet(models.QuerySet["Country"]):
     """Custom queryset helpers for Country."""
 
-    def active(self) -> "CountryQuerySet":
+    def active(self) -> CountryQuerySet:
         """Return only active countries."""
         return self.filter(active=True)
 
-    def search(self, term: str | None) -> "CountryQuerySet":
+    def search(self, term: str | None) -> CountryQuerySet:
         """Search countries by name or ISO code."""
         if not term:
             return self.active()
@@ -73,11 +73,11 @@ class Country(TimestampedModel):
 class CityQuerySet(models.QuerySet["City"]):
     """Query helpers for City."""
 
-    def active(self) -> "CityQuerySet":
+    def active(self) -> CityQuerySet:
         """Return active cities only."""
         return self.filter(active=True)
 
-    def search(self, term: str | None) -> "CityQuerySet":
+    def search(self, term: str | None) -> CityQuerySet:
         """Search cities by case-insensitive name."""
         if not term:
             return self.active()

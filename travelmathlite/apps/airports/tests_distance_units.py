@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from io import StringIO
-
-from django.core.management import call_command
 from django.test import TestCase
 
 from apps.airports.models import Airport
@@ -45,6 +42,6 @@ class DistanceUnitsTests(TestCase):
 
         # Validate conversion for the second airport (~11.3 km ≈ 7.0 mi)
         if len(results) > 1:
-            km = getattr(results[1], "distance_km")
-            mi = getattr(results[1], "distance_mi")
+            km = results[1].distance_km
+            mi = results[1].distance_mi
             self.assertAlmostEqual(mi, km_to_mi(km), places=4)

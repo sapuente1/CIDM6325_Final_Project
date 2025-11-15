@@ -7,8 +7,6 @@ heuristic driving distance estimates.
 """
 
 import math
-from typing import Tuple
-
 
 # Unit conversion constants
 KM_TO_MILES_FACTOR = 0.621371
@@ -46,10 +44,7 @@ def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> fl
     dlat = lat2_rad - lat1_rad
     dlon = lon2_rad - lon1_rad
 
-    a = (
-        math.sin(dlat / 2) ** 2
-        + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
-    )
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
     c = 2 * math.asin(math.sqrt(a))
 
     return EARTH_RADIUS_KM * c
@@ -128,9 +123,7 @@ def miles_to_km(miles: float) -> float:
     return miles * MILES_TO_KM_FACTOR
 
 
-def estimate_driving_distance(
-    straight_line_km: float, route_factor: float = 1.2
-) -> float:
+def estimate_driving_distance(straight_line_km: float, route_factor: float = 1.2) -> float:
     """
     Estimate driving distance from straight-line distance using a route factor.
 
@@ -162,7 +155,7 @@ def calculate_distance_between_points(
     unit: str = "km",
     include_driving_estimate: bool = False,
     route_factor: float = 1.2,
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """
     Calculate distance between two points with optional driving estimate.
 
