@@ -116,6 +116,23 @@ uv run python manage.py test
 uv run python manage.py test apps.base apps.airports
 ```
 
+### Calculator Settings (environment variables)
+
+The calculators use sane defaults that you can override via environment variables:
+
+```bash
+# Driving distance/time heuristics
+export ROUTE_FACTOR=1.2           # Multiplier applied to straight-line km (default: 1.2)
+export AVG_SPEED_KMH=80            # Average driving speed for time estimate (default: 80)
+
+# Cost-of-driving defaults
+export FUEL_PRICE_PER_LITER=1.50   # Fuel price per liter (default: 1.50)
+export FUEL_ECONOMY_L_PER_100KM=7.5 # Vehicle economy in L/100km (default: 7.5)
+
+# Example: run server with overrides (macOS bash)
+ROUTE_FACTOR=1.25 AVG_SPEED_KMH=85 uv run python manage.py runserver
+```
+
 ### Debugging
 
 ```bash

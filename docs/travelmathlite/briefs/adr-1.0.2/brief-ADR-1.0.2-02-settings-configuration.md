@@ -26,7 +26,7 @@ Deliverables (Completed)
   - `FUEL_ECONOMY_L_PER_100KM = float(os.getenv('FUEL_ECONOMY_L_PER_100KM', '7.5'))`
 - [x] Add comment documentation explaining each setting
 - [x] Verify via tests settings load with expected defaults
-- [ ] Update README or settings documentation with environment variable examples
+ - [x] Update README or settings documentation with environment variable examples
 
 Prompts for Copilot
 - "Add calculator-related settings to Django settings.py: ROUTE_FACTOR (default 1.2), AVG_SPEED_KMH (default 80), FUEL_PRICE_PER_LITER (default 1.50), FUEL_ECONOMY_L_PER_100KM (default 7.5). Make them configurable via environment variables."
