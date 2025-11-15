@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.conf import settings
 
 from .geo import (
     calculate_distance_between_points,
@@ -222,4 +223,26 @@ class CalculateDistanceBetweenPointsTests(TestCase):
             route_factor=1.5,
         )
         self.assertAlmostEqual(driving / flight, 1.5, places=10)
+
+
+class SettingsDefaultsTests(TestCase):
+    """Ensure calculator settings defaults are present and properly typed."""
+
+    def test_settings_defaults_exist_and_types(self) -> None:
+        self.assertTrue(hasattr(settings, "ROUTE_FACTOR"))
+        self.assertTrue(hasattr(settings, "AVG_SPEED_KMH"))
+        self.assertTrue(hasattr(settings, "FUEL_PRICE_PER_LITER"))
+        self.assertTrue(hasattr(settings, "FUEL_ECONOMY_L_PER_100KM"))
+
+        self.assertIsInstance(settings.ROUTE_FACTOR, float)
+        self.assertIsInstance(settings.AVG_SPEED_KMH, float)
+        self.assertIsInstance(settings.FUEL_PRICE_PER_LITER, float)
+        self.assertIsInstance(settings.FUEL_ECONOMY_L_PER_100KM, float)
+
+    def test_settings_default_values(self) -> None:
+        # Defaults per ADR 1.0.2 brief
+        self.assertAlmostEqual(settings.ROUTE_FACTOR, 1.2, places=6)
+        self.assertAlmostEqual(settings.AVG_SPEED_KMH, 80.0, places=6)
+        self.assertAlmostEqual(settings.FUEL_PRICE_PER_LITER, 1.50, places=6)
+        self.assertAlmostEqual(settings.FUEL_ECONOMY_L_PER_100KM, 7.5, places=6)
 

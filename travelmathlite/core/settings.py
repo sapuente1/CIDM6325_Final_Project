@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -127,3 +128,16 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Calculators defaults (ADR-1.0.2)
+# These can be overridden via environment variables. Defaults chosen for
+# reasonable, offline estimates in line with the PRD/ADR.
+# - ROUTE_FACTOR: multiplier applied to straight-line distance to approximate
+#   driving distance on typical road networks (e.g., 1.2 = 20% longer).
+# - AVG_SPEED_KMH: average mixed driving speed used for time estimates.
+# - FUEL_PRICE_PER_LITER: default fuel price for cost calculations.
+# - FUEL_ECONOMY_L_PER_100KM: default vehicle fuel economy.
+ROUTE_FACTOR: float = float(os.getenv("ROUTE_FACTOR", "1.2"))
+AVG_SPEED_KMH: float = float(os.getenv("AVG_SPEED_KMH", "80"))
+FUEL_PRICE_PER_LITER: float = float(os.getenv("FUEL_PRICE_PER_LITER", "1.50"))
+FUEL_ECONOMY_L_PER_100KM: float = float(os.getenv("FUEL_ECONOMY_L_PER_100KM", "7.5"))

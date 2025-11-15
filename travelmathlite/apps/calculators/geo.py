@@ -7,7 +7,6 @@ heuristic driving distance estimates.
 """
 
 import math
-import geopy
 from typing import Tuple
 
 
@@ -84,7 +83,8 @@ def geodesic_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> flo
 
         point1 = (lat1, lon1)
         point2 = (lat2, lon2)
-        return geopy_geodesic(point1, point2).kilometers
+        distance = float(geopy_geodesic(point1, point2).kilometers)  # type: ignore[attr-defined]
+        return distance
     except ImportError:
         # Fall back to haversine if geopy is not available
         return haversine_distance(lat1, lon1, lat2, lon2)
