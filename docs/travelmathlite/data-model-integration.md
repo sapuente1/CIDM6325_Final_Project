@@ -61,3 +61,11 @@ uv run python travelmathlite/manage.py import_airports --dry-run
 | Need to revert | Use Django migrations to roll back `airports/0002` and `base/0001`, then remove FK fields from import command. | Only revert if class requirements change; otherwise keep migrations applied. |
 
 Always run imports/validation via `uv run` to ensure the correct virtual environment is active. For more architectural context see ADR-1.0.1 and ADR-1.0.16.
+
+## Related Documentation
+
+- **[Quick Reference](dataset-workflow-quickref.md)** - Command cheat sheet
+- **[Contributing Guide](CONTRIBUTING.md)** - Onboarding for new contributors
+- **[Schema Mapping](schema-mapping-airports.md)** - Field mapping details
+- **[Update Automation](update-automation-airports.md)** - Scheduling imports
+- **[Licensing](licensing-compliance-airports.md)** - Dataset license and attribution
