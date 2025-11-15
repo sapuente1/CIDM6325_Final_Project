@@ -47,7 +47,7 @@ Summary
 - Status: Completed — forms for distance and cost with validation and defaults.
 - Files: `apps/calculators/forms.py`, `apps/calculators/tests.py`.
 - Tests: 39 tests passing at completion for this slice.
-- Commit: <to be filled on commit>.
+ - Commit: [83860bd](https://github.com/ahuimanu/CIDM6325/commit/83860bd).
 - Issue: #47.
 
 ---
