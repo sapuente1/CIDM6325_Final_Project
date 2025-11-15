@@ -22,15 +22,15 @@ Acceptance
 - Update docs & PR checklist.
 
 Deliverables
-- [ ] `calculators/geo.py` module with functions:
+- [x] `calculators/geo.py` module with functions:
   - `haversine_distance(lat1, lon1, lat2, lon2) -> float` (returns km)
   - `geodesic_distance(lat1, lon1, lat2, lon2) -> float` (returns km, using geopy or similar)
   - `km_to_miles(km: float) -> float`
   - `miles_to_km(miles: float) -> float`
   - `estimate_driving_distance(straight_line_km: float, route_factor: float = 1.2) -> float`
-- [ ] Unit tests with known city pairs (e.g., NYC to LA)
-- [ ] Test invariant: conversions km ↔ miles are mathematically correct
-- [ ] Test edge cases: zero distance, same point, antipodal points
+- [x] Unit tests with known city pairs (e.g., NYC to LA)
+- [x] Test invariant: conversions km ↔ miles are mathematically correct
+- [x] Test edge cases: zero distance, same point, antipodal points
 
 Prompts for Copilot
 - "Generate a Python module `calculators/geo.py` with haversine and geodesic distance functions. Include type hints and docstrings. Use geopy if available, otherwise implement haversine formula directly."
@@ -42,4 +42,4 @@ Prompts for Copilot
 ---
 ADR: adr-1.0.2-geo-calculation-methods.md
 PRD: §4 F-001, FR-F-001-1
-Issue: #TODO
+Issue: #44
