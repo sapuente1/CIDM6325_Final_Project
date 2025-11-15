@@ -10,6 +10,13 @@ from .geo import (
     km_to_miles,
     miles_to_km,
 )
+from .costs import (
+    calculate_fuel_cost,
+    gallons_to_liters,
+    liters_to_gallons,
+    l_per_100km_to_mpg,
+    mpg_to_l_per_100km,
+)
 
 
 class CalculatorsURLsAndTemplatesTests(TestCase):
@@ -223,6 +230,56 @@ class CalculateDistanceBetweenPointsTests(TestCase):
             route_factor=1.5,
         )
         self.assertAlmostEqual(driving / flight, 1.5, places=10)
+
+
+class CostUnitConversionTests(TestCase):
+    def test_mpg_to_l_per_100km_and_back(self) -> None:
+        mpg = 30.0
+        l_per_100 = mpg_to_l_per_100km(mpg)
+        self.assertAlmostEqual(l_per_100, 235.214 / 30.0, places=6)
+        back_to_mpg = l_per_100km_to_mpg(l_per_100)
+        self.assertAlmostEqual(back_to_mpg, mpg, places=6)
+
+    def test_gallons_to_liters_and_back(self) -> None:
+        gallons = 10.0
+        liters = gallons_to_liters(gallons)
+        self.assertAlmostEqual(liters, 37.8541, places=4)
+        back_to_gallons = liters_to_gallons(liters)
+        self.assertAlmostEqual(back_to_gallons, gallons, places=6)
+
+    def test_invalid_inputs(self) -> None:
+        with self.assertRaises(ValueError):
+            mpg_to_l_per_100km(0)
+        with self.assertRaises(ValueError):
+            l_per_100km_to_mpg(0)
+        with self.assertRaises(ValueError):
+            gallons_to_liters(-1)
+        with self.assertRaises(ValueError):
+            liters_to_gallons(-1)
+
+
+class CostCalculationTests(TestCase):
+    def test_defaults_from_settings(self) -> None:
+        # Using defaults: 100 km, 7.5 L/100km, 1.50 /L => 11.25
+        cost = calculate_fuel_cost(100.0)
+        self.assertEqual(cost, 11.25)
+
+    def test_overrides(self) -> None:
+        # 200 km, 8.0 L/100km, 2.00 /L => (200/100)*8*2 = 32.0
+        cost = calculate_fuel_cost(200.0, fuel_economy_l_per_100km=8.0, fuel_price_per_liter=2.0)
+        self.assertEqual(cost, 32.0)
+
+    def test_rounding(self) -> None:
+        # Choose values that produce repeating decimals and ensure rounding
+        cost = calculate_fuel_cost(123.0, fuel_economy_l_per_100km=7.7, fuel_price_per_liter=1.33)
+        self.assertIsInstance(cost, float)
+        # Compute expected manually
+        expected = round((123.0 / 100.0) * 7.7 * 1.33, 2)
+        self.assertEqual(cost, expected)
+
+    def test_negative_distance_raises(self) -> None:
+        with self.assertRaises(ValueError):
+            calculate_fuel_cost(-1.0)
 
 
 class SettingsDefaultsTests(TestCase):

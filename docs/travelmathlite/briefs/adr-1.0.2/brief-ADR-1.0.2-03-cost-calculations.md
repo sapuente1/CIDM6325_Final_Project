@@ -20,19 +20,19 @@ Acceptance
 - Include migration? no
 - Update docs & PR checklist.
 
-Deliverables
-- [ ] `calculators/costs.py` module with functions:
+Deliverables (Completed)
+- [x] `calculators/costs.py` module with functions:
   - `calculate_fuel_cost(distance_km: float, fuel_economy_l_per_100km: float = None, fuel_price_per_liter: float = None) -> float`
   - `mpg_to_l_per_100km(mpg: float) -> float`
   - `l_per_100km_to_mpg(l_per_100km: float) -> float`
   - `gallons_to_liters(gallons: float) -> float`
   - `liters_to_gallons(liters: float) -> float`
-- [ ] Default values pulled from Django settings
-- [ ] Unit tests with known scenarios:
+- [x] Default values pulled from Django settings
+- [x] Unit tests with known scenarios:
   - 100 km drive with 7.5 L/100km at €1.50/L = €11.25
   - Test with override values
   - Test unit conversions (MPG ↔ L/100km)
-- [ ] Test invariant: cost is deterministic for given inputs
+- [x] Test invariant: cost is deterministic for given inputs
 
 Prompts for Copilot
 - "Generate a Python module `calculators/costs.py` for cost-of-driving calculations. Function should accept distance in km, fuel economy in L/100km (with default from Django settings.FUEL_ECONOMY_L_PER_100KM), and fuel price per liter (with default from settings.FUEL_PRICE_PER_LITER). Include type hints and docstrings."
@@ -44,4 +44,4 @@ Prompts for Copilot
 ---
 ADR: adr-1.0.2-geo-calculation-methods.md
 PRD: §4 F-003, FR-F-003-1
-Issue: #TODO
+Issue: #46
