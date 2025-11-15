@@ -151,6 +151,8 @@ Keywords:
 - Use Copilot PR summary to brief reviewers
 - Link related issues and ADRs
 
+**For detailed rollback procedures**, see **[Rollback and Recovery](rollback-and-recovery.md)**.
+
 ## Documentation
 
 Key documentation files:
@@ -159,6 +161,7 @@ Key documentation files:
 - **[schema-mapping-airports.md](schema-mapping-airports.md)** - Field mapping reference
 - **[update-automation-airports.md](update-automation-airports.md)** - Scheduling automated updates
 - **[licensing-compliance-airports.md](licensing-compliance-airports.md)** - License and attribution
+- **[rollback-and-recovery.md](rollback-and-recovery.md)** - 🛡️ Disaster recovery and backup procedures
 
 ## Getting Help
 
@@ -200,6 +203,15 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Or use pip
 pip install uv
 ```
+
+### Data corruption or import failures
+
+**See**: **[Rollback and Recovery](rollback-and-recovery.md)** for comprehensive procedures including:
+- Database backup and restore
+- Migration rollback
+- Import failure recovery
+- FK detachment procedures
+- Automated backup/restore scripts
 
 ## Dataset Updates
 

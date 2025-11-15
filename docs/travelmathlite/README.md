@@ -31,7 +31,7 @@ Comprehensive documentation for the TravelMathLite project.
    - Country/City FK linking
    - Query helpers and usage
    - Validation and monitoring
-   - Troubleshooting and rollback
+   - Troubleshooting quick reference
 
 2. **[Schema Mapping Reference](schema-mapping-airports.md)** 📊
    - OurAirports CSV field mapping
@@ -45,9 +45,19 @@ Comprehensive documentation for the TravelMathLite project.
    - Celery Beat configuration
    - Monitoring and alerting
 
+### Operations and Disaster Recovery
+
+4. **[Rollback and Recovery Procedures](rollback-and-recovery.md)** 🛡️ *Important!*
+   - Migration rollback procedures
+   - Database backup and restore workflows
+   - FK detachment and re-linking
+   - Import failure recovery
+   - Automated backup/restore scripts
+   - Emergency procedures
+
 ### Legal and Compliance
 
-4. **[Licensing and Compliance](licensing-compliance-airports.md)** ⚖️
+5. **[Licensing and Compliance](licensing-compliance-airports.md)** ⚖️
    - Dataset license (Public Domain)
    - Attribution requirements
    - Compliance checklist

@@ -62,6 +62,13 @@ uv run python travelmathlite/manage.py import_airports --dry-run
 
 Always run imports/validation via `uv run` to ensure the correct virtual environment is active. For more architectural context see ADR-1.0.1 and ADR-1.0.16.
 
+**For comprehensive rollback procedures**, see **[Rollback and Recovery](rollback-and-recovery.md)** which includes:
+- Migration rollback procedures
+- Database backup and restore workflows
+- FK detachment procedures
+- Import failure recovery
+- Automated backup/restore scripts
+
 ## Related Documentation
 
 - **[Quick Reference](dataset-workflow-quickref.md)** - Command cheat sheet
@@ -69,3 +76,4 @@ Always run imports/validation via `uv run` to ensure the correct virtual environ
 - **[Schema Mapping](schema-mapping-airports.md)** - Field mapping details
 - **[Update Automation](update-automation-airports.md)** - Scheduling imports
 - **[Licensing](licensing-compliance-airports.md)** - Dataset license and attribution
+- **[Rollback and Recovery](rollback-and-recovery.md)** - 🛡️ Disaster recovery procedures
