@@ -103,6 +103,10 @@ Task-level implementation guides organized by ADR:
 - **[Brief Template](briefs/copilot_brief_template_v1.0.0.md)**
   - Template for new task briefs
 
+### Calculators & Algorithms
+
+- **[Distance, Time, and Cost Algorithms](algorithms/distance-and-cost.md)** — Formulas, defaults, examples, and limitations for distance/time/cost calculations
+
 ## Reference Materials
 
 ### Datasets
@@ -151,6 +155,7 @@ docs/travelmathlite/
 ├── update-automation-airports.md      # Scheduling
 ├── licensing-compliance-airports.md   # Legal compliance
 ├── django-project-setup-with-uv.md   # Setup guide
+├── algorithms/                       # Calculation methods & formulas
 ├── adr/                               # Architecture decisions
 ├── briefs/                            # Task implementation guides
 ├── prd/                               # Requirements
