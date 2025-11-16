@@ -1,23 +1,28 @@
 # BRIEF: Build documentation slice
 
 Goal
+
 - Document algorithms, formulas, and usage for distance and cost calculators addressing PRD §4 F-001, F-003.
 
 Scope (single PR)
+
 - Files to touch: `docs/travelmathlite/algorithms/distance-and-cost.md`, README updates.
 - Non-goals: Implementation code changes.
 
 Standards
+
 - Commits: conventional style (docs).
 - Clear explanations for non-technical readers; include formulas and examples.
 
 Acceptance
+
 - User flow: Developer or user can read documentation to understand calculation methods and assumptions.
 - Documentation includes: formulas, default values, example inputs/outputs, limitations.
 - Include migration? no
 - Update docs & PR checklist.
 
 Deliverables
+
 - [ ] Create `docs/travelmathlite/algorithms/distance-and-cost.md`:
   - **Distance calculations**:
     - Haversine/geodesic formula explanation
@@ -46,6 +51,7 @@ Deliverables
 - [ ] Ensure doc formatting (Markdown) and links are correct
 
 Prompts for Copilot
+
 - "Generate documentation file `docs/travelmathlite/algorithms/distance-and-cost.md` explaining distance, time, and cost calculation methods. Include formulas, default values, rationale, examples, and limitations."
 - "Add unit conversion formulas and examples to the documentation."
 - "Update README.md with a section on calculators: brief description and link to detailed algorithms doc."
