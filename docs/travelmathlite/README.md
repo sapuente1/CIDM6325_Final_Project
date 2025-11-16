@@ -47,7 +47,7 @@ Comprehensive documentation for the TravelMathLite project.
 
 ### Operations and Disaster Recovery
 
-4. **[Rollback and Recovery Procedures](rollback-and-recovery.md)** 🛡️ *Important!*
+1. **[Rollback and Recovery Procedures](rollback-and-recovery.md)** 🛡️ *Important!*
    - Migration rollback procedures
    - Database backup and restore workflows
    - FK detachment and re-linking
@@ -57,7 +57,7 @@ Comprehensive documentation for the TravelMathLite project.
 
 ### Legal and Compliance
 
-5. **[Licensing and Compliance](licensing-compliance-airports.md)** ⚖️
+1. **[Licensing and Compliance](licensing-compliance-airports.md)** ⚖️
    - Dataset license (Public Domain)
    - Attribution requirements
    - Compliance checklist
@@ -145,7 +145,7 @@ Task-level implementation guides organized by ADR:
 
 ### File Organization
 
-```
+```text
 docs/travelmathlite/
 ├── README.md                           # This index
 ├── CONTRIBUTING.md                     # Contributor onboarding
@@ -174,7 +174,7 @@ docs/travelmathlite/
 
 Example commit:
 
-```
+```text
 docs: add troubleshooting guide for import errors
 
 - Common import failures and solutions
@@ -219,4 +219,4 @@ Refs #XX
 
 ---
 
-*Last Updated: 2025-11-14*
+**Last Updated:** 2025-11-14
