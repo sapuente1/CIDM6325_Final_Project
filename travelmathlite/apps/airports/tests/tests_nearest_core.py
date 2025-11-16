@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from django.test import TestCase
 
-from apps.airports.models import Airport
+from ..models import Airport
 
 
 class NearestCoreTests(TestCase):

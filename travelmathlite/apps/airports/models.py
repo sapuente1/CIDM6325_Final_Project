@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import math
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from django.db import models
 
-from apps.base.models import City, Country
+from ..base.models import City, Country
 
 
 class AirportQuerySet(models.QuerySet["Airport"]):
@@ -71,7 +71,7 @@ class AirportQuerySet(models.QuerySet["Airport"]):
             d_km = _haversine_km(latitude, longitude, airport.latitude_deg, airport.longitude_deg)
             airport.distance_km = d_km
             if unit == "mi":
-                from apps.base.utils.units import km_to_mi
+                from ..base.utils.units import km_to_mi
 
                 airport.distance_mi = km_to_mi(d_km)
         candidates.sort(key=lambda airport: getattr(airport, "distance_km", math.inf))
@@ -149,7 +149,12 @@ class Airport(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    objects = AirportQuerySet.as_manager()
+    # Typing-only attributes attached at runtime by queryset helpers
+    if TYPE_CHECKING:  # pragma: no cover - static typing aid only
+        distance_km: float
+        distance_mi: float
+
+    objects: AirportQuerySet = AirportQuerySet.as_manager()  # type: ignore[assignment]
 
     class Meta:
         db_table = "airports"

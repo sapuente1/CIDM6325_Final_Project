@@ -174,10 +174,39 @@ gh auth login
 gh repo clone <org>/<repo> && cd <repo>
 ```
 
-### 4.2 Create an Issue from terminal
+### 4.2 Create an Issue from terminal and capture the number
 
 ``` bash
-gh issue create -t "Add <feature>" -b "PRD §<id>. Acceptance: …" -l enhancement
+# Create Issue and capture the number for commits
+# Note: gh CLI's -q flag works without jq (built-in JSON query)
+ISSUE_NUM=$(gh issue create \
+  -t "Add <feature>" \
+  -b "PRD §<id>. Acceptance: …" \
+  -l enhancement \
+  --json number -q '.number')
+
+echo "Created Issue #${ISSUE_NUM}"
+```
+
+**Windows Git Bash alternative (if -q doesn't work):**
+
+``` bash
+# Git Bash: capture URL and extract number with sed/regex
+ISSUE_URL=$(gh issue create \
+  -t "Add <feature>" \
+  -b "PRD §<id>. Acceptance: …" \
+  -l enhancement)
+ISSUE_NUM=$(echo "$ISSUE_URL" | sed -E 's#.*/([0-9]+)$#\1#')
+echo "Created Issue #${ISSUE_NUM}"
+```
+
+**Windows PowerShell alternative:**
+
+``` powershell
+# PowerShell: capture output and parse manually
+$ISSUE_URL = gh issue create -t "Add <feature>" -b "PRD §<id>. Acceptance: …" -l enhancement
+$ISSUE_NUM = $ISSUE_URL -replace '.*?/(\d+)$', '$1'
+Write-Host "Created Issue #$ISSUE_NUM"
 ```
 
 ### 4.3 Start work from an Issue
@@ -195,20 +224,10 @@ git switch <auto-created-branch>
 ### 4.4 Make commits (small, atomic)
 
 ``` bash
-git add -p
-# Include the Issue reference so history is traceable (issues-only works great with Refs #<issue>)
-git commit -m "feat: add <feature> form and CBV\n\nPRD: §<id>; ADR: ADR-XXXX; Refs #<issue-number>"
-# Final commit that closes the Issue (optional, prefer when merging to default branch):
-# git commit -m "feat: finish <feature> — closes #<issue-number>"
-```
+# Using the captured ISSUE_NUM from 4.2
+COMMIT_MSG="feat: add <feature> form and CBV — Refs #${ISSUE_NUM}
 
-#### Keep Issue comments in sync with commit messages
-
-For clear traceability, mirror each commit message as an Issue comment on the related Issue. This keeps the timeline aligned for reviewers.
-
-``` bash
-# Assumes ISSUE_NUM is set (see creating issues in your workflow)
-COMMIT_MSG="feat: <short> — context (ADR-<id>) Refs #${ISSUE_NUM}"
+PRD: §<id>; ADR: ADR-XXXX"
 
 git add -A
 git commit -m "$COMMIT_MSG"
@@ -219,7 +238,7 @@ gh issue comment "$ISSUE_NUM" -b "$COMMIT_MSG"
 git push
 
 # Optional (final): when you intend to close the Issue on merge to default
-# COMMIT_MSG="feat: complete <short> — closes #${ISSUE_NUM}"
+# COMMIT_MSG="feat: complete <feature> — closes #${ISSUE_NUM}"
 # git commit -m "$COMMIT_MSG" && gh issue comment "$ISSUE_NUM" -b "$COMMIT_MSG" && git push
 ```
 
