@@ -294,7 +294,7 @@ OurAirports license
 
 - **License**: Public Domain
 - **Terms**: All data released to Public Domain with no restrictions
-- **Source**: https://ourairports.com/data/
+- **Source**: <https://ourairports.com/data/>
 - **Official Statement**: "All data is released to the Public Domain, and comes with no guarantee of accuracy or fitness for use."
 
 Permitted uses
@@ -315,7 +315,7 @@ Warranty disclaimer
 Attribution practice
 
 - **Provided**: Optional attribution included in documentation as best practice
-- **Text**: "Airport data sourced from OurAirports (https://ourairports.com/data/), released to the Public Domain."
+- **Text**: "Airport data sourced from OurAirports (<https://ourairports.com/data/>), released to the Public Domain."
 - **Locations**: ADR documentation, README, code comments
 - **Rationale**: Respects open data norms, builds trust, aids transparency
 
