@@ -121,7 +121,7 @@ Task-level implementation guides organized by ADR:
 
 ## Quick Links by Task
 
-### I want to...
+### I want to
 
 - **Get started as a new contributor** → [Contributing Guide](CONTRIBUTING.md)
 - **Import airport data** → [Data Model Integration](data-model-integration.md)
@@ -173,6 +173,7 @@ docs/travelmathlite/
 5. Submit PR with conventional commit
 
 Example commit:
+
 ```
 docs: add troubleshooting guide for import errors
 
