@@ -129,6 +129,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Auth settings (ADR-1.0.6)
+LOGIN_REDIRECT_URL = "base:index"
+LOGOUT_REDIRECT_URL = "base:index"
+
 # Calculators defaults (ADR-1.0.2)
 # These can be overridden via environment variables. Defaults chosen for
 # reasonable, offline estimates in line with the PRD/ADR.

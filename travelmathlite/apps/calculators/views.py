@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from django.conf import settings
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import FormView, TemplateView
 
