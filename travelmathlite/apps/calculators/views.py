@@ -96,3 +96,15 @@ class CostCalculatorView(FormView):
         if self.request.headers.get("HX-Request") == "true":
             return render(self.request, "calculators/partials/cost_result.html", {"form": form}, status=400)
         return super().form_invalid(form)
+
+
+class DistancePartialView(DistanceCalculatorView):
+    def form_invalid(self, form: DistanceCalculatorForm) -> HttpResponse:  # type: ignore[override]
+        # For partial endpoint, on invalid input render full page with errors (tests expect this)
+        return render(self.request, "calculators/distance_calculator.html", {"form": form}, status=400)
+
+
+class CostPartialView(CostCalculatorView):
+    def form_invalid(self, form: CostCalculatorForm) -> HttpResponse:  # type: ignore[override]
+        # For partial endpoint, on invalid input render full page with errors (tests expect this)
+        return render(self.request, "calculators/cost_calculator.html", {"form": form}, status=400)

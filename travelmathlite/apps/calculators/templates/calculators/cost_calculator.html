@@ -2,8 +2,8 @@
 {% block title %}Cost Calculator{% endblock %}
 {% block content %}
   <h1>Trip Cost Calculator</h1>
-  <form id="cost-form" method="post" action="{% url 'calculators:cost' %}"
-        hx-post="{% url 'calculators:cost' %}"
+    <form id="cost-form" method="post" action="{% url 'calculators:cost' %}"
+      hx-post="{% url 'calculators:cost-partial' %}"
         hx-target="#cost-results"
         hx-swap="outerHTML show:top">
     {% csrf_token %}
