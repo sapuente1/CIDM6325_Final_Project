@@ -353,7 +353,7 @@ Expose nearest-airport lookup via a page view (CBV) and a JSON API endpoint.
 
 ### Implementation Steps
 
-**1. Create a page view**
+#### 1. Create a page view
 
 File: `apps/calculators/views.py`:
 
