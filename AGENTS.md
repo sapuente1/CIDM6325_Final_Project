@@ -209,6 +209,21 @@ $ISSUE_NUM = $ISSUE_URL -replace '.*?/(\d+)$', '$1'
 Write-Host "Created Issue #$ISSUE_NUM"
 ```
 
+**Complete workflow (Git Bash one-liner):**
+
+``` bash
+# Create Issue, commit, comment, and push in one sequence
+ISSUE_URL=$(gh issue create -t "Title" -b "Body") && \
+ISSUE_NUM=$(echo "$ISSUE_URL" | sed -E 's#.*/([0-9]+)$#\1#') && \
+echo "Created Issue #${ISSUE_NUM}" && \
+COMMIT_MSG="prefix: description — Refs #${ISSUE_NUM}" && \
+git add -A && \
+git commit -m "$COMMIT_MSG" && \
+gh issue comment "$ISSUE_NUM" -b "$COMMIT_MSG" && \
+git push && \
+echo "✓ Done! Issue #${ISSUE_NUM}"
+```
+
 ### 4.3 Start work from an Issue
 
 ``` bash

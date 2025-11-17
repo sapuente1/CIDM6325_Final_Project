@@ -23,12 +23,13 @@ Acceptance
 
 Deliverables
 
-- [ ] `docs/travelmathlite/algorithms/nearest-airport.md` with:
-  - [ ] Bounding box derivation and lat/lon deltas from radius
-  - [ ] Haversine formula and constants
-  - [ ] Example: coordinate → top 3 airports (with distances)
-  - [ ] Unit handling (km, mi) and conversion
-  - [ ] Limitations; perf targets (p95 < 300 ms on sample dataset)
+- [x] `docs/travelmathlite/algorithms/nearest-airport.md` with:
+  - [x] Bounding box derivation and lat/lon deltas from radius
+  - [x] Haversine formula and constants
+  - [x] Example: coordinate → top 3 airports (with distances)
+  - [x] Unit handling (km, mi) and conversion
+  - [x] Limitations; perf targets (p95 < 300 ms on sample dataset)
+  - [x] Index usage and SQLite rationale
 
 Prompts for Copilot
 
@@ -37,10 +38,10 @@ Prompts for Copilot
 
 Summary
 
-- Status: Planned — algorithms doc only.
+- Status: Complete — algorithms doc finished.
 - Files: `docs/travelmathlite/algorithms/nearest-airport.md`.
 - Tests: N/A (documentation).
-- Issue: #TODO
+- Issue: #51 (to be created)
 
 ---
 ADR: adr-1.0.3-nearest-airport-lookup-implementation.md

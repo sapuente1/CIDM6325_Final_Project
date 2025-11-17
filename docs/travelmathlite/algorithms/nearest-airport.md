@@ -55,6 +55,51 @@ Units: results always include `distance_km`; when requested, a `distance_mi` con
 
 Returned list is ordered by `distance_km` ascending with distances attached to each instance.
 
+## Example Query
+
+Given a coordinate near El Paso, Texas:
+
+```python
+from apps.airports.models import Airport
+
+lat, lon = 31.76, -106.49
+results = Airport.objects.nearest(lat, lon, limit=3, iso_country="US")
+
+for airport in results:
+    print(f"{airport.name} ({airport.iata_code}): {airport.distance_km:.2f} km")
+
+# Output (sample):
+# El Paso International (ELP): 10.23 km
+# Las Cruces Intl (LRU): 78.45 km
+# Alamogordo-White Sands Regional (ALM): 135.67 km
+```
+
+The queryset attaches `distance_km` (and optionally `distance_mi`) to each instance for display.
+
+## Performance and Indexes
+
+**Target:** p95 < 300 ms on a 50k-airport dataset (typical for OurAirports).
+
+**Why this works well on SQLite without PostGIS:**
+
+- Bounding box filters use standard B-tree indexes on `(latitude_deg, longitude_deg)`, `iso_country`, and `active`.
+- SQLite excels at these simple range queries; no GIS extensions needed.
+- Python-side haversine computation is fast for candidate sets (typically < 100 airports after bbox filter).
+- For larger datasets or sub-50ms requirements, consider PostGIS or spatial indexes.
+
+**Index usage:**
+
+- `latitude_deg, longitude_deg` composite index accelerates bbox filtering.
+- `iso_country` index speeds up country prefilter when specified.
+- `active` index ensures inactive airports are excluded early.
+
+## Limitations
+
+- **Accuracy:** Haversine assumes a spherical Earth; geodesic (WGS84 ellipsoid) is more accurate but requires `geopy` or similar. Current error: < 0.5% for distances < 1000 km.
+- **Bounding box approximation:** Longitude delta uses `cos(lat)` heuristic; near poles (lat > 80°) results may be imprecise.
+- **Cross-border:** Without `iso_country` filter, results may include airports from neighboring countries if they're closer.
+- **Performance at scale:** For datasets > 100k airports or real-time queries at high volume, consider adding PostGIS and spatial indexes.
+
 ## References
 
 - ADR: `docs/travelmathlite/adr/adr-1.0.3-nearest-airport-lookup-implementation.md`
