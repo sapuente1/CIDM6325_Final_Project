@@ -38,7 +38,7 @@ def get_calculator_inputs(request: HttpRequest, calculator_type: str) -> dict[st
         Dictionary of inputs or None if not found
     """
     key = get_calculator_session_key(calculator_type)
-    return request.session.get(key)
+    return request.session.get(key)  # type: ignore[attr-defined]
 
 
 def set_calculator_inputs(request: HttpRequest, calculator_type: str, inputs: dict[str, Any]) -> None:
@@ -51,8 +51,8 @@ def set_calculator_inputs(request: HttpRequest, calculator_type: str, inputs: di
         inputs: Dictionary of input values to store
     """
     key = get_calculator_session_key(calculator_type)
-    request.session[key] = inputs
-    request.session.modified = True
+    request.session[key] = inputs  # type: ignore[attr-defined]
+    request.session.modified = True  # type: ignore[attr-defined]
 
 
 def clear_calculator_inputs(request: HttpRequest, calculator_type: str) -> None:
@@ -64,9 +64,9 @@ def clear_calculator_inputs(request: HttpRequest, calculator_type: str) -> None:
         calculator_type: Type of calculator
     """
     key = get_calculator_session_key(calculator_type)
-    if key in request.session:
-        del request.session[key]
-        request.session.modified = True
+    if key in request.session:  # type: ignore[attr-defined]
+        del request.session[key]  # type: ignore[attr-defined]
+        request.session.modified = True  # type: ignore[attr-defined]
 
 
 def get_all_calculator_inputs(request: HttpRequest) -> dict[str, dict[str, Any]]:
@@ -77,10 +77,10 @@ def get_all_calculator_inputs(request: HttpRequest) -> dict[str, dict[str, Any]]
         Dictionary mapping calculator_type to inputs dict
     """
     result = {}
-    for key in request.session.keys():
+    for key in request.session.keys():  # type: ignore[attr-defined]
         if key.startswith(CALCULATOR_SESSION_PREFIX):
             calculator_type = key[len(CALCULATOR_SESSION_PREFIX) :]
-            result[calculator_type] = request.session[key]
+            result[calculator_type] = request.session[key]  # type: ignore[attr-defined]
     return result
 
 
@@ -91,8 +91,8 @@ def mark_session_as_user_bound(request: HttpRequest) -> None:
     This is called after login to indicate that any calculator inputs
     in the session are now associated with the logged-in user.
     """
-    request.session["user_bound"] = True
-    request.session.modified = True
+    request.session["user_bound"] = True  # type: ignore[attr-defined]
+    request.session.modified = True  # type: ignore[attr-defined]
 
 
 def is_session_user_bound(request: HttpRequest) -> bool:
@@ -102,4 +102,4 @@ def is_session_user_bound(request: HttpRequest) -> bool:
     Returns:
         True if session belongs to authenticated user
     """
-    return request.session.get("user_bound", False)
+    return request.session.get("user_bound", False)  # type: ignore[attr-defined]

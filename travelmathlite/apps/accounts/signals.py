@@ -7,7 +7,7 @@ Handles user authentication events like login to migrate anonymous session data.
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 
-from core.session import mark_session_as_user_bound
+from core.session import mark_session_as_user_bound  # type: ignore[reportMissingImports]
 
 
 @receiver(user_logged_in)

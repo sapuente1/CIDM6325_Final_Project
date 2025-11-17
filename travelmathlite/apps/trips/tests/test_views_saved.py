@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.trips.models import SavedCalculation
+from ..models import SavedCalculation
 
 User = get_user_model()
 
@@ -52,7 +52,7 @@ class SavedCalculationViewTests(TestCase):
 
         # Should redirect to login
         self.assertEqual(response.status_code, 302)
-        self.assertIn("/accounts/login/", response.url)
+        self.assertIn("/accounts/login/", response["Location"])
 
     def test_saved_list_shows_only_user_calculations(self):
         """Test INV-1: Users only see their own calculations."""
@@ -98,7 +98,7 @@ class SavedCalculationViewTests(TestCase):
 
         # Should redirect to login
         self.assertEqual(response.status_code, 302)
-        self.assertIn("/accounts/login/", response.url)
+        self.assertIn("/accounts/login/", response["Location"])
 
     def test_delete_shows_confirmation_page(self):
         """Test that delete shows confirmation page for owner."""
@@ -124,7 +124,7 @@ class SavedCalculationViewTests(TestCase):
 
         # Should redirect to list
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("trips:saved_list"))
+        self.assertEqual(response["Location"], reverse("trips:saved_list"))
 
         # Calculation should be deleted
         self.assertFalse(SavedCalculation.objects.filter(pk=self.calc1_user1.pk).exists())
