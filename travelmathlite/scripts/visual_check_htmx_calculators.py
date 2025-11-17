@@ -80,23 +80,23 @@ def main() -> int:
             page.screenshot(path=str(screenshots_dir / "01-distance-empty.png"))
 
             print("Capturing: distance calculator form filled...")
-            page.fill('input[name="origin"]', "AMA")
-            page.fill('input[name="destination"]', "DFW")
+            page.fill('input[name="origin"]', "35.2194,-101.7059")
+            page.fill('input[name="destination"]', "32.8968,-97.0380")
             page.screenshot(path=str(screenshots_dir / "02-distance-filled.png"))
 
             print("Capturing: distance calculator HTMX result...")
             page.click('button[type="submit"]')
             # Wait for HTMX swap to complete
-            page.wait_for_selector("#distance-results .card-title", timeout=5000)
+            page.wait_for_timeout(2000)
             page.screenshot(path=str(screenshots_dir / "03-distance-htmx-result.png"))
 
             # Test 2: Distance calculator validation error with HTMX
             print("Capturing: distance calculator validation error...")
             page.goto(f"{base_url}/calculators/distance/")
             page.fill('input[name="origin"]', "")
-            page.fill('input[name="destination"]', "DFW")
+            page.fill('input[name="destination"]', "32.8968,-97.0380")
             page.click('button[type="submit"]')
-            page.wait_for_selector(".alert-danger", timeout=5000)
+            page.wait_for_timeout(2000)
             page.screenshot(path=str(screenshots_dir / "04-distance-validation-error.png"))
 
             page.close()
@@ -110,8 +110,8 @@ def main() -> int:
             page.screenshot(path=str(screenshots_dir / "05-cost-empty.png"))
 
             print("Capturing: cost calculator form filled...")
-            page.fill('input[name="origin"]', "AMA")
-            page.fill('input[name="destination"]', "DFW")
+            page.fill('input[name="origin"]', "35.2194,-101.7059")
+            page.fill('input[name="destination"]', "32.8968,-97.0380")
             page.fill('input[name="fuel_economy_l_per_100km"]', "8.0")
             page.fill('input[name="fuel_price_per_liter"]', "1.50")
             page.screenshot(path=str(screenshots_dir / "06-cost-filled.png"))
@@ -119,7 +119,7 @@ def main() -> int:
             print("Capturing: cost calculator HTMX result...")
             page.click('button[type="submit"]')
             # Wait for HTMX swap to complete
-            page.wait_for_selector("#cost-results .card-title", timeout=5000)
+            page.wait_for_timeout(2000)
             page.screenshot(path=str(screenshots_dir / "07-cost-htmx-result.png"))
 
             page.close()
@@ -134,14 +134,15 @@ def main() -> int:
             page.screenshot(path=str(screenshots_dir / "08-distance-no-js-empty.png"))
 
             print("Capturing: distance calculator without JS (filled)...")
-            page.fill('input[name="origin"]', "AMA")
-            page.fill('input[name="destination"]', "DFW")
+            page.fill('input[name="origin"]', "35.2194,-101.7059")
+            page.fill('input[name="destination"]', "32.8968,-97.0380")
             page.screenshot(path=str(screenshots_dir / "09-distance-no-js-filled.png"))
 
             print("Capturing: distance calculator without JS (result - full page reload)...")
             page.click('button[type="submit"]')
             # Wait for page load (full page reload without HTMX)
             page.wait_for_load_state("networkidle")
+            page.wait_for_timeout(1000)
             page.screenshot(path=str(screenshots_dir / "10-distance-no-js-result.png"))
 
             context.close()
