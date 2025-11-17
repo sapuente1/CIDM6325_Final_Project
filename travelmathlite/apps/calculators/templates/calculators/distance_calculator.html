@@ -2,7 +2,10 @@
 {% block title %}Distance Calculator{% endblock %}
 {% block content %}
   <h1>Distance Calculator</h1>
-  <form id="distance-form" method="post" hx-post="{% url 'calculators:distance-partial' %}" hx-target="#distance-results">
+  <form id="distance-form" method="post" action="{% url 'calculators:distance' %}"
+        hx-post="{% url 'calculators:distance' %}"
+        hx-target="#distance-results"
+        hx-swap="outerHTML">
     {% csrf_token %}
     {{ form.non_field_errors }}
     <div>
