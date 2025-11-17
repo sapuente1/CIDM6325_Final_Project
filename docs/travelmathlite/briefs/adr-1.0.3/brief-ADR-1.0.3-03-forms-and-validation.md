@@ -24,13 +24,13 @@ Acceptance
 
 Deliverables
 
-- [ ] `NearestAirportForm` with fields:
-  - [ ] `query` (city name | IATA | "lat,lon")
-  - [ ] `iso_country` (optional)
-  - [ ] `unit` (km/mi)
-  - [ ] `limit` (default 3; max 10)
-- [ ] Clean methods normalize to coords, set `resolved_coords`
-- [ ] Tests for valid/invalid inputs; normalization and defaults
+- [x] `NearestAirportForm` with fields:
+  - [x] `query` (city name | IATA | "lat,lon")
+  - [x] `iso_country` (optional)
+  - [x] `unit` (km/mi)
+  - [x] `limit` (default 3; max 10)
+- [x] Clean methods normalize to coords, set `resolved_coords`
+- [x] Tests for valid/invalid inputs; normalization and defaults
 
 Prompts for Copilot
 
@@ -39,8 +39,8 @@ Prompts for Copilot
 
 Summary
 
-- Status: Planned — forms and validation only.
-- Files: `apps/airports/forms.py`, `apps/airports/tests_forms.py`.
+- Status: Implemented — forms and validation complete.
+- Files: `apps/airports/forms.py`, `apps/airports/tests/tests_forms.py`.
 - Tests: form normalization, validation, and defaults.
 - Issue: #TODO
 
