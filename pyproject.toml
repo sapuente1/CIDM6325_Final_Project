@@ -30,3 +30,8 @@ include = ["api_examples*"]
 members = [
     "travelmathlite",
 ]
+
+[dependency-groups]
+dev = [
+    "playwright>=1.56.0",
+]

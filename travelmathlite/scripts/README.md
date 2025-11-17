@@ -7,7 +7,7 @@
 Install Playwright browsers:
 
 ```bash
-uvx playwright install chromium
+uv run playwright install chromium
 ```
 
 ### Run
@@ -15,13 +15,13 @@ uvx playwright install chromium
 From repository root:
 
 ```bash
-uvx --with playwright --from . python travelmathlite/scripts/visual_check_search.py
+uv run python travelmathlite/scripts/visual_check_search.py
 ```
 
 Or from `travelmathlite/` directory:
 
 ```bash
-uvx --with playwright python scripts/visual_check_search.py
+uv run python scripts/visual_check_search.py
 ```
 
 ### Output

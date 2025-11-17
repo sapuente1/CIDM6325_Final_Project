@@ -1,8 +1,10 @@
 """Visual regression check for search feature.
 
 Captures screenshots of search flows for manual/automated visual inspection.
-Run with: uvx --with playwright playwright install chromium && uvx --from . python scripts/visual_check_search.py
+Run with: python scripts/visual_check_search.py (after: playwright install chromium)
 """
+
+from __future__ import annotations
 
 import os
 import socket
