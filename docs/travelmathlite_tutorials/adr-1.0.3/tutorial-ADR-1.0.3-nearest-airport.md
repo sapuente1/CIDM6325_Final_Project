@@ -1,23 +1,32 @@
-# Tutorial: ADR-1.0.3 Nearest Airport Lookup
+# Tutorial: ADR-1.0.3 Nearest Airport Lookup Implementation
 
 ## Goal
 
-Learn how TravelMathLite implements nearest-airport lookup using a bounding box prefilter combined with haversine distance calculation—all without PostGIS—and how to expose this via Django QuerySets, forms, views, and APIs.
+Learn how TravelMathLite implements nearest-airport lookup using a bounding box prefilter combined with haversine distance calculation—all without PostGIS—and how to expose this via Django QuerySets, forms, views, templates, and APIs. This tutorial walks through the complete implementation from core algorithms to HTMX-enabled UI.
 
-## Context
+## Context and Traceability
 
 - **ADR:** `docs/travelmathlite/adr/adr-1.0.3-nearest-airport-lookup-implementation.md`
 - **Briefs:** `docs/travelmathlite/briefs/adr-1.0.3/` (six briefs covering core → docs → forms → views → templates → tests)
 - **App:** `travelmathlite/apps/airports/`
 - **Algorithm Documentation:** `docs/travelmathlite/algorithms/nearest-airport.md`
+- **PRD Requirements:** §4 F-002 (nearest airports), §4 F-004 (search/indexes), §7 NF-001 (performance < 300ms)
+- **Functional Requirements:** FR-F-002-1, FR-F-004-1
 
 ## Prerequisites
 
-- TravelMathLite project initialized with `uv`
-- Python environment activated
-- Database migrated
-- Airport data loaded (via `import_airports` command or fixtures)
-- Basic familiarity with Django models, QuerySets, and views
+Before starting this tutorial, ensure you have:
+
+- TravelMathLite project initialized with `uv` (see ADR-1.0.0 tutorial)
+- Python 3.12+ environment activated
+- Database migrated with airport and country models
+- Airport data loaded via `import_airports` management command (see ADR-1.0.1 tutorial)
+- Basic familiarity with:
+  - Django models, QuerySets, and custom managers
+  - Django forms and validation
+  - Class-Based Views (CBVs)
+  - Django templates and template inheritance
+  - HTMX for dynamic partial updates
 
 ## Section 1: Core QuerySet and Indexes (Brief 01)
 

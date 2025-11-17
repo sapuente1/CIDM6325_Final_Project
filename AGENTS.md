@@ -177,6 +177,9 @@ gh repo clone <org>/<repo> && cd <repo>
 ### 4.2 Create an Issue from terminal and capture the number
 
 ``` bash
+# FIRST: Check available labels in the repo
+gh label list
+
 # Create Issue and capture the number for commits
 # Note: gh CLI's -q flag works without jq (built-in JSON query)
 ISSUE_NUM=$(gh issue create \
@@ -191,6 +194,9 @@ echo "Created Issue #${ISSUE_NUM}"
 **Windows Git Bash alternative (if -q doesn't work):**
 
 ``` bash
+# FIRST: Check available labels
+gh label list
+
 # Git Bash: capture URL and extract number with sed/regex
 ISSUE_URL=$(gh issue create \
   -t "Add <feature>" \
@@ -203,9 +209,12 @@ echo "Created Issue #${ISSUE_NUM}"
 **Windows PowerShell alternative:**
 
 ``` powershell
+# FIRST: Check available labels
+gh label list
+
 # PowerShell: capture output and parse manually
 $ISSUE_URL = gh issue create -t "Add <feature>" -b "PRD §<id>. Acceptance: …" -l enhancement
-$ISSUE_NUM = $ISSUE_URL -replace '.*?/(\d+)$', '$1'
+$ISSUE_NUM = $ISSUE_URL -replace '.*?(\d+)$', '$1'
 Write-Host "Created Issue #$ISSUE_NUM"
 ```
 
@@ -277,6 +286,9 @@ gh pr merge --squash --delete-branch
 ### 4.8 ADR and Issue automation (policy)
 
 ``` bash
+# FIRST: Always check available labels before creating issues
+gh label list
+
 # ADRs: one ADR per PR
 gh issue create -t "docs(adr): ADR-<id> <title>" -b "Link PRD sections and FR/NF IDs. Keep PR small." -l docs,adr,travelmathlite
 # Issues-only workflow: commit on base branch; if you prefer, create a branch per Issue:

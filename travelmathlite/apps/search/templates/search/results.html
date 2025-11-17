@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Search{% if query %} — {{ query }}{% endif %}{% endblock %}
+
+{% block content %}
+  <h1>Search</h1>
+
+  <form method="get" action="" style="margin-bottom: 1rem;">
+    <label for="q">Query</label>
+    <input type="text" id="q" name="q" value="{{ query|default:'' }}" />
+    <button type="submit">Search</button>
+  </form>
+
+  {% if not had_query %}
+    <p>Enter a term to search airports and cities.</p>
+  {% else %}
+    <p><strong>{{ results_count }}</strong> result{{ results_count|pluralize }} for "{{ query }}"</p>
+
+    {% if airport_results %}
+      <h2>Airports</h2>
+      <ul>
+        {% for a in airport_results %}
+          <li>
+            {{ a.name }}
+            {% if a.iata_code %} ({{ a.iata_code }}){% else %} ({{ a.ident }}){% endif %}
+            {% if a.municipality %} — {{ a.municipality }}{% endif %}
+            {% if a.country %}, {{ a.country.name }}{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if city_results %}
+      <h2>Cities</h2>
+      <ul>
+        {% for c in city_results %}
+          <li>
+            {{ c.name }}, {{ c.country.iso_code }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
+{% endblock %}

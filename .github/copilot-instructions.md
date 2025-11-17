@@ -40,7 +40,8 @@ Wireframes
 
 GitHub automations (ADRs, Briefs, FR/AC issues)
 
--   One ADR per PR. Create a dedicated branch per ADR (`adr/<id>-<slug>`) or use an issues‑only workflow on your base branch (e.g., `FALL2025`) if branch isolation isn’t needed. Keep PRs small; include traceability (PRD §, FR/NF IDs). Title: `docs(adr): ADR-<id> <title>`.
+-   One ADR per PR. Create a dedicated branch per ADR (`adr/<id>-<slug>`) or use an issues‑only workflow on your base branch (e.g., `FALL2025`) if branch isolation isn't needed. Keep PRs small; include traceability (PRD §, FR/NF IDs). Title: `docs(adr): ADR-<id> <title>`.
+-   **ALWAYS check available labels FIRST** before creating any GitHub Issue. Run `gh label list` to see what labels exist in the repository, then use only existing labels when creating issues.
 -   For each Brief and each PRD Functional Requirement ID (e.g., `FR-F-001-1`) or Acceptance Criteria item, create a GitHub Issue using GitHub CLI. Include labels (e.g., `feature`, `FR`, `AC`, `travelmathlite`) and paste the acceptance notes.
 -   Branches optional: if using per‑issue branches, link with `gh issue develop` and open PRs with `gh pr create` (enable Copilot PR summary). If using issues‑only, commit on the base branch and PR only when you open a feature branch. Always include the Issue reference in your commit messages (use Refs for ongoing work; Closes for the final commit merged to the default branch).
 
@@ -49,7 +50,8 @@ Copilot nudges (speak up)
 -   When the user asks to commit or push, remind them to include the Issue reference in the commit message using the keywords "Refs" (ongoing) or "Closes" (final on merge). Example phrasing: include an Issue reference in the form Refs followed by the issue number, and mirror the same text as an Issue comment.
 -   If a commit message draft lacks an Issue reference, propose an amended message that adds a Refs tag and show how to post the same text as an Issue comment.
 -   If the user does not have the Issue number handy, ask for it or suggest a quick way to retrieve it (e.g., from the creation output or repository Issues list).
--   When generating GH CLI blocks that create Issues, prefer patterns that print or export the Issue number so it can be reused for commit tagging and comments.
+-   **Before creating any GitHub Issue**, always run `gh label list` first to check available labels, then use only existing labels in the issue creation command.
+-   When generating GH CLI blocks that create Issues, always include `gh label list` as the first command before the issue creation command. Prefer patterns that print or export the Issue number so it can be reused for commit tagging and comments.
 -   If the user indicates an issues‑only workflow, avoid suggesting per‑issue branches unless they explicitly request it; otherwise, confirm intent before proposing branches.
 
 Commit + Issue comment sync
