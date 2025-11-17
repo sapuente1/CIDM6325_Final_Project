@@ -51,7 +51,7 @@ class DistanceCalculatorView(FormView):
 
     def form_invalid(self, form: DistanceCalculatorForm) -> HttpResponse:  # type: ignore[override]
         if self.request.headers.get("HX-Request") == "true":
-            return render(self.request, self.template_name, {"form": form}, status=400)
+            return render(self.request, "calculators/partials/distance_result.html", {"form": form}, status=400)
         return super().form_invalid(form)
 
 
@@ -94,5 +94,5 @@ class CostCalculatorView(FormView):
 
     def form_invalid(self, form: CostCalculatorForm) -> HttpResponse:  # type: ignore[override]
         if self.request.headers.get("HX-Request") == "true":
-            return render(self.request, self.template_name, {"form": form}, status=400)
+            return render(self.request, "calculators/partials/cost_result.html", {"form": form}, status=400)
         return super().form_invalid(form)
