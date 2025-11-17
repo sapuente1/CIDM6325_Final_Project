@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Nearest Airports{% endblock %}
+{% block content %}
+  <h1>Nearest Airports</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label>Query (city, IATA, or lat,lon): {{ form.query }}</label><br/>
+    <label>Country (ISO 2): {{ form.iso_country }}</label><br/>
+    <label>Unit: {{ form.unit }}</label>
+    <label>Limit: {{ form.limit }}</label>
+    <button type="submit">Search</button>
+    {% if form.errors %}
+      <pre>{{ form.errors }}</pre>
+    {% endif %}
+  </form>
+
+  {% if results %}
+    <h2>Results ({{ unit }})</h2>
+    <ol>
+      {% for a in results %}
+        <li>
+          {{ a.name }} ({{ a.iata_code|default:a.ident }}) —
+          {% if unit == 'mi' %}{{ a.distance_mi|floatformat:1 }} mi{% else %}{{ a.distance_km|floatformat:1 }} km{% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+{% endblock %}

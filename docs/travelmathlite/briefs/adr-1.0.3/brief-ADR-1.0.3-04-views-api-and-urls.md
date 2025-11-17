@@ -25,10 +25,10 @@ Acceptance
 
 Deliverables
 
-- [ ] `NearestAirportView` (CBV) rendering a simple page with form and results
-- [ ] `nearest_airports_json` (FBV) returning JSON `{results:[{ident,iata,name,distance,unit}], count}`
-- [ ] URL patterns under `airports/` namespace; add link from base nav if not present
-- [ ] Tests for 200 responses, valid/invalid queries, and JSON payload shape
+- [x] `NearestAirportView` (CBV) rendering a simple page with form and results
+- [x] `nearest_airports_json` (FBV) returning JSON `{results:[{ident,iata,name,distance,unit}], count}`
+- [x] URL patterns under `airports/` namespace; add link from base nav if not present
+- [x] Tests for 200 responses, valid/invalid queries, and JSON payload shape
 
 Prompts for Copilot
 
@@ -38,9 +38,9 @@ Prompts for Copilot
 
 Summary
 
-- Status: Planned — views/API endpoints and URLs.
-- Files: `apps/airports/views.py`, `apps/airports/urls.py`, `apps/airports/tests_views.py`.
-- Tests: HTTP responses, JSON shape, ordering.
+- Status: Implemented — views/API endpoints and URLs complete.
+- Files: `apps/airports/views.py`, `apps/airports/urls.py`, `apps/airports/templates/airports/nearest.html`, `apps/airports/tests/tests_views.py`.
+- Tests: HTTP responses, JSON shape, ordering. All passing via `uv run`.
 - Issue: #TODO
 
 ---
