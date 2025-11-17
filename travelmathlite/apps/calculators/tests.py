@@ -525,3 +525,133 @@ class CalculatorsViewAndHTMXTests(TestCase):
         self.assertTemplateUsed(resp, "calculators/cost_calculator.html")
         self.assertContains(resp, "Trip Cost Calculator")
         self.assertContains(resp, "Estimated fuel cost")
+
+
+class HTMXRequestDetectionTests(TestCase):
+    """Test HTMX request detection and partial template rendering (ADR-1.0.5)."""
+
+    def setUp(self) -> None:
+        """Create test airports."""
+        self.ama = Airport.objects.create(
+            ident="KAMA",
+            iata_code="AMA",
+            name="Rick Husband Amarillo International Airport",
+            municipality="Amarillo",
+            latitude_deg=35.2194,
+            longitude_deg=-101.7059,
+            active=True,
+        )
+        self.dfw = Airport.objects.create(
+            ident="KDFW",
+            iata_code="DFW",
+            name="Dallas Fort Worth International Airport",
+            municipality="Dallas-Fort Worth",
+            latitude_deg=32.8968,
+            longitude_deg=-97.0380,
+            active=True,
+        )
+
+    def test_distance_calculator_htmx_request_returns_partial(self) -> None:
+        """HTMX requests to distance calculator should return partial template."""
+        url = reverse("calculators:distance")
+        data = {
+            "origin": "AMA",  # Use IATA code as string
+            "destination": "DFW",  # Use IATA code as string
+            "unit": "km",
+            "route_factor": "1.2",
+        }
+        # Simulate HTMX request with HX-Request header
+        resp = self.client.post(url, data, HTTP_HX_REQUEST="true")
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/partials/distance_result.html")
+        self.assertTemplateNotUsed(resp, "calculators/distance_calculator.html")
+        self.assertContains(resp, "Distance Results")
+        self.assertContains(resp, "Flight distance")
+
+    def test_distance_calculator_standard_request_returns_full_page(self) -> None:
+        """Standard POST requests should return full page template."""
+        url = reverse("calculators:distance")
+        data = {
+            "origin": "AMA",
+            "destination": "DFW",
+            "unit": "km",
+            "route_factor": "1.2",
+        }
+        # Standard POST without HTMX header
+        resp = self.client.post(url, data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/distance_calculator.html")
+        self.assertTemplateUsed(resp, "base.html")
+        self.assertContains(resp, "Distance Calculator")
+
+    def test_distance_calculator_htmx_validation_error_returns_partial(self) -> None:
+        """HTMX requests with validation errors should return partial with errors."""
+        url = reverse("calculators:distance")
+        data = {
+            "origin": "",  # Missing origin
+            "destination": "DFW",
+            "unit": "km",
+            "route_factor": "1.2",
+        }
+        resp = self.client.post(url, data, HTTP_HX_REQUEST="true")
+        self.assertEqual(resp.status_code, 400)  # Bad request
+        self.assertTemplateUsed(resp, "calculators/partials/distance_result.html")
+        self.assertContains(resp, "Please correct the following errors", status_code=400)
+
+    def test_cost_calculator_htmx_request_returns_partial(self) -> None:
+        """HTMX requests to cost calculator should return partial template."""
+        url = reverse("calculators:cost")
+        data = {
+            "origin": "AMA",
+            "destination": "DFW",
+            "unit": "km",
+            "route_factor": "1.2",
+            "fuel_economy_l_per_100km": "8.0",
+            "fuel_price_per_liter": "1.50",
+        }
+        resp = self.client.post(url, data, HTTP_HX_REQUEST="true")
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/partials/cost_result.html")
+        self.assertTemplateNotUsed(resp, "calculators/cost_calculator.html")
+        self.assertContains(resp, "Cost Estimate Results")
+        self.assertContains(resp, "Estimated fuel cost")
+
+    def test_cost_calculator_standard_request_returns_full_page(self) -> None:
+        """Standard POST requests should return full page template."""
+        url = reverse("calculators:cost")
+        data = {
+            "origin": "AMA",
+            "destination": "DFW",
+            "unit": "km",
+            "route_factor": "1.2",
+            "fuel_economy_l_per_100km": "8.0",
+            "fuel_price_per_liter": "1.50",
+        }
+        resp = self.client.post(url, data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "calculators/cost_calculator.html")
+        self.assertTemplateUsed(resp, "base.html")
+        self.assertContains(resp, "Trip Cost Calculator")
+
+    def test_cost_calculator_htmx_validation_error_returns_partial(self) -> None:
+        """HTMX requests with validation errors should return partial with errors."""
+        url = reverse("calculators:cost")
+        data = {
+            "origin": "AMA",
+            "destination": "",  # Missing destination
+            "unit": "km",
+            "route_factor": "1.2",
+            "fuel_economy_l_per_100km": "8.0",
+            "fuel_price_per_liter": "1.50",
+        }
+        resp = self.client.post(url, data, HTTP_HX_REQUEST="true")
+        self.assertEqual(resp.status_code, 400)
+        self.assertTemplateUsed(resp, "calculators/partials/cost_result.html")
+        self.assertContains(resp, "Please correct the following errors", status_code=400)
+
+    def test_csrf_token_present_in_full_page(self) -> None:
+        """Full page templates should include CSRF token (INV-2)."""
+        url = reverse("calculators:distance")
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "csrfmiddlewaretoken")
