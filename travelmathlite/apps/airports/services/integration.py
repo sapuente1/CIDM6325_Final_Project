@@ -98,25 +98,36 @@ class AirportLocationIntegrator:
         if cache_key in self._city_cache:
             return self._city_cache[cache_key], False
 
-        slug_value = slugify(f"{country.iso_code}-{normalized_name}")[:255] or slugify(normalized_name)[:255]
-        city, created = City.objects.get_or_create(
+        # First, try to find by the unique (country, search_name)
+        existing = City.objects.filter(country=country, search_name=normalized_name.lower()).first()
+        if existing:
+            self._city_cache[cache_key] = existing
+            return existing, False
+
+        # Create with a slug unique per (country, slug) constraint
+        base_slug = slugify(f"{country.iso_code}-{normalized_name}")[:255] or slugify(normalized_name)[:255]
+        slug_value = base_slug
+        if City.objects.filter(country=country, slug=slug_value).exists():
+            # Resolve collisions by appending a numeric suffix
+            i = 2
+            # Reserve a few characters for suffix (e.g., -12345)
+            max_base_len = 255 - 6
+            base = base_slug[:max_base_len]
+            while City.objects.filter(country=country, slug=slug_value).exists():
+                slug_value = f"{base}-{i}"
+                i += 1
+
+        city = City(
             country=country,
+            name=normalized_name,
+            ascii_name=normalized_name,
             search_name=normalized_name.lower(),
-            defaults={
-                "name": normalized_name,
-                "ascii_name": normalized_name,
-                "slug": slug_value,
-                "latitude": latitude,
-                "longitude": longitude,
-            },
+            slug=slug_value,
+            latitude=latitude,
+            longitude=longitude,
         )
-        if created:
-            # slug/search_name defaults handled via model save, but ensure lat/lon update.
-            if latitude is not None:
-                city.latitude = latitude
-            if longitude is not None:
-                city.longitude = longitude
-            city.save()
+        city.save()
+        created = True
 
         self._city_cache[cache_key] = city
         return city, created
