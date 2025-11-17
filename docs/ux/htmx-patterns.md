@@ -239,7 +239,30 @@ class CalculatorViewTests(TestCase):
 
 ### Visual Checks (Playwright)
 
-See `travelmathlite/scripts/` for automated visual check scripts.
+Automated visual regression tests are available in `travelmathlite/scripts/`:
+
+**Run HTMX calculator visual checks:**
+
+```bash
+# Install Playwright browser (one-time setup)
+uvx playwright install chromium
+
+# Run the visual check script
+cd travelmathlite
+python scripts/visual_check_htmx_calculators.py
+```
+
+**What it tests:**
+
+- Distance calculator with HTMX (empty, filled, result, validation errors)
+- Cost calculator with HTMX (empty, filled, result)
+- No-JS fallback behavior (full page reloads)
+- Screenshots saved to `travelmathlite/screenshots/calculators/`
+
+**Scripts available:**
+
+- `visual_check_htmx_calculators.py` - HTMX calculator flows (ADR-1.0.5)
+- `visual_check_search.py` - Search feature flows (ADR-1.0.4)
 
 ---
 
@@ -286,3 +309,4 @@ Check:
 | Date | Version | Changes |
 |------|---------|---------|
 | 2025-11-16 | 1.0 | Initial documentation for ADR-1.0.5-01 |
+| 2025-11-16 | 1.1 | Added focus management, visual check script documentation (ADR-1.0.5-05, ADR-1.0.5-06) |
