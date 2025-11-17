@@ -1,8 +1,11 @@
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.db import models
+
+if TYPE_CHECKING:
+    from django.db.models.manager import Manager
 
 
 class SavedCalculation(models.Model):
@@ -18,6 +21,9 @@ class SavedCalculation(models.Model):
 
     Pruning: On save, if user has >10 entries, oldest are deleted.
     """
+
+    if TYPE_CHECKING:
+        objects: "Manager[SavedCalculation]"  # type: ignore[assignment]
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -58,14 +64,14 @@ class SavedCalculation(models.Model):
     def get_inputs(self) -> dict:
         """Return inputs as dict."""
         try:
-            return json.loads(self.inputs)
+            return json.loads(str(self.inputs))
         except json.JSONDecodeError:
             return {}
 
     def get_outputs(self) -> dict:
         """Return outputs as dict."""
         try:
-            return json.loads(self.outputs)
+            return json.loads(str(self.outputs))
         except json.JSONDecodeError:
             return {}
 
