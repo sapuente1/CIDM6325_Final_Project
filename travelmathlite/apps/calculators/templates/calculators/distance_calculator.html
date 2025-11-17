@@ -5,7 +5,7 @@
   <form id="distance-form" method="post" action="{% url 'calculators:distance' %}"
         hx-post="{% url 'calculators:distance' %}"
         hx-target="#distance-results"
-        hx-swap="outerHTML">
+        hx-swap="outerHTML show:top">
     {% csrf_token %}
     {{ form.non_field_errors }}
     <div>

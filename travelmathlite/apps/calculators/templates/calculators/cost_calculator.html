@@ -5,7 +5,7 @@
   <form id="cost-form" method="post" action="{% url 'calculators:cost' %}"
         hx-post="{% url 'calculators:cost' %}"
         hx-target="#cost-results"
-        hx-swap="outerHTML">
+        hx-swap="outerHTML show:top">
     {% csrf_token %}
     {{ form.non_field_errors }}
     <div>
