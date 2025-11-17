@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
 
 from .forms import NearestAirportForm
@@ -18,6 +19,7 @@ class NearestAirportView(FormView):
 
     GET: show empty form
     POST: validate and display top results
+    HTMX POST: return only the results partial
     """
 
     template_name = "airports/nearest.html"
@@ -29,10 +31,18 @@ class NearestAirportView(FormView):
         limit = form.cleaned_data.get("limit", 3)
         iso_country = form.cleaned_data.get("iso_country") or None
         results = Airport.objects.nearest(latitude, longitude, limit=limit, unit=unit, iso_country=iso_country)
+
+        # If HTMX request, return only the partial template
+        if self.request.headers.get("HX-Request"):
+            return render(self.request, "airports/partials/nearest_results.html", {"results": results, "unit": unit})
+
         context = self.get_context_data(form=form, results=results, unit=unit)
         return self.render_to_response(context)
 
     def form_invalid(self, form: NearestAirportForm) -> HttpResponse:
+        # If HTMX request and form is invalid, return error message in partial
+        if self.request.headers.get("HX-Request"):
+            return render(self.request, "airports/partials/nearest_results.html", {"results": None})
         return self.render_to_response(self.get_context_data(form=form, results=None))
 
 
