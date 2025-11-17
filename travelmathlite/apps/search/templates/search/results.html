@@ -3,6 +3,12 @@
 
 {% block title %}Search{% if query %} — {{ query }}{% endif %}{% endblock %}
 
+{% block canonical %}
+  {% if had_query %}
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{% url 'search:index' %}?q={{ query|urlencode }}{% if page_obj.number > 1 %}&page={{ page_obj.number }}{% endif %}" />
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   <h1>Search</h1>
 
