@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, List, Tuple
+from typing import Any
 
+from django.core.paginator import Page, Paginator
 from django.db.models import QuerySet
 from django.views.generic import TemplateView
 
-from django.core.paginator import Paginator, Page
 from ..airports.models import Airport
 from ..base.models import City
 
@@ -61,7 +61,7 @@ class SearchView(TemplateView):
         )
 
         # Combine into a single list for pagination; airports first, then cities (simple deterministic grouping)
-        combined: List[Tuple[str, object]] = [("airport", a) for a in airports] + [("city", c) for c in cities]
+        combined: list[tuple[str, object]] = [("airport", a) for a in airports] + [("city", c) for c in cities]
 
         paginator = Paginator(combined, 20)
         page_number = self.request.GET.get("page")

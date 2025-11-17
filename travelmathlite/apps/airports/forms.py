@@ -7,13 +7,12 @@ query (city, IATA, or coordinates) and normalize it to coordinates.
 from __future__ import annotations
 
 import re
-from typing import Literal, Tuple
+from typing import Literal
 
 from django import forms
 
-from .models import Airport
 from ..base.models import City
-
+from .models import Airport
 
 LAT_LON_RE = re.compile(r"^\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*$")
 
@@ -35,7 +34,7 @@ class NearestAirportForm(forms.Form):
     unit = forms.ChoiceField(choices=(("km", "km"), ("mi", "mi")), initial="km", required=False)
     limit = forms.IntegerField(min_value=1, max_value=10, initial=3, required=False)
 
-    resolved_coords: Tuple[float, float] | None = None
+    resolved_coords: tuple[float, float] | None = None
 
     def clean_iso_country(self) -> str:
         """Normalize ISO country code to uppercase when provided."""
@@ -58,8 +57,8 @@ class NearestAirportForm(forms.Form):
             return 3
         try:
             ivalue = int(value)
-        except (TypeError, ValueError):
-            raise forms.ValidationError("Limit must be an integer.")
+        except (TypeError, ValueError) as err:
+            raise forms.ValidationError("Limit must be an integer.") from err
         if ivalue < 1:
             raise forms.ValidationError("Limit must be at least 1.")
         if ivalue > 10:
@@ -105,7 +104,7 @@ class NearestAirportForm(forms.Form):
         return cleaned
 
     # Helpers
-    def _try_parse_coords(self, value: str) -> Tuple[float, float] | None:
+    def _try_parse_coords(self, value: str) -> tuple[float, float] | None:
         match = LAT_LON_RE.match(value)
         if not match:
             return None
@@ -125,7 +124,7 @@ class NearestAirportForm(forms.Form):
     def _looks_like_iata(self, value: str) -> bool:
         return len(value) == 3 and value.replace(" ", "").isalpha()
 
-    def _resolve_iata(self, code: str, iso_country: str) -> Tuple[float, float] | None:
+    def _resolve_iata(self, code: str, iso_country: str) -> tuple[float, float] | None:
         qs = Airport.objects.active().filter(iata_code__iexact=code)
         if iso_country:
             qs = qs.filter(iso_country__iexact=iso_country)
@@ -134,7 +133,7 @@ class NearestAirportForm(forms.Form):
             return None
         return float(airport.latitude_deg), float(airport.longitude_deg)
 
-    def _resolve_city_or_municipality(self, name: str, iso_country: str) -> Tuple[float, float] | None:
+    def _resolve_city_or_municipality(self, name: str, iso_country: str) -> tuple[float, float] | None:
         normalized = name.strip()
         # Prefer normalized City with coordinates
         city_qs = City.objects.active().filter(search_name__icontains=normalized.lower())

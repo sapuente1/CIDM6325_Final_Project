@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
+
 from apps.airports.models import Airport
-from apps.base.models import Country, City
+from apps.base.models import City, Country
 from apps.search.templatetags.highlight import highlight
 
 

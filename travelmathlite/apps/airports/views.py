@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
-from django.views.generic import TemplateView, FormView
+from django.views.generic import FormView, TemplateView
 
 from .forms import NearestAirportForm
 from .models import Airport
