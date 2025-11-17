@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, List, Tuple
 
 from django.db.models import QuerySet
 from django.views.generic import TemplateView
 
+from django.core.paginator import Paginator, Page
 from ..airports.models import Airport
 from ..base.models import City
 
@@ -29,7 +30,9 @@ class SearchView(TemplateView):
             # Avoid DB work on empty queries
             context["airport_results"] = Airport.objects.none()
             context["city_results"] = City.objects.none()
+            context["results"] = []
             context["results_count"] = 0
+            context["page_obj"] = None
             return context
 
         # Basic icontains search using existing queryset helpers; limit until pagination lands
@@ -57,11 +60,16 @@ class SearchView(TemplateView):
             )
         )
 
-        # Temporary cap to keep page manageable pre-pagination
-        airport_list = list(airports[:20])
-        city_list = list(cities[:20])
+        # Combine into a single list for pagination; airports first, then cities (simple deterministic grouping)
+        combined: List[Tuple[str, object]] = [("airport", a) for a in airports] + [("city", c) for c in cities]
 
-        context["airport_results"] = airport_list
-        context["city_results"] = city_list
-        context["results_count"] = len(airport_list) + len(city_list)
+        paginator = Paginator(combined, 20)
+        page_number = self.request.GET.get("page")
+        page_obj: Page = paginator.get_page(page_number)
+
+        context["airport_results"] = []  # deprecated in favor of combined paginator
+        context["city_results"] = []
+        context["results"] = page_obj.object_list
+        context["results_count"] = paginator.count
+        context["page_obj"] = page_obj
         return context

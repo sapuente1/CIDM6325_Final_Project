@@ -16,29 +16,40 @@
   {% else %}
     <p><strong>{{ results_count }}</strong> result{{ results_count|pluralize }} for "{{ query }}"</p>
 
-    {% if airport_results %}
-      <h2>Airports</h2>
+    {% if page_obj and page_obj.object_list %}
       <ul>
-        {% for a in airport_results %}
-          <li>
-            {{ a.name }}
-            {% if a.iata_code %} ({{ a.iata_code }}){% else %} ({{ a.ident }}){% endif %}
-            {% if a.municipality %} — {{ a.municipality }}{% endif %}
-            {% if a.country %}, {{ a.country.name }}{% endif %}
-          </li>
+        {% for kind, obj in page_obj.object_list %}
+          {% if kind == 'airport' %}
+            <li>
+              [Airport] {{ obj.name }}{% if obj.iata_code %} ({{ obj.iata_code }}){% else %} ({{ obj.ident }}){% endif %}
+              {% if obj.municipality %} — {{ obj.municipality }}{% endif %}
+              {% if obj.country %}, {{ obj.country.name }}{% endif %}
+            </li>
+          {% elif kind == 'city' %}
+            <li>
+              [City] {{ obj.name }}, {{ obj.country.iso_code }}
+            </li>
+          {% endif %}
         {% endfor %}
       </ul>
-    {% endif %}
 
-    {% if city_results %}
-      <h2>Cities</h2>
-      <ul>
-        {% for c in city_results %}
-          <li>
-            {{ c.name }}, {{ c.country.iso_code }}
-          </li>
-        {% endfor %}
-      </ul>
+      {% if page_obj.paginator.num_pages > 1 %}
+        <nav aria-label="Search pagination">
+          <ul>
+            {% if page_obj.has_previous %}
+              <li><a href="?q={{ query|urlencode }}&page=1">First</a></li>
+              <li><a href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            <li>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</li>
+            {% if page_obj.has_next %}
+              <li><a href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">Next</a></li>
+              <li><a href="?q={{ query|urlencode }}&page={{ page_obj.paginator.num_pages }}">Last</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    {% else %}
+      <p>No results.</p>
     {% endif %}
   {% endif %}
 {% endblock %}
