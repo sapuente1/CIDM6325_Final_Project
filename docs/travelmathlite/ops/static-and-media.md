@@ -90,3 +90,28 @@ jobs:
           name: collectstatic-evidence
           path: docs/travelmathlite/ops/logs/
 ```
+
+How to run the static/media tests and visual attestation
+
+- Run Django unit tests (the new tests validate static URL behavior):
+
+```bash
+# from repo root
+uv run python manage.py test apps.base.tests.test_static_pipeline
+```
+
+- Run the visual check (Playwright) after starting the site locally:
+
+```bash
+# Ensure Playwright is installed and browsers are available
+pip install playwright
+playwright install
+
+# Start the dev server in another terminal (repo root):
+uv run python manage.py runserver
+
+# Run the visual check (writes PNG + links file under travelmathlite/screenshots/static-pipeline/)
+uv run python travelmathlite/scripts/visual_checks/static_pipeline_check.py --url http://127.0.0.1:8000
+```
+
+Attach the resulting screenshot and links file to the ADR evidence folder when closing the brief.
