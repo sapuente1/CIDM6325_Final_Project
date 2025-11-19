@@ -17,6 +17,8 @@ dependencies = [
     "markdown",
     "bleach",
     "geopy>=2.4.1",
+    "django-environ==0.10.0",
+    "whitenoise==6.5.0",
 ]
 
 [project.urls]

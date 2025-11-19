@@ -18,7 +18,7 @@ uv run python manage.py import_airports
 uv run python manage.py runserver
 ```
 
-Visit http://127.0.0.1:8000 to see the application.
+Visit <http://127.0.0.1:8000> to see the application.
 
 ## Features
 
@@ -51,7 +51,7 @@ Visit http://127.0.0.1:8000 to see the application.
 ### Calculators
 
 - **[Distance, Time, and Cost Algorithms](../docs/travelmathlite/algorithms/distance-and-cost.md)**
-	- Explains formulas, defaults, unit conversions, examples, and limitations used by the calculators.
+ 	- Explains formulas, defaults, unit conversions, examples, and limitations used by the calculators.
 
 #### Try the calculators locally
 
@@ -118,6 +118,11 @@ See [Data Model Integration](../docs/travelmathlite/data-model-integration.md) f
 
 - Python 3.12 + Django
 - PEP 8 style with docstrings and type hints
+
+### Environment / .env
+
+- The project supports a `.env` file read by `django-environ` for local development. An example file lives at `travelmathlite/.env.example` — copy it to `travelmathlite/.env` and update values as needed.
+- By default `core.settings` uses the local settings; to exercise the production settings locally, set `DJANGO_SETTINGS_MODULE=core.settings.prod` before running management commands.
 - Django TestCase for testing (no pytest)
 - Conventional commits (feat/fix/docs/refactor/test/chore)
 

@@ -21,6 +21,7 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from .sitemaps import StaticViewSitemap
+from .views import health_check
 
 sitemaps = {
     "static": StaticViewSitemap,
@@ -28,6 +29,8 @@ sitemaps = {
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # Health check endpoint
+    path("health/", health_check, name="health"),
     # Namespaced app URLs
     path("", include("apps.base.urls", namespace="base")),
     path("calculators/", include("apps.calculators.urls", namespace="calculators")),
