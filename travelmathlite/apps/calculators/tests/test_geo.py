@@ -6,7 +6,7 @@ with happy paths, edge cases, and boundary conditions.
 
 import math
 
-from apps.base.tests import BaseTestCase
+from django.test import TestCase
 
 from ..geo import (
     EARTH_RADIUS_KM,
@@ -17,7 +17,7 @@ from ..geo import (
 )
 
 
-class HaversineDistanceTests(BaseTestCase):
+class HaversineDistanceTests(TestCase):
     """Test haversine distance calculation."""
 
     def test_same_location_returns_zero(self):
@@ -81,7 +81,7 @@ class HaversineDistanceTests(BaseTestCase):
         self.assertLess(distance, 9000)
 
 
-class GeodesicDistanceTests(BaseTestCase):
+class GeodesicDistanceTests(TestCase):
     """Test geodesic distance calculation (with geopy fallback)."""
 
     def test_same_location_returns_zero(self):
@@ -114,7 +114,7 @@ class GeodesicDistanceTests(BaseTestCase):
         self.assertLess(diff_percent, 1.0)
 
 
-class UnitConversionTests(BaseTestCase):
+class UnitConversionTests(TestCase):
     """Test distance unit conversion functions."""
 
     def test_km_to_miles_conversion(self):
@@ -143,7 +143,7 @@ class UnitConversionTests(BaseTestCase):
         self.assertAlmostEqual(miles_to_km(-100), -160.934, places=3)
 
 
-class EdgeCaseTests(BaseTestCase):
+class EdgeCaseTests(TestCase):
     """Test edge cases and boundary conditions."""
 
     def test_zero_distance(self):

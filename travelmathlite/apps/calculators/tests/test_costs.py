@@ -4,9 +4,7 @@ Tests fuel cost calculations, unit conversions, and edge cases
 with boundary values and error handling.
 """
 
-from django.test import override_settings
-
-from apps.base.tests.base import BaseTestCase
+from django.test import TestCase, override_settings
 
 from ..costs import (
     calculate_fuel_cost,
@@ -17,10 +15,10 @@ from ..costs import (
 )
 
 
-class FuelCostCalculationTests(BaseTestCase):
+class FuelCostCalculationTests(TestCase):
     """Test fuel cost calculations."""
 
-    def test_basic_fuel_cost_calculation(self):
+    def test_basic_calculation(self):
         """Test basic fuel cost with known values."""
         # 100 km, 8 L/100km, $1.50/L = $12.00
         cost = calculate_fuel_cost(distance_km=100.0, fuel_economy_l_per_100km=8.0, fuel_price_per_liter=1.50)
@@ -93,7 +91,7 @@ class FuelCostCalculationTests(BaseTestCase):
         self.assertEqual(cost, 40.00)
 
 
-class FuelEconomyConversionTests(BaseTestCase):
+class FuelEconomyConversionTests(TestCase):
     """Test fuel economy unit conversions between MPG and L/100km."""
 
     def test_mpg_to_l_per_100km(self):
@@ -150,7 +148,7 @@ class FuelEconomyConversionTests(BaseTestCase):
             l_per_100km_to_mpg(-8.0)
 
 
-class VolumeConversionTests(BaseTestCase):
+class VolumeConversionTests(TestCase):
     """Test volume conversions between gallons and liters."""
 
     def test_gallons_to_liters(self):
@@ -196,10 +194,10 @@ class VolumeConversionTests(BaseTestCase):
         self.assertAlmostEqual(result, 3785.41, places=2)
 
 
-class BoundaryValueTests(BaseTestCase):
+class BoundaryValueTests(TestCase):
     """Test boundary values and edge cases."""
 
-    def test_minimal_positive_distance(self):
+    def test_minimal_distance(self):
         """Test calculation with minimal positive distance."""
         # Very small distance - use 0.1 km instead and disable rounding
         cost = calculate_fuel_cost(distance_km=0.1, fuel_economy_l_per_100km=8.0, fuel_price_per_liter=1.50, round_to_cents=False)
