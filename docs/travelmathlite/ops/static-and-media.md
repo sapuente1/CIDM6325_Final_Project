@@ -23,7 +23,15 @@ Operator/deploy workflow
 
 - Before deploying to a demo/prod environment, ensure `collectstatic` has run and artifacts are present under `STATIC_ROOT`.
 
-Example deploy checklist snippet:
+Example deploy checklist snippet (preferred):
+
+```bash
+# Preferred: use the project helper which emits logs and a concise summary
+# Run from repo root (bash example):
+uv run python scripts/run_collectstatic.py --noinput --log-dir docs/travelmathlite/ops/logs --archive-logs
+```
+
+If you prefer to call `manage.py` directly, the old pattern continues to work:
 
 ```bash
 # Optional: export env overrides
@@ -49,3 +57,36 @@ Troubleshooting
 Evidence and attestation
 
 - Save the `collectstatic` log and any screenshots of the site showing local assets under `docs/travelmathlite/screenshots/` for ADR evidence.
+- When using `scripts/run_collectstatic.py`, a timestamped log and a concise `collectstatic-summary-*.md` are produced under `docs/travelmathlite/ops/logs/` and may be attached to the ADR evidence folder. The `--archive-logs` flag produces a `.tar.gz` of the raw log files for archival.
+
+CI Example (GitHub Actions)
+
+```yaml
+name: collectstatic-and-evidence
+on: [workflow_dispatch]
+jobs:
+  collectstatic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run collectstatic (prod-like)
+        env:
+          DJANGO_SETTINGS_MODULE: travelmathlite.core.settings
+          DEBUG: 'False'
+          USE_MANIFEST_STATIC: '1'
+        run: |
+          uv run python scripts/run_collectstatic.py --noinput --log-dir docs/travelmathlite/ops/logs --archive-logs
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: collectstatic-evidence
+          path: docs/travelmathlite/ops/logs/
+```
