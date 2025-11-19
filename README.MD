@@ -374,6 +374,82 @@ Also for ***redis***:
 
 `docker run -it --rm --name redis -p 6379:6379 redis:latest`
 
+## Caching Configuration ##
+
+TravelMathLite uses Django's caching framework to improve performance. By default, local development uses in-memory caching (no setup required).
+
+### Local Development (Default)
+
+No configuration needed. The application uses `locmem` backend:
+
+```bash
+# Cache settings (already configured in settings/base.py)
+CACHE_BACKEND=django.core.cache.backends.locmem.LocMemCache
+CACHE_LOCATION=travelmathlite-cache
+CACHE_TIMEOUT=300  # 5 minutes
+```
+
+### Production (Redis)
+
+For production deployments, configure Redis caching:
+
+**1. Install Redis:**
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install redis-server
+
+# Docker
+docker run -d --name redis -p 6379:6379 redis:latest
+
+# macOS
+brew install redis
+```
+
+**2. Set environment variables:**
+
+```bash
+export CACHE_BACKEND=django.core.cache.backends.redis.RedisCache
+export CACHE_LOCATION=redis://localhost:6379/1
+export CACHE_KEY_PREFIX=travelmathlite
+```
+
+**3. Install Redis Python client:**
+
+```bash
+uv pip install redis
+```
+
+### Cache Management Commands
+
+**Clear cache:**
+
+```bash
+# Clear entire cache
+uv run python manage.py clear_cache
+
+# Clear specific patterns (Redis only)
+uv run python manage.py clear_cache --pattern airports
+uv run python manage.py clear_cache --pattern search
+uv run python manage.py clear_cache --pattern calculators
+```
+
+**View cache statistics (Redis only):**
+
+```bash
+uv run python manage.py cache_stats
+```
+
+### Caching Strategy
+
+- **Search results:** 5 minutes (300s)
+- **Calculator results:** 10 minutes (600s)
+- **Airport queries:** 15 minutes (900s)
+- **Distance calculations:** 15 minutes (900s)
+- **Static assets:** 1 year (handled by WhiteNoise)
+
+For more details, see `docs/travelmathlite/ops/caching.md`.
+
 ## General Notes ##
 
 - DO NOT SKIP READING THE BOOK! As it is Free, [Matt Layman's Book](https://www.mattlayman.com/understand-django/browser-to-django/) is a little sparse, but it has the concepts we need.
