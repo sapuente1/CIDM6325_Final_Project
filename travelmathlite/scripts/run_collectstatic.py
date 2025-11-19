@@ -26,7 +26,12 @@ from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 
 
-DEFAULT_LOG_DIR = Path("docs/travelmathlite/ops/logs")
+# Default to the repository-root docs folder so logs land in a stable location
+# regardless of the current working directory when the script is invoked.
+SCRIPT_DIR = Path(__file__).resolve().parent
+# travelmathlite/scripts -> parents[1] == repo root (CIDM6325)
+REPO_ROOT = SCRIPT_DIR.parents[1]
+DEFAULT_LOG_DIR = REPO_ROOT / "docs" / "travelmathlite" / "ops" / "logs"
 
 
 def make_parser() -> argparse.ArgumentParser:
