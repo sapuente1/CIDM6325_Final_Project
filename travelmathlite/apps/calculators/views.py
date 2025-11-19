@@ -5,6 +5,8 @@ from typing import Any
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import FormView, TemplateView
 
 from .costs import calculate_fuel_cost
@@ -18,6 +20,7 @@ class IndexView(TemplateView):
     template_name: str = "calculators/index.html"
 
 
+@method_decorator(cache_page(600), name="dispatch")  # 10 minutes
 class DistanceCalculatorView(FormView):
     template_name = "calculators/distance_calculator.html"
     form_class = DistanceCalculatorForm
@@ -55,6 +58,7 @@ class DistanceCalculatorView(FormView):
         return super().form_invalid(form)
 
 
+@method_decorator(cache_page(600), name="dispatch")  # 10 minutes
 class CostCalculatorView(FormView):
     template_name = "calculators/cost_calculator.html"
     form_class = CostCalculatorForm

@@ -4,12 +4,15 @@ from typing import Any
 
 from django.core.paginator import Page, Paginator
 from django.db.models import QuerySet
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 
 from ..airports.models import Airport
 from ..base.models import City
 
 
+@method_decorator(cache_page(300), name="dispatch")  # 5 minutes
 class SearchView(TemplateView):
     """Render search results for airports and cities based on `q`.
 

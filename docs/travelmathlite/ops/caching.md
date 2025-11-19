@@ -6,6 +6,39 @@ TravelMathLite uses Django's caching framework to improve performance by storing
 
 **Related:** ADR-1.0.10 — Caching Strategy
 
+## Caching Strategies
+
+TravelMathLite uses multiple caching strategies:
+
+1. **Per-view caching** — Entire view responses cached with `@cache_page` decorator
+2. **Low-level caching** — Manual caching of expensive computations (future)
+3. **Template fragment caching** — Partial template caching (future)
+
+### Per-View Caching
+
+Hot-path views are cached using Django's `@cache_page` decorator:
+
+| View | TTL | Cache Behavior |
+|------|-----|----------------|
+| Search results (`SearchView`) | 5 minutes (300s) | Varies by query string (`q`, `page`) |
+| Distance calculator (`DistanceCalculatorView`) | 10 minutes (600s) | GET requests only; POST bypasses cache |
+| Cost calculator (`CostCalculatorView`) | 10 minutes (600s) | GET requests only; POST bypasses cache |
+
+**Cache key variation:**
+
+- Full URL including all query parameters
+- Method (GET only; POST/PUT/DELETE bypass cache)
+- HTTP headers (Accept-Language, Cookie if session-based)
+
+**Example:**
+
+```python
+# In apps/search/views.py
+@method_decorator(cache_page(300), name="dispatch")  # 5 minutes
+class SearchView(TemplateView):
+    # ... view logic
+```
+
 ## Cache Backends
 
 ### Local Development
