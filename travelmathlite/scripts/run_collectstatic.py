@@ -36,9 +36,7 @@ def make_parser() -> argparse.ArgumentParser:
     p.add_argument("--noinput", action="store_true", help="Pass --noinput to collectstatic")
     p.add_argument("--settings", type=str, help="DJANGO_SETTINGS_MODULE to use")
     p.add_argument("--log-dir", type=Path, default=DEFAULT_LOG_DIR, help="Directory to write logs")
-    p.add_argument(
-        "--archive-logs", action="store_true", help="Create a .tar.gz archive of the logs after run"
-    )
+    p.add_argument("--archive-logs", action="store_true", help="Create a .tar.gz archive of the logs after run")
     return p
 
 
@@ -46,9 +44,7 @@ def ensure_logs_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
-def write_log_and_summary(
-    log_dir: Path, base_name: str, stdout_text: str, stderr_text: str, settings_module: str | None
-) -> int:
+def write_log_and_summary(log_dir: Path, base_name: str, stdout_text: str, stderr_text: str, settings_module: str | None) -> int:
     ts = datetime.datetime.utcnow().strftime("%Y%m%d-%H%M%S")
     log_file = log_dir / f"collectstatic-{base_name}-{ts}.log"
     summary_file = log_dir / f"collectstatic-summary-{base_name}-{ts}.md"
