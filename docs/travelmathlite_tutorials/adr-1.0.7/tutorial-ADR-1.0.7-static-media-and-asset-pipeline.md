@@ -14,6 +14,17 @@ source .venv/Scripts/activate  # Windows bash-style, adjust if needed
 ```
 
 - Familiarity with Django basics (models, templates, management commands).
+**Repository state note:** This tutorial assumes you are on branch `FALL2025` with the ADR-1.0.7 briefs and helper scripts present. The work completed so far for this ADR includes:
+
+- `travelmathlite/core/settings.py` — static/media settings and WhiteNoise toggle
+- `travelmathlite/core/wsgi.py` — optional WhiteNoise wrapping
+- `travelmathlite/static/vendor/` — placeholder vendor assets
+- `travelmathlite/staticfiles/` — default `STATIC_ROOT` target (populated by `collectstatic`)
+- `travelmathlite/media/` — default `MEDIA_ROOT`
+- `travelmathlite/scripts/run_collectstatic.py` — collectstatic helper
+- `apps/accounts/` — `Profile` model, form, view, template, and migrations (avatar flow)
+
+If any of those files are missing, refer to the briefs in `docs/travelmathlite/briefs/adr-1.0.7/` for step-by-step implementation notes.
 
 Overview (Sections)
 
@@ -100,6 +111,22 @@ if USE_MANIFEST_STATIC or not DEBUG:
 
 - Optionally wrap WSGI with WhiteNoise if using certain server entrypoints (brief includes examples for `core/wsgi.py`).
 
+Example `core/wsgi.py` WhiteNoise wrap (optional):
+
+```py
+from django.core.wsgi import get_wsgi_application
+from whitenoise import WhiteNoise
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+application = get_wsgi_application()
+if os.environ.get('USE_WHITENOISE') == '1':
+    application = WhiteNoise(application, root=str(STATIC_ROOT))
+```
+
 - Generate the manifest in a production-like run (CI or locally with DEBUG=False):
 
 ```bash
@@ -111,6 +138,16 @@ Verification
 
 - `staticfiles.json` should appear under `STATIC_ROOT` and `collectstatic` output should show hashed filenames.
 - Templates that use `{% static %}` will resolve to hashed filenames when `STATICFILES_STORAGE` is the manifest storage.
+
+**Expected collectstatic output (prod-like):**
+
+```text
+Removing old static files...
+129 static files copied to '.../travelmathlite/staticfiles'.
+Manifest created at .../travelmathlite/staticfiles/staticfiles.json
+```
+
+If you see `0 static files copied` and `manifest not found`, ensure you ran with `DEBUG=False` or `USE_MANIFEST_STATIC=1` and that `STATIC_ROOT` is writable.
 
 Section 3 — Media and avatar upload flow
 
@@ -157,6 +194,47 @@ Verification
 - Log in and visit `/accounts/profile/` to upload an image; verify the file lands under `travelmathlite/media/avatars/` and the template shows it.
 - Run the profile test that overrides `MEDIA_ROOT` to ensure no repo files are written during tests.
 
+Profile form (minimal `apps/accounts/forms.py`):
+
+```py
+from django import forms
+from .models import Profile
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['avatar']
+```
+
+Profile view (minimal `apps/accounts/views.py`):
+
+```py
+from django.views.generic.edit import UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Profile
+from .forms import ProfileForm
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = Profile
+    form_class = ProfileForm
+    template_name = 'accounts/profile_form.html'
+
+    def get_object(self):
+        return self.request.user.profile
+```
+
+Manual verification (local):
+
+- Run dev server:
+
+```bash
+uv run python manage.py runserver
+```
+
+- Log in, visit `/accounts/profile/`, upload an avatar, and confirm the file appears under `travelmathlite/media/avatars/` and the page shows the image.
+
+- If the image doesn't show, check `MEDIA_URL` mapping in `travelmathlite/urls.py` when `DEBUG=True` and file permissions on `MEDIA_ROOT`.
+
 Section 4 — Collectstatic automation and docs
 
 Brief context and goal
@@ -179,6 +257,12 @@ Verification
 
 - After a CI run or local prod-like run, confirm `docs/travelmathlite/ops/logs/collectstatic-summary-*.md` exists and `staticfiles.json` is present under `STATIC_ROOT`.
 
+Troubleshooting tips
+
+- If `collectstatic` reports missing files referenced in templates, run `uv run python manage.py findstatic <path>` to discover which staticfiles finder resolves the path.
+- If manifest generation fails with `ValueError: The file '...' could not be found with <storage>`, check for files referenced by templates that are not present under any `STATICFILES_DIRS`.
+- Permissions: ensure `STATIC_ROOT` is writable by the user running the command.
+
 Section 5 — Tests and visual attestation
 
 Brief context and goal
@@ -190,6 +274,11 @@ Implementation steps
 - Unit tests added: `apps/base/tests/test_static_pipeline.py` — covers static URL resolution without a manifest and mocked manifest behavior by patching `staticfiles_storage.url`.
 
 - Visual check script added: `travelmathlite/scripts/visual_checks/static_pipeline_check.py` — uses Playwright to capture screenshots and list static asset `href`/`src` values.
+
+## Playwright notes
+
+- Playwright may require additional CI setup (installing browsers). In GitHub Actions use `uses: actions/setup-python@v4` + `pip install playwright` and `playwright install` or `uses: microsoft/playwright-github-action@v1`.
+- For reproducible artifacts, upload the `scripts/visual_checks` output (PNG + links file) as workflow artifacts using `actions/upload-artifact`.
 
 How to run tests & visual check
 
@@ -208,6 +297,13 @@ Verification
 
 - Unit tests pass on CI.
 - Visual artifacts (PNG + links file) are saved under `travelmathlite/screenshots/static-pipeline/` and can be attached to ADR evidence.
+
+## Attestation checklist (suggested evidence)
+
+- `collectstatic-summary-*.md` in `docs/travelmathlite/ops/logs/`
+- `collectstatic-logs-*.tar.gz` (if archived)
+- `travelmathlite/screenshots/static-pipeline/static-pipeline-*.png` and `links-*.txt`
+- Commit hashes for settings + WhiteNoise changes and the `run_collectstatic.py` helper
 
 Summary and next steps
 
