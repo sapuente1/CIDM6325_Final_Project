@@ -138,6 +138,186 @@ print(f"Driving time: {metrics['driving_hours']:.1f} hours")
 - **Parameters normalized** (lowercase, stripped) for consistent keys
 - **Composite keys** include all relevant parameters to prevent stale data
 
+## HTTP Cache Headers
+
+TravelMathLite uses HTTP cache headers to enable browser and CDN caching, reducing server load and improving perceived performance.
+
+### Cache Header Middleware
+
+The `CacheHeaderMiddleware` automatically adds appropriate `Cache-Control` and `Vary` headers based on content type and authentication state.
+
+**Middleware placement:**
+
+```python
+# core/settings/base.py
+MIDDLEWARE = [
+    # ... earlier middleware
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # ... messages, clickjacking
+    "core.middleware.CacheHeaderMiddleware",  # After auth to check user state
+]
+```
+
+### Cache Control Directives
+
+| Directive | Meaning | Usage |
+|-----------|---------|-------|
+| `public` | Cacheable by any cache (browsers, CDN) | Search results, calculators, public pages |
+| `private` | Cacheable by browser only (not CDN) | Authenticated user content |
+| `max-age=<seconds>` | Cache lifetime in seconds | All cached content |
+| `must-revalidate` | Must revalidate when stale | Private/sensitive content |
+| `no-cache` | Must revalidate before use | (Reserved for future use) |
+| `no-store` | Never cache | Sensitive data (not currently used) |
+
+### Cache Strategies by Path
+
+| Path Pattern | Cache-Control | Vary Headers | Rationale |
+|--------------|---------------|--------------|-----------|
+| `/search/` | `public, max-age=300` | `Accept, Cookie` | Search results vary by query and auth state |
+| `/calculators/` | `public, max-age=600` | `Accept` | Calculator results cacheable for 10 minutes |
+| Authenticated pages | `private, max-age=0, must-revalidate` | - | User-specific content, no public caching |
+| Default pages | `public, max-age=300` | - | Public content cacheable for 5 minutes |
+| `/static/`, `/media/` | Handled by WhiteNoise | - | Static assets: `max-age=31536000` (1 year) |
+
+### Vary Header Usage
+
+The `Vary` header tells caches to store separate versions based on request headers:
+
+- **`Vary: Accept`** — Cache varies by `Accept` header (e.g., `text/html` vs `application/json`)
+- **`Vary: Cookie`** — Cache varies by cookies (authenticated vs anonymous users)
+- **`Vary: Accept-Encoding`** — Handled by WhiteNoise for gzip/brotli compression
+
+**Example:**
+
+```http
+GET /search/?q=Dallas HTTP/1.1
+Accept: text/html
+Cookie: sessionid=abc123
+
+HTTP/1.1 200 OK
+Cache-Control: public, max-age=300
+Vary: Accept, Cookie
+```
+
+### Interaction with @cache_page Decorator
+
+Views using `@cache_page` decorator already have server-side caching:
+
+```python
+@method_decorator(cache_page(300), name="dispatch")
+class SearchView(TemplateView):
+    # ...
+```
+
+The middleware supplements this by:
+
+1. Adding `public` directive for CDN caching
+2. Setting `Vary` headers for content negotiation
+3. Ensuring consistent cache behavior across all views
+
+### Browser Caching Behavior
+
+**First request:**
+
+```
+GET /search/?q=Dallas
+→ Server processes request
+→ Response: Cache-Control: public, max-age=300
+→ Browser caches for 5 minutes
+```
+
+**Subsequent requests (within 5 minutes):**
+
+```
+GET /search/?q=Dallas
+→ Browser serves from cache (no network request)
+```
+
+**After 5 minutes:**
+
+```
+GET /search/?q=Dallas
+→ Browser revalidates with server
+→ Server responds with 200 OK or 304 Not Modified
+```
+
+### CDN Considerations
+
+For production deployments with a CDN (Cloudflare, CloudFront, etc.):
+
+1. **Public content** (`public, max-age=<seconds>`) is cached by CDN
+2. **Private content** (`private`) is never cached by CDN
+3. **Vary headers** ensure correct cache keys
+4. **Static assets** handled by WhiteNoise with long TTL (1 year)
+
+**CDN best practices:**
+
+- Set CDN TTL ≤ `max-age` to respect origin cache policy
+- Configure CDN to respect `Vary` headers
+- Use CDN cache purge/invalidation for urgent updates
+- Monitor CDN cache hit rates
+
+### Testing Cache Headers
+
+**Manual testing with curl:**
+
+```bash
+# Check search cache headers
+curl -I http://localhost:8000/search/?q=Dallas
+
+# Check calculator cache headers
+curl -I http://localhost:8000/calculators/distance/
+
+# Check static file headers
+curl -I http://localhost:8000/static/css/main.css
+```
+
+**Expected output:**
+
+```http
+HTTP/1.1 200 OK
+Cache-Control: public, max-age=300
+Vary: Accept, Cookie
+X-Request-ID: abc-123-def
+```
+
+**Automated tests:**
+
+```bash
+cd travelmathlite
+uv run python manage.py test core.tests.test_cache_headers
+```
+
+### Performance Impact
+
+**Without cache headers:**
+
+- Every request hits the server
+- Database queries on every page load
+- High server load, slow response times
+
+**With cache headers:**
+
+- Browsers cache responses locally
+- CDN caches content globally
+- Reduced server load (50-90% fewer requests)
+- Faster page loads (cache hits < 10ms)
+
+### Security Considerations
+
+1. **Never cache sensitive data:**
+   - Use `private` or `no-store` for user-specific content
+   - Don't cache pages with CSRF tokens or session data
+
+2. **Vary by authentication state:**
+   - Use `Vary: Cookie` for content that differs by auth state
+   - Ensures anonymous and authenticated users see different cached versions
+
+3. **Cache invalidation:**
+   - Update `max-age` after code deployments
+   - Use cache busting for static assets (handled by WhiteNoise)
+   - Monitor for stale cached content
+
 ## Cache Backends
 
 ### Local Development

@@ -67,3 +67,77 @@ class RequestIDMiddleware:
         response["X-Request-ID"] = request_id
 
         return response
+
+
+class CacheHeaderMiddleware:
+    """Add appropriate HTTP cache headers to responses.
+
+    This middleware sets Cache-Control and Vary headers for browser/CDN caching
+    as specified in ADR-1.0.10. It applies different caching strategies based on
+    content type and authentication state.
+
+    Cache strategies:
+    - Static assets: Handled by WhiteNoise (public, max-age=31536000)
+    - Search results: public, max-age=300, Vary: Accept, Cookie
+    - Calculator results: public, max-age=600
+    - Authenticated content: private, max-age=0
+    - Default public content: public, max-age=300
+    """
+
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
+        """Initialize middleware with the next handler in the chain.
+
+        Args:
+            get_response: The next middleware or view to call.
+        """
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        """Process request and add cache headers to response.
+
+        Args:
+            request: The incoming HTTP request.
+
+        Returns:
+            The HTTP response with Cache-Control and Vary headers added.
+        """
+        from django.utils.cache import patch_cache_control
+
+        response = self.get_response(request)
+
+        # Static files already handled by WhiteNoise - skip
+        if request.path.startswith("/static/") or request.path.startswith("/media/"):
+            return response
+
+        # Check if Cache-Control already exists (from @cache_page decorator)
+        has_cache_control = response.has_header("Cache-Control")
+
+        # Search results: ensure public cache and Vary headers
+        if request.path.startswith("/search/"):
+            if not has_cache_control:
+                patch_cache_control(response, public=True, max_age=300)
+            else:
+                # @cache_page already set max-age, add public directive
+                patch_cache_control(response, public=True)
+            # Always add Vary headers for content negotiation
+            response["Vary"] = "Accept, Cookie"
+
+        # Calculator results: ensure public cache and Vary headers
+        elif request.path.startswith("/calculators/"):
+            if not has_cache_control:
+                patch_cache_control(response, public=True, max_age=600)
+            else:
+                # @cache_page already set max-age, add public directive
+                patch_cache_control(response, public=True)
+            # Add Vary header for content negotiation
+            response["Vary"] = "Accept"
+
+        # Authenticated pages: private cache only
+        elif request.user.is_authenticated and not has_cache_control:
+            patch_cache_control(response, private=True, max_age=0, must_revalidate=True)
+
+        # Default public content: cache for 5 minutes
+        elif not has_cache_control:
+            patch_cache_control(response, public=True, max_age=300)
+
+        return response

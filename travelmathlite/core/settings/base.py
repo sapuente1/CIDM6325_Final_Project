@@ -61,6 +61,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Cache headers middleware - must be after auth to check user state
+    "core.middleware.CacheHeaderMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
