@@ -11,7 +11,7 @@ TravelMathLite uses Django's caching framework to improve performance by storing
 TravelMathLite uses multiple caching strategies:
 
 1. **Per-view caching** — Entire view responses cached with `@cache_page` decorator
-2. **Low-level caching** — Manual caching of expensive computations (future)
+2. **Low-level caching** — Manual caching of expensive computations and queries
 3. **Template fragment caching** — Partial template caching (future)
 
 ### Per-View Caching
@@ -38,6 +38,105 @@ Hot-path views are cached using Django's `@cache_page` decorator:
 class SearchView(TemplateView):
     # ... view logic
 ```
+
+### Low-Level Caching
+
+Expensive operations (database queries, CPU-intensive calculations) are cached manually using Django's low-level cache API:
+
+**TTL:** 15 minutes (900 seconds)
+
+#### Airport Queries
+
+Utility functions in `apps/airports/utils.py`:
+
+| Function | Cache Key Pattern | Purpose |
+|----------|-------------------|---------|
+| `get_airports_by_country(code)` | `travelmathlite:airports:country:{code}` | Airports filtered by ISO country code |
+| `get_airports_by_city(name)` | `travelmathlite:airports:city:{name}` | Airports in a specific city (case-insensitive) |
+| `get_airports_by_iata(code)` | `travelmathlite:airports:iata:{code}` | Single airport by IATA code |
+| `get_nearest_airports_cached(lat, lon, limit, radius)` | `travelmathlite:nearest:airports:{lat}:{lon}:{limit}:{radius}` | Nearest airports within radius |
+| `search_airports_cached(query)` | `travelmathlite:airports:search:{query}` | Full-text search results |
+
+**Cache invalidation:**
+
+```python
+from apps.airports.utils import clear_airport_cache, invalidate_airport_cache
+
+# Clear all airport-related cache entries
+clear_airport_cache()
+
+# Invalidate cache for a specific airport (after updates)
+invalidate_airport_cache(airport_id=123)
+```
+
+**Example usage:**
+
+```python
+from apps.airports.utils import get_airports_by_country, get_airports_by_iata
+
+# First call: cache miss, database query executed
+airports = get_airports_by_country("US")
+
+# Second call: cache hit, returns cached list
+airports = get_airports_by_country("US")
+
+# Lookup by IATA code
+airport = get_airports_by_iata("DFW")
+if airport:
+    print(f"Found: {airport.name}")
+```
+
+#### Calculator Functions
+
+Utility functions in `apps/calculators/utils.py`:
+
+| Function | Cache Key Pattern | Purpose |
+|----------|-------------------|---------|
+| `haversine_distance_cached(lat1, lon1, lat2, lon2)` | `travelmathlite:distance:haversine:{coords}` | Great-circle distance between coordinates |
+| `calculate_route_distance_cached(...)` | `travelmathlite:distance:route:{coords}:{factor}` | Flight + driving distances with route factor |
+| `calculate_fuel_cost_cached(distance, economy, price)` | `travelmathlite:cost:fuel:{params}` | Fuel cost estimation |
+| `calculate_trip_metrics_cached(...)` | `travelmathlite:trip:metrics:{coords}:{params}` | Comprehensive trip metrics |
+
+**Cache invalidation:**
+
+```python
+from apps.calculators.utils import clear_calculator_cache
+
+# Clear all calculator-related cache entries
+clear_calculator_cache()
+
+# Clear specific pattern (e.g., all distance calculations)
+clear_calculator_cache(pattern="travelmathlite:distance:*")
+```
+
+**Example usage:**
+
+```python
+from apps.calculators.utils import haversine_distance_cached, calculate_trip_metrics_cached
+
+# Distance calculation (coordinates rounded to 4 decimals for cache key)
+distance = haversine_distance_cached(32.7767, -96.7970, 29.7604, -95.3698)
+
+# Comprehensive trip metrics
+metrics = calculate_trip_metrics_cached(
+    32.7767, -96.7970,  # Dallas
+    29.7604, -95.3698,  # Houston
+    route_factor=1.2,
+    fuel_economy_l_per_100km=7.5,
+    fuel_price_per_liter=1.50,
+    avg_speed_kmh=80.0,
+)
+print(f"Flight: {metrics['flight_km']} km")
+print(f"Driving: {metrics['driving_km']} km")
+print(f"Fuel cost: ${metrics['fuel_cost']:.2f}")
+print(f"Driving time: {metrics['driving_hours']:.1f} hours")
+```
+
+**Cache key design:**
+
+- **Coordinates rounded to 4 decimals** (~11 meter precision) to improve cache hit rates
+- **Parameters normalized** (lowercase, stripped) for consistent keys
+- **Composite keys** include all relevant parameters to prevent stale data
 
 ## Cache Backends
 
