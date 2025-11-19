@@ -89,6 +89,29 @@ DATABASE_URL = env("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}
 DATABASES = {"default": env.db_url_config(DATABASE_URL)}
 
 
+# Cache
+# Use locmem for local development; support CACHE_URL for Redis/file-based in production.
+# Default TTL is 300 seconds (5 minutes).
+CACHES = {
+    "default": {
+        "BACKEND": env(
+            "CACHE_BACKEND",
+            default="django.core.cache.backends.locmem.LocMemCache",
+        ),
+        "LOCATION": env("CACHE_LOCATION", default="travelmathlite-cache"),
+        "TIMEOUT": int(env("CACHE_TIMEOUT", default="300")),  # 5 minutes default
+        "OPTIONS": {
+            "MAX_ENTRIES": int(env("CACHE_MAX_ENTRIES", default="1000")),
+        },
+        "KEY_PREFIX": env("CACHE_KEY_PREFIX", default="travelmathlite"),
+    }
+}
+
+# Alternative: use django-environ's cache_url for URL-based configuration
+# Uncomment to use CACHE_URL environment variable parsing:
+# CACHES = {"default": env.cache_url("CACHE_URL", default="locmem://")}
+
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
