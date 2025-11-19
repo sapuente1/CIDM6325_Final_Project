@@ -122,7 +122,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+# URL prefix for static files
 STATIC_URL = "static/"
+
+# Additional directories to search for static assets during development.
+# By default we look for `travelmathlite/static/` so designers and app-level
+# assets can be placed there. Can be overridden with the `STATICFILES_DIR`
+# environment variable if needed for CI or build pipelines.
+from pathlib import Path as _Path
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Where `collectstatic` places the gathered static assets for deployment.
+# Default is `travelmathlite/staticfiles/` but this path can be overridden
+# by setting the `STATIC_ROOT` environment variable in CI/deploy.
+STATIC_ROOT = _Path(os.getenv("STATIC_ROOT", BASE_DIR / "staticfiles"))
+
+# Media (user-uploaded) files
+MEDIA_URL = "/media/"
+MEDIA_ROOT = _Path(os.getenv("MEDIA_ROOT", BASE_DIR / "media"))
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
