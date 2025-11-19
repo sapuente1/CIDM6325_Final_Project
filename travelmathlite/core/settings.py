@@ -49,6 +49,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # WhiteNoise middleware should be placed directly after SecurityMiddleware
+    # so it can serve static files efficiently when enabled in production.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -141,6 +144,21 @@ STATIC_ROOT = _Path(os.getenv("STATIC_ROOT", BASE_DIR / "staticfiles"))
 # Media (user-uploaded) files
 MEDIA_URL = "/media/"
 MEDIA_ROOT = _Path(os.getenv("MEDIA_ROOT", BASE_DIR / "media"))
+
+# Feature flags and static storage policy
+# Use ManifestStaticFilesStorage when `USE_MANIFEST_STATIC` is truthy or when
+# DEBUG is disabled. This can be toggled via environment for CI/demo runs.
+USE_MANIFEST_STATIC = os.getenv("USE_MANIFEST_STATIC", "0").lower() in ("1", "true", "yes")
+
+# Default to manifest storage when DEBUG is False unless explicitly disabled.
+if not DEBUG or USE_MANIFEST_STATIC:
+    STATICFILES_STORAGE = os.getenv(
+        "STATICFILES_STORAGE",
+        "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    )
+
+# WhiteNoise tuning
+WHITENOISE_MAX_AGE = int(os.getenv("WHITENOISE_MAX_AGE", "31536000"))
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
