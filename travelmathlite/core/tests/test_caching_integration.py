@@ -13,8 +13,8 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import Client, TestCase
 
-from apps.airports.models import Airport
-from apps.base.models import City, Country
+from apps.airports.models import Airport  # type: ignore[import-not-found]
+from apps.base.models import City, Country  # type: ignore[import-not-found]
 
 User = get_user_model()
 

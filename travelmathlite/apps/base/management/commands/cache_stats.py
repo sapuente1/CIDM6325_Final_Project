@@ -32,16 +32,16 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"Cache Backend: {backend}"))
 
         # Check for Redis-like backend
-        if "Redis" in backend or hasattr(cache, "_cache"):
+        if "Redis" in backend:
             try:
                 # Try to access Redis client (different methods for different backends)
                 client = None
-                if hasattr(cache, "_cache"):
-                    if hasattr(cache._cache, "get_client"):
-                        client = cache._cache.get_client()  # type: ignore[attr-defined]
-                    elif callable(cache._cache):
-                        # django-redis compatibility
-                        client = cache._cache  # type: ignore[attr-defined]
+
+                # Try to get the underlying client for django.core.cache.backends.redis.RedisCache
+                if hasattr(cache, "get_master_client"):
+                    client = cache.get_master_client()  # type: ignore[attr-defined]
+                elif hasattr(cache, "client"):
+                    client = cache.client  # type: ignore[attr-defined]
 
                 if client and hasattr(client, "info"):
                     # Stats info
