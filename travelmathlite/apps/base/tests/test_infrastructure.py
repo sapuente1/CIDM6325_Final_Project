@@ -5,7 +5,7 @@ Demonstrates usage of BaseTestCase, MockingTestCase, and TimeTestCase.
 
 from django.utils import timezone
 
-from apps.base.tests import BaseTestCase, MockingTestCase, TimeTestCase
+from .base import BaseTestCase, MockingTestCase, TimeTestCase
 
 
 class BaseTestCaseTests(BaseTestCase):
