@@ -4,17 +4,15 @@ Contains environment-driven defaults and shared configuration.
 Use `django-environ` to parse env vars and allow a `.env` file for local development.
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # `base.py` lives at `travelmathlite/core/settings/base.py`, so go three
 # levels up to reach the project root `travelmathlite`.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-# Use django-environ to parse environment variables. This file assumes the
-# dependency is installed in the dev/CI environment per ADR guidance.
-import environ
 
 env = environ.Env(
     DJANGO_DEBUG=(bool, False),

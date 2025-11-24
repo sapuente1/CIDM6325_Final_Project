@@ -5,8 +5,10 @@ This module intentionally raises if required secrets are missing to avoid
 accidentally starting in an insecure state.
 """
 
-from .base import *  # noqa: F401,F403
 from django.core.exceptions import ImproperlyConfigured
+
+from .base import *  # noqa: F401,F403
+from .base import env
 
 # Enforce production defaults
 DEBUG = False

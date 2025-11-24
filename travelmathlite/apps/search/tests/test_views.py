@@ -128,5 +128,5 @@ class SearchViewBehaviorTests(TestCase):
         resp = self.client.get(url)
         combined = resp.context["results"]
         self.assertIsInstance(combined, list)
-        for kind, obj in combined:
+        for kind, _obj in combined:
             self.assertIn(kind, {"airport", "city"})

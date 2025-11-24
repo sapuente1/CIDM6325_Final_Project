@@ -18,8 +18,8 @@ from __future__ import annotations
 
 import argparse
 import datetime
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def make_parser():
@@ -43,7 +43,7 @@ def main(argv=None):
 
     try:
         from playwright.sync_api import sync_playwright
-    except Exception as exc:
+    except Exception:
         print("Playwright is required: pip install playwright && playwright install")
         raise
 
@@ -68,8 +68,8 @@ def main(argv=None):
         browser.close()
 
     with links_path.open("w", encoding="utf-8") as f:
-        for l in links:
-            f.write(l + "\n")
+        for link in links:
+            f.write(link + "\n")
 
     print(f"Wrote screenshot: {screenshot_path}")
     print(f"Wrote links file: {links_path}")

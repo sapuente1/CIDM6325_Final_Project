@@ -4,12 +4,15 @@ Signal handlers for the accounts app.
 Handles user authentication events like login to migrate anonymous session data.
 """
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in
-from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.dispatch import receiver as _receiver
 
 from core.session import mark_session_as_user_bound  # type: ignore[reportMissingImports]
+
+from .models import Profile
 
 
 @receiver(user_logged_in)
@@ -42,11 +45,6 @@ def migrate_anonymous_calculator_inputs(sender, request, user, **kwargs):  # typ
 
 
 # Auto-create Profile when a User is created
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from .models import Profile
-
-
 @_receiver(post_save, sender=get_user_model())
 def create_profile_for_new_user(sender, instance, created, **kwargs):  # type: ignore[no-untyped-def]
     if created:

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import os
-import shutil
 import tempfile
 
-from django.test import TestCase, override_settings
 from django.contrib.auth import get_user_model
+from django.test import TestCase, override_settings
 
 
 @override_settings(MEDIA_ROOT=tempfile.gettempdir())
@@ -18,7 +17,7 @@ class ProfileUploadTests(TestCase):
         # cleanup any created files in tmpdir whose names start with avatars/
         # Best-effort cleanup.
         tmp = tempfile.gettempdir()
-        for root, dirs, files in os.walk(tmp):
+        for root, _dirs, files in os.walk(tmp):
             for f in files:
                 if "avatars" in root:
                     try:

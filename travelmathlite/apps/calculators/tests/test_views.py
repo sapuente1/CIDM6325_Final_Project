@@ -15,11 +15,7 @@ from django.urls import reverse
 
 from ..forms import CostCalculatorForm, DistanceCalculatorForm
 from ..views import (
-    CostCalculatorView,
-    CostPartialView,
     DistanceCalculatorView,
-    DistancePartialView,
-    IndexView,
 )
 
 

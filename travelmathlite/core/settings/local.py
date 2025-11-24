@@ -4,6 +4,7 @@ Import all settings from base and apply developer-friendly overrides.
 """
 
 from .base import *  # noqa: F401,F403
+from .base import BASE_DIR
 
 # Local development defaults
 DEBUG = True

@@ -5,8 +5,8 @@ and import the module reliably from the project package path.
 """
 
 from importlib import import_module
-from unittest.mock import patch
 from typing import Any
+from unittest.mock import patch
 
 from django.test import TestCase
 

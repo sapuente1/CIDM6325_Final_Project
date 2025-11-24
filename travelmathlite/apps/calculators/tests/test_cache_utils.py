@@ -149,9 +149,6 @@ class CalculatorCachingTestCase(TestCase):
 
     def test_cache_key_uniqueness(self) -> None:
         """Test that different parameters generate different cache keys."""
-        lat1, lon1 = 32.7767, -96.7970
-        lat2, lon2 = 29.7604, -95.3698
-
         # Same coordinates, different fuel parameters
         cost1 = calculate_fuel_cost_cached(362.0, 7.5, 1.50)
         cost2 = calculate_fuel_cost_cached(362.0, 8.0, 1.50)

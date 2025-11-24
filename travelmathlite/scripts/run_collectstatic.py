@@ -22,9 +22,8 @@ import io
 import os
 import sys
 import tarfile
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
-
 
 # Default to the repository-root docs folder so logs land in a stable location
 # regardless of the current working directory when the script is invoked.
@@ -50,7 +49,7 @@ def ensure_logs_dir(path: Path) -> None:
 
 
 def write_log_and_summary(log_dir: Path, base_name: str, stdout_text: str, stderr_text: str, settings_module: str | None) -> int:
-    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
+    ts = datetime.datetime.now(datetime.UTC).strftime("%Y%m%d-%H%M%S")
     log_file = log_dir / f"collectstatic-{base_name}-{ts}.log"
     summary_file = log_dir / f"collectstatic-summary-{base_name}-{ts}.md"
 
@@ -94,7 +93,7 @@ def write_log_and_summary(log_dir: Path, base_name: str, stdout_text: str, stder
 
 
 def archive_logs(log_dir: Path, pattern: str = "collectstatic-*.log") -> Path:
-    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
+    ts = datetime.datetime.now(datetime.UTC).strftime("%Y%m%d-%H%M%S")
     archive_path = log_dir / f"collectstatic-logs-{ts}.tar.gz"
     with tarfile.open(archive_path, "w:gz") as tar:
         for p in sorted(log_dir.glob(pattern)):
