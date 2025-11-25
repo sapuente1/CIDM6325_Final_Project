@@ -186,6 +186,11 @@ BLEACH_ALLOWED_PROTOCOLS = env.list("BLEACH_ALLOWED_PROTOCOLS", default=["http",
 BLEACH_STRIP = env.bool("BLEACH_STRIP", default=True)
 BLEACH_STRIP_COMMENTS = env.bool("BLEACH_STRIP_COMMENTS", default=True)
 
+# Rate limiting (auth endpoints)
+RATE_LIMIT_AUTH_ENABLED = env.bool("RATE_LIMIT_AUTH_ENABLED", default=True)
+RATE_LIMIT_AUTH_MAX_REQUESTS = int(env("RATE_LIMIT_AUTH_MAX_REQUESTS", default="5"))
+RATE_LIMIT_AUTH_WINDOW = int(env("RATE_LIMIT_AUTH_WINDOW", default="60"))  # seconds
+
 
 # Logging configuration
 # Structured JSON logging with request metadata per ADR-1.0.9
