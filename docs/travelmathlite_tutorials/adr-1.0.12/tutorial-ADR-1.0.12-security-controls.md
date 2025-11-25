@@ -17,6 +17,7 @@ ADR-1.0.12 hardens the app: security headers/cookies, auth rate limiting, input 
 - Sanitize user-rendered HTML via bleach with allowlists.
 - Run security test suites (headers/CSRF/rate limits/sanitization) and interpret outputs.
 - Use docs/toggles to enable/disable controls in different environments.
+- Map controls to PRD/NF requirements and know how to relax/override safely in dev.
 
 **Prerequisites**
 - Working TravelMathLite dev environment with `uv`.
@@ -65,10 +66,12 @@ uv run python travelmathlite/manage.py test core.tests.test_settings_prod
 **Verification**
 - Curl prod/staging: `curl -I https://<host>/` → expect `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`.
 - Local dev should not force HTTPS: `SECURE_SSL_REDIRECT=0` in `core/settings/local.py`.
+- Automated: `uv run python travelmathlite/manage.py test core.tests.test_settings_prod` passes.
 
 **Troubleshooting**
 - Redirect loops locally → set `SECURE_SSL_REDIRECT=0`.  
 - Missing HSTS in staging → ensure `DEBUG=False` and `SECURE_HSTS_SECONDS>0`.
+- If headers absent, confirm `SecurityMiddleware` order (early) and that `DEBUG=False` for secure requests.
 
 ---
 
@@ -102,10 +105,12 @@ uv run python travelmathlite/manage.py test apps.accounts.tests.test_rate_limit
 **Verification**
 - Automated: tests expect 429 on third bad login/signup attempt with defaults.  
 - Manual: post 3 bad logins from same IP to `/accounts/login/` → 429 on third; set `RATE_LIMIT_AUTH_ENABLED=0` to disable quickly.
+- Inspect logs: 429 entries appear in request logs with path/method/status_code.
 
 **Troubleshooting**
 - In multi-process setups, use a shared cache (Redis/Memcached); locmem is single-process.
 - If 429 arrives too early/late, adjust env: `RATE_LIMIT_AUTH_MAX_REQUESTS`, `RATE_LIMIT_AUTH_WINDOW`.
+- If CSRF 403 appears during manual POST, include the CSRF token or disable CSRF checks only in controlled tests (not recommended in prod).
 
 ---
 
@@ -141,10 +146,12 @@ uv run python travelmathlite/manage.py test core.tests.test_sanitization apps.tr
 **Verification**
 - Automated: tests assert `<script>` stripped, `<b>` preserved, script text rendered as text.
 - Manual: seed saved calc inputs with `<script>alert(1)</script><b>ok</b>` and visit `/trips/saved/`; expect no `<script>`, text “alert(1)”, and bold “ok”.
+- View rendered HTML source to ensure no stray `<script>` tags.
 
 **Troubleshooting**
 - Missing bleach? ensure dependency present (declared in requirements).  
 - Need richer HTML? Adjust `BLEACH_ALLOWED_TAGS/ATTRIBUTES/PROTOCOLS` envs and update docs/tests accordingly.
+- If sanitizer is too permissive/restrictive, adjust allowlists and rerun `core.tests.test_sanitization apps.trips.tests.test_sanitization`.
 
 ---
 
@@ -181,9 +188,11 @@ uv run python travelmathlite/manage.py test core.tests.test_security apps.accoun
 **Verification**
 - Tests pass; warnings for expected 403/429 may appear in logs (negative scenarios).
 - Manual: `curl -I https://<host>/` for headers; attempt repeated bad logins for 429.
+- Check CSRF: GET `/accounts/login/` and confirm `csrfmiddlewaretoken` present in the form; POST without token should yield 403.
 
 **Troubleshooting**
 - If SECRET_KEY/ALLOWED_HOSTS errors appear, mimic test env patches; ensure `DEBUG=False` when checking headers.
+- If header assertions fail, confirm `SECURE_*` settings are active in the environment where you run tests.
 
 ---
 
@@ -218,6 +227,12 @@ uv run python travelmathlite/manage.py test core.tests.test_sanitization apps.tr
 ```
 
 Expected: all pass; 403/429 warnings may appear (negative cases). For manual checks: `curl -I https://<host>/` and try 3 bad logins for 429.
+
+If something fails
+- Headers missing: ensure `DEBUG=False`, `SecurityMiddleware` loaded, and secure request (HTTPS).
+- Rate limits not firing: verify cache backend and `RATE_LIMIT_AUTH_ENABLED=1`.
+- Sanitization too strict/loose: adjust BLEACH allowlists and rerun tests.
+- CSRF 403 in manual attempts: include CSRF token in POST; do not disable middleware in prod.
 
 ---
 
