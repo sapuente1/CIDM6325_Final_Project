@@ -8,6 +8,7 @@ import time
 import uuid
 from collections.abc import Callable
 
+import logging
 from django.http import HttpRequest, HttpResponse
 
 
@@ -66,6 +67,37 @@ class RequestIDMiddleware:
         # Add X-Request-ID to response headers
         response["X-Request-ID"] = request_id
 
+        return response
+
+
+class RequestLoggingMiddleware:
+    """Emit structured logs for each request with timing and request_id."""
+
+    logger = logging.getLogger("request")
+
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        start = time.perf_counter()
+        response = self.get_response(request)
+        duration_ms = getattr(request, "duration_ms", None)
+        if duration_ms is None:
+            duration_ms = (time.perf_counter() - start) * 1000.0
+            request.duration_ms = duration_ms  # type: ignore[attr-defined]
+
+        request_id = getattr(request, "request_id", "-")
+
+        self.logger.info(
+            "request completed",
+            extra={
+                "request_id": request_id,
+                "duration_ms": duration_ms,
+                "path": request.path,
+                "method": request.method,
+                "status_code": response.status_code,
+            },
+        )
         return response
 
 

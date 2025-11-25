@@ -43,5 +43,6 @@
 ## Verification checklist
 - Logs emit JSON with `request_id` and `duration_ms` (see `core.tests.test_logging`).
 - Health endpoint passes (`core.tests.test_health`).
-- 404/500 templates render (after brief-02 implementation).
-- Sentry init guarded by DSN (after brief-03 implementation).
+- Observability suite: `uv run python travelmathlite/manage.py test core.tests.test_observability` (logs, 404/500 templates, Sentry guard).
+- 404/500 templates render (covered in observability suite).
+- Sentry init guarded by DSN (covered in observability suite).

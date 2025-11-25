@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Something went wrong{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1>Something went wrong</h1>
+  <p>We hit an unexpected error. Please try again in a moment.</p>
+  <p class="text-muted">Include the request ID from the response headers if you contact support.</p>
+  <a class="btn btn-primary" href="/">Return home</a>
+</div>
+{% endblock %}

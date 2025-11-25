@@ -51,6 +51,8 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     # Request ID and timing middleware - must be early for logging
     "core.middleware.RequestIDMiddleware",
+    # Request logging with structured context
+    "core.middleware.RequestLoggingMiddleware",
     # WhiteNoise placed here so deployments that enable it get static serving
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -217,6 +219,11 @@ LOGGING = {
         "django": {
             "handlers": ["console"],
             "level": env("DJANGO_LOG_LEVEL", default="INFO"),
+            "propagate": False,
+        },
+        "request": {
+            "handlers": ["console"],
+            "level": env("REQUEST_LOG_LEVEL", default="INFO"),
             "propagate": False,
         },
         "django.request": {

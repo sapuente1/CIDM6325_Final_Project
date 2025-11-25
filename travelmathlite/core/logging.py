@@ -18,6 +18,9 @@ class JSONFormatter(logging.Formatter):
     - message: Formatted log message
     - request_id: Request ID from middleware (or '-' if not available)
     - duration_ms: Request duration from middleware (or null if not available)
+    - path: Request path when available
+    - method: HTTP method when available
+    - status_code: Response status when available
 
     The formatter attempts to extract request_id and duration_ms from the
     log record, which are set by RequestIDMiddleware on the request object.
@@ -47,6 +50,17 @@ class JSONFormatter(logging.Formatter):
             "request_id": request_id,
             "duration_ms": duration_ms,
         }
+
+        # Optional HTTP context
+        path = getattr(record, "path", None)
+        method = getattr(record, "method", None)
+        status_code = getattr(record, "status_code", None)
+        if path is not None:
+            log_entry["path"] = path
+        if method is not None:
+            log_entry["method"] = method
+        if status_code is not None:
+            log_entry["status_code"] = status_code
 
         # Add exception info if present
         if record.exc_info:

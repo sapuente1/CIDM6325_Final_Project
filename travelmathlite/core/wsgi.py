@@ -11,7 +11,11 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+from core.sentry import init_sentry
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+
+init_sentry()
 
 application = get_wsgi_application()
 if os.getenv("USE_WHITENOISE", "0").lower() in ("1", "true", "yes"):

@@ -14,6 +14,7 @@ TravelMathLite uses Django's built-in TestCase framework (no pytest) with custom
 
 ### Observability-focused test entry points
 - Logging/health: `uv run python travelmathlite/manage.py test core.tests.test_logging core.tests.test_health`
+- Observability suite (logging fields, 404/500 templates, Sentry guard): `uv run python travelmathlite/manage.py test core.tests.test_observability`
 - See `docs/travelmathlite/ops/logging-and-errors.md` for log fields and error page guidance.
 
 ## Test Infrastructure
