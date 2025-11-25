@@ -14,19 +14,40 @@ from django.test import TestCase
 class ProdSettingsTest(TestCase):
     """Verify production settings enforce security invariants."""
 
-    @patch("os.environ", {"SECRET_KEY": "fake-secret-for-tests", "ALLOWED_HOSTS": "example.com", "USE_WHITENOISE": "1"})
+    @patch.dict(
+        "environ.environ.Env.ENVIRON",
+        {"SECRET_KEY": "fake-secret-for-tests", "ALLOWED_HOSTS": "example.com", "USE_WHITENOISE": "1"},
+        clear=True,
+    )
     def test_prod_settings_requirements_and_flags(self) -> None:
         prod: Any = import_module("core.settings.prod")
 
         # DEBUG must be False in production
         self.assertFalse(getattr(prod, "DEBUG", True))
 
+        # Security middleware should be present to emit headers
+        self.assertIn(
+            "django.middleware.security.SecurityMiddleware",
+            getattr(prod, "MIDDLEWARE", []),
+        )
+
         # Security flags should be enabled by default in prod
         self.assertTrue(getattr(prod, "SESSION_COOKIE_SECURE", False))
+        self.assertTrue(getattr(prod, "SESSION_COOKIE_HTTPONLY", False))
         self.assertTrue(getattr(prod, "CSRF_COOKIE_SECURE", False))
+        self.assertTrue(getattr(prod, "CSRF_COOKIE_HTTPONLY", False))
+        self.assertTrue(getattr(prod, "SECURE_SSL_REDIRECT", False))
 
         # WhiteNoise flag should be present (env-controlled)
         self.assertTrue(getattr(prod, "USE_WHITENOISE", False))
 
         # ALLOWED_HOSTS should be populated from the env
         self.assertTrue(getattr(prod, "ALLOWED_HOSTS", []))
+
+        # Security headers should have production-safe defaults
+        self.assertEqual(getattr(prod, "SECURE_REFERRER_POLICY", ""), "strict-origin-when-cross-origin")
+        self.assertEqual(getattr(prod, "X_FRAME_OPTIONS", ""), "DENY")
+        self.assertTrue(getattr(prod, "SECURE_CONTENT_TYPE_NOSNIFF", False))
+        self.assertEqual(getattr(prod, "SECURE_HSTS_SECONDS", 0), 31536000)
+        self.assertTrue(getattr(prod, "SECURE_HSTS_INCLUDE_SUBDOMAINS", False))
+        self.assertFalse(getattr(prod, "SECURE_HSTS_PRELOAD", True))
