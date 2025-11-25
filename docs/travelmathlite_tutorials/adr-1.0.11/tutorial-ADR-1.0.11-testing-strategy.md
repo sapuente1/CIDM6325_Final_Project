@@ -12,12 +12,14 @@
 ADR-1.0.11 defines a Django `TestCase`-only strategy (no pytest) focused on deterministic tests: shared base classes for mocking/time control, calculator/search/auth coverage, and health/import checks. This guide walks through each brief with steps, code, commands, verification, and troubleshooting so you can extend or debug the suite safely.
 
 **Learning Objectives**
+
 - Use `BaseTestCase`, `MockingTestCase`, and `TimeTestCase` to keep tests deterministic (INV-1).
 - Cover calculators/search/auth flows with happy paths and edge cases (FR-F-011-1).
 - Mock external calls and freeze time to avoid flakiness; keep tests isolated (NF-004).
 - Run targeted suites quickly and mirror them with manual smoke checks.
 
 **Prerequisites**
+
 - Working TravelMathLite dev environment with `uv`.
 - No extra datasets required.
 - Familiarity with Django `TestCase`, `RequestFactory`, and the test client.
@@ -25,6 +27,7 @@ ADR-1.0.11 defines a Django `TestCase`-only strategy (no pytest) focused on dete
 ---
 
 ## How to use this tutorial
+
 - Cite ADR and briefs (links above) in each section.
 - For each brief: context → why it matters → steps → code excerpt (file path) → commands → verification (tests/URLs/expected) → troubleshooting.
 - Reference docs: Django, Python stdlib (`unittest.mock`), plus HTMX/Bootstrap if UI touches.
@@ -37,10 +40,12 @@ ADR-1.0.11 defines a Django `TestCase`-only strategy (no pytest) focused on dete
 **Why it matters:** INV-1 determinism; shared helpers reduce duplication and prevent real network/time drift.
 
 **Steps**
+
 - Use `BaseTestCase` for common setup, `MockingTestCase` for HTTP mocks, `TimeTestCase` for time freezing.
 - RequestFactory helpers keep view tests fast; `_ensure_requests_module` guards against missing `requests`.
 
 **Key code** (`travelmathlite/apps/base/tests/base.py`):
+
 ```python
 class MockingTestCase(BaseTestCase):
     def _ensure_requests_module(self) -> Any:
@@ -58,14 +63,17 @@ class MockingTestCase(BaseTestCase):
 ```
 
 **Commands**
+
 ```bash
 uv run python travelmathlite/manage.py test apps.base.tests.test_mocking_examples
 ```
 
 **Verification**
+
 - Tests pass; no external HTTP calls. ImportErrors for `requests` are handled by the shim.
 
 **Troubleshooting**
+
 - If mocks leak, ensure `_mocks` is cleared (built into base class).  
 - If RequestFactory tests fail on middleware-dependent views, switch to the client.
 
@@ -77,10 +85,12 @@ uv run python travelmathlite/manage.py test apps.base.tests.test_mocking_example
 **Why it matters:** FR-F-011-1 requires correct calculations and cache behavior.
 
 **Steps**
+
 - Cover pure functions (`test_geo.py`, `test_costs.py`) and caching utilities.
 - Use deterministic inputs; assert numeric outputs with tolerances.
 
 **Key code** (`travelmathlite/apps/calculators/tests/test_geo.py`):
+
 ```python
 class GeoTests(TestCase):
     def test_haversine_distance(self) -> None:
@@ -90,14 +100,17 @@ class GeoTests(TestCase):
 ```
 
 **Commands**
+
 ```bash
 uv run python travelmathlite/manage.py test calculators
 ```
 
 **Verification**
+
 - All calculator tests pass; no network calls. Manual: submit forms on `/calculators/distance/` and `/calculators/cost/` to mirror coverage.
 
 **Troubleshooting**
+
 - If float drift occurs, use `assertAlmostEqual` and keep constants in settings stable.  
 - If forms fail, check defaults in `core/settings/base.py` for speed/fuel values.
 
@@ -109,9 +122,11 @@ uv run python travelmathlite/manage.py test calculators
 **Why it matters:** Stable templates/routes underpin UX; ensures HTMX/full-page behavior.
 
 **Steps**
+
 - Use client/RequestFactory to hit calculator views; assert status, templates, context.
 
 **Key code** (`travelmathlite/apps/calculators/tests/test_views.py`):
+
 ```python
 class DistanceViewTests(TestCase):
     def test_distance_view_renders(self) -> None:
@@ -121,14 +136,17 @@ class DistanceViewTests(TestCase):
 ```
 
 **Commands**
+
 ```bash
 uv run python travelmathlite/manage.py test calculators.tests.test_views
 ```
 
 **Verification**
+
 - 200 responses, correct templates. Manual: browse `/calculators/` and partials; expect HTMX snippets to render.
 
 **Troubleshooting**
+
 - If URLs break, confirm inclusion in `core/urls.py`. Update template assertions if layout legitimately changes.
 
 ---
@@ -139,9 +157,11 @@ uv run python travelmathlite/manage.py test calculators.tests.test_views
 **Why it matters:** Search is user-facing; results/pagination/highlighting must hold.
 
 **Steps**
+
 - Test `/search/` with/without query; assert help text vs results and pagination.
 
 **Key code** (`travelmathlite/apps/search/tests/test_views.py`):
+
 ```python
 class SearchViewTests(TestCase):
     def test_search_page_without_query(self) -> None:
@@ -151,14 +171,17 @@ class SearchViewTests(TestCase):
 ```
 
 **Commands**
+
 ```bash
 uv run python travelmathlite/manage.py test search
 ```
 
 **Verification**
+
 - No query → help text; query → results + pagination. Manual: `/search/?q=dfw` should show airports/cities with highlights.
 
 **Troubleshooting**
+
 - If highlighting fails, check `apps/search/templatetags/highlight.py`.  
 - If fixtures missing, ensure tests use bundled data (avoid external calls).
 
@@ -170,9 +193,11 @@ uv run python travelmathlite/manage.py test search
 **Why it matters:** Login/logout/signup/profile flows are core (FR-F-011-1).
 
 **Steps**
+
 - Test login 302 to home, logout 302 to home, signup creates user and redirects, profile requires auth.
 
 **Key code** (`travelmathlite/core/tests/test_auth.py`):
+
 ```python
 def test_login_success_redirects_to_home(self) -> None:
     resp = self.client.post(reverse("accounts:login"), {"username": self.user.username, "password": self.password})
@@ -181,14 +206,17 @@ def test_login_success_redirects_to_home(self) -> None:
 ```
 
 **Commands**
+
 ```bash
 uv run python travelmathlite/manage.py test core.tests.test_auth
 ```
 
 **Verification**
+
 - Login/logout redirect as expected; profile redirects anon to login. Manual: log in at `/accounts/login/`, hit `/accounts/profile/`, then logout.
 
 **Troubleshooting**
+
 - 301s in dev? Ensure `SECURE_SSL_REDIRECT=0` locally.  
 - Profile 404? Confirm accounts URLs are included and Profile migrations applied.
 
@@ -200,10 +228,12 @@ uv run python travelmathlite/manage.py test core.tests.test_auth
 **Why it matters:** NF-004 reliability; health must be stable and imports deterministic.
 
 **Steps**
+
 - Test `/health/` returns 200 + JSON; ensure request ID header present.
 - Import-related tests should mock external data (keep local).
 
 **Key code** (`travelmathlite/core/tests/test_health.py`):
+
 ```python
 class HealthEndpointTests(TestCase):
     def test_health_returns_ok(self) -> None:
@@ -214,14 +244,17 @@ class HealthEndpointTests(TestCase):
 ```
 
 **Commands**
+
 ```bash
 uv run python travelmathlite/manage.py test core.tests.test_health
 ```
 
 **Verification**
+
 - 200 + JSON + `X-Request-ID`. Manual: `curl -i http://localhost:8000/health/`.
 
 **Troubleshooting**
+
 - If ALLOWED_HOSTS issues arise, set `ALLOWED_HOSTS=["*"]` for local tests (or use default local settings).
 
 ---
@@ -232,9 +265,11 @@ uv run python travelmathlite/manage.py test core.tests.test_health
 **Why it matters:** Determinism depends on controlled time/network (INV-1).
 
 **Steps**
+
 - Use `MockingTestCase` to patch `requests.get/post`; `TimeTestCase` to freeze time.
 
 **Key code** (`travelmathlite/apps/base/tests/test_mocking_examples.py`):
+
 ```python
 def test_freeze_time_for_duration(self) -> None:
     frozen = self.get_fixed_datetime(2025, 11, 19, hour=12, minute=34, second=56)
@@ -243,14 +278,17 @@ def test_freeze_time_for_duration(self) -> None:
 ```
 
 **Commands**
+
 ```bash
 uv run python travelmathlite/manage.py test apps.base.tests.test_mocking_examples
 ```
 
 **Verification**
+
 - Frozen time returns same value; HTTP mocks return deterministic payloads.
 
 **Troubleshooting**
+
 - Patch fully-qualified names; avoid external libs like freezegun (course norm).
 
 ---
@@ -261,18 +299,22 @@ uv run python travelmathlite/manage.py test apps.base.tests.test_mocking_example
 **Why it matters:** Visual smoke tests catch UI regressions complementary to unit tests.
 
 **Steps**
+
 - Use Playwright scripts under `travelmathlite/scripts/`; store screenshots under `travelmathlite/screenshots/`.
 
 **Commands (example)**
+
 ```bash
 # Calculators HTMX visual checks
 uv run python travelmathlite/scripts/visual_check_htmx_calculators.py
 ```
 
 **Verification**
+
 - Screenshots written; flows complete without 404/500. Manually review for layout issues.
 
 **Troubleshooting**
+
 - Install browsers if missing: `uvx playwright install chromium`.  
 - Update selectors if templates change.
 

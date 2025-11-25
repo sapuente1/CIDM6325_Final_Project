@@ -141,7 +141,7 @@ print('✓ Cache working')
 
 Expected output:
 
-```
+```text
 Backend: LocMemCache
 Cached value: test_value
 ✓ Cache working
@@ -174,11 +174,11 @@ class CacheConfigTestCase(TestCase):
     def test_cache_timeout(self):
         """Test that cache respects timeout settings."""
         import time
-        
+
         # Set with 1 second timeout
         cache.set('short_lived', 'value', 1)
         self.assertEqual(cache.get('short_lived'), 'value')
-        
+
         # Wait and verify expiration
         time.sleep(2)
         self.assertIsNone(cache.get('short_lived'))
@@ -187,7 +187,7 @@ class CacheConfigTestCase(TestCase):
         """Test cache deletion."""
         cache.set('deletable', 'value', 300)
         self.assertEqual(cache.get('deletable'), 'value')
-        
+
         cache.delete('deletable')
         self.assertIsNone(cache.get('deletable'))
 
@@ -245,7 +245,7 @@ def search_results(request):
 @method_decorator(cache_page(300), name='dispatch')
 class SearchView(View):
     """Search view with per-view caching."""
-    
+
     def get(self, request):
         query = request.GET.get('q', '')
         # ... search logic
@@ -268,7 +268,7 @@ from django.utils.decorators import method_decorator
 @method_decorator(cache_page(600), name='dispatch')  # 10 minutes
 class NearestAirportView(View):
     """Nearest airport calculator with caching."""
-    
+
     def get(self, request):
         # ... calculator logic
         return render(request, 'calculators/nearest.html', context)
@@ -276,7 +276,7 @@ class NearestAirportView(View):
 @method_decorator(cache_page(600), name='dispatch')
 class DistanceCalculatorView(View):
     """Distance calculator with caching."""
-    
+
     def get(self, request):
         # ... distance calculation logic
         return render(request, 'calculators/distance.html', context)
@@ -335,42 +335,42 @@ class SearchCachingTestCase(TestCase):
     def test_search_results_cached(self):
         """Test that identical search queries return cached results."""
         client = Client()
-        
+
         # First request
         response1 = client.get('/search/?q=Dallas')
         self.assertEqual(response1.status_code, 200)
-        
+
         # Second identical request should be cached
         response2 = client.get('/search/?q=Dallas')
         self.assertEqual(response2.status_code, 200)
-        
+
         # Content should be identical
         self.assertEqual(response1.content, response2.content)
 
     def test_different_queries_different_cache(self):
         """Test that different queries use different cache keys."""
         client = Client()
-        
+
         response1 = client.get('/search/?q=Dallas')
         response2 = client.get('/search/?q=Houston')
-        
+
         # Both should succeed
         self.assertEqual(response1.status_code, 200)
         self.assertEqual(response2.status_code, 200)
-        
+
         # Content should differ (different results)
         self.assertNotEqual(response1.content, response2.content)
 
     def test_query_params_vary_cache(self):
         """Test that query parameter changes create different cache keys."""
         client = Client()
-        
+
         response1 = client.get('/search/?q=Dallas')
         response2 = client.get('/search/?q=Dallas&page=2')
-        
+
         self.assertEqual(response1.status_code, 200)
         self.assertEqual(response2.status_code, 200)
-        
+
         # Different pages should have different content
         self.assertNotEqual(response1.content, response2.content)
 
@@ -430,38 +430,38 @@ CACHE_TTL = 900  # 15 minutes
 
 def get_airports_by_country(country_code):
     """Get airports by country code with caching.
-    
+
     Args:
         country_code: ISO country code (e.g., 'US')
-    
+
     Returns:
         List of Airport objects
     """
     cache_key = f"travelmathlite:airports:country:{country_code}"
-    
+
     # Try to get from cache
     airports = cache.get(cache_key)
     if airports is not None:
         return airports
-    
+
     # Cache miss - query database
     airports = list(Airport.objects.filter(country_code=country_code))
-    
+
     # Store in cache
     cache.set(cache_key, airports, CACHE_TTL)
-    
+
     return airports
 
 
 def get_airports_by_filters(country=None, city=None, iata=None):
     """Get airports by multiple filters with caching.
-    
+
     Uses atomic get_or_set pattern for cleaner code.
     """
     # Create deterministic cache key
     params = f"{country or ''}:{city or ''}:{iata or ''}"
     cache_key = f"travelmathlite:airports:filter:{params}"
-    
+
     # Define computation function
     def compute_airports():
         queryset = Airport.objects.all()
@@ -472,14 +472,14 @@ def get_airports_by_filters(country=None, city=None, iata=None):
         if iata:
             queryset = queryset.filter(iata_code=iata)
         return list(queryset)
-    
+
     # Atomic fetch-or-compute
     return cache.get_or_set(cache_key, compute_airports, CACHE_TTL)
 
 
 def clear_airport_cache():
     """Clear all airport-related cache keys.
-    
+
     Note: This is a simple implementation. For production with many keys,
     consider using cache key versioning or Redis SCAN/DELETE pattern.
     """
@@ -502,75 +502,75 @@ CACHE_TTL = 900  # 15 minutes
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """Calculate haversine distance between two points.
-    
+
     Returns distance in kilometers.
     """
     R = 6371  # Earth radius in kilometers
-    
+
     # Convert to radians
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
-    
+
     # Haversine formula
     dlat = lat2 - lat1
     dlon = lon2 - lon1
     a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
     c = 2 * math.asin(math.sqrt(a))
-    
+
     return R * c
 
 
 def haversine_distance_cached(lat1, lon1, lat2, lon2):
     """Calculate haversine distance with caching.
-    
+
     Round coordinates to 4 decimal places (~11m precision) to improve cache hits.
     """
     # Create deterministic cache key
     coords = f"{round(lat1,4)}:{round(lon1,4)}:{round(lat2,4)}:{round(lon2,4)}"
     cache_key = f"travelmathlite:distance:haversine:{coords}"
-    
+
     # Try cache first
     distance = cache.get(cache_key)
     if distance is not None:
         return distance
-    
+
     # Compute distance
     distance = haversine_distance(lat1, lon1, lat2, lon2)
-    
+
     # Cache result
     cache.set(cache_key, distance, CACHE_TTL)
-    
+
     return distance
 
 
 def get_nearest_airports_cached(lat, lon, limit=5):
     """Get nearest airports with caching.
-    
+
     Round user location to reduce cache key variations.
     """
     # Round to 2 decimals (~1km precision) for better cache hits
     coords = f"{round(lat,2)}:{round(lon,2)}:{limit}"
     cache_key = f"travelmathlite:nearest:airports:{coords}"
-    
+
     def compute_nearest():
         # Expensive calculation - find nearest airports
         from apps.airports.models import Airport
-        
+
         airports = Airport.objects.all()
         results = []
-        
+
         for airport in airports:
             if airport.latitude and airport.longitude:
                 distance = haversine_distance(
-                    lat, lon, 
-                    float(airport.latitude), 
+                    lat, lon,
+                    float(airport.latitude),
                     float(airport.longitude)
                 )
                 results.append((airport, distance))
-        
+
         # Sort by distance and limit
         results.sort(key=lambda x: x[1])
         return results[:limit]
-    
+
     return cache.get_or_set(cache_key, compute_nearest, CACHE_TTL)
 ```
 
@@ -631,10 +631,10 @@ class AirportCachingTestCase(TestCase):
         """Test that airport queries are cached."""
         # First call should query database
         airports1 = get_airports_by_country('US')
-        
+
         # Second call should use cache
         airports2 = get_airports_by_country('US')
-        
+
         # Results should be identical
         self.assertEqual(len(airports1), len(airports2))
 
@@ -642,7 +642,7 @@ class AirportCachingTestCase(TestCase):
         """Test that different parameters create different cache keys."""
         airports_us = get_airports_by_country('US')
         airports_ca = get_airports_by_country('CA')
-        
+
         # Should cache separately
         self.assertIsNotNone(airports_us)
         self.assertIsNotNone(airports_ca)
@@ -651,10 +651,10 @@ class AirportCachingTestCase(TestCase):
         """Test cache invalidation."""
         # Cache some data
         get_airports_by_country('US')
-        
+
         # Clear cache
         clear_airport_cache()
-        
+
         # Should require fresh query (we can't easily test this without timing,
         # but we can verify the function doesn't error)
         airports = get_airports_by_country('US')
@@ -710,43 +710,43 @@ from django.utils.cache import patch_cache_control
 
 class CacheHeaderMiddleware:
     """Add appropriate cache headers to responses.
-    
+
     Sets Cache-Control and Vary headers based on request path and authentication.
     """
-    
+
     def __init__(self, get_response):
         self.get_response = get_response
-    
+
     def __call__(self, request):
         response = self.get_response(request)
-        
+
         # Skip if headers already set
         if response.has_header('Cache-Control'):
             return response
-        
+
         # Static files handled by WhiteNoise - skip
         if request.path.startswith('/static/'):
             return response
-        
+
         # Set headers for dynamic content
         if request.path.startswith('/search/'):
             # Search results: cache for 5 minutes, vary by query
             patch_cache_control(response, public=True, max_age=300)
             response['Vary'] = 'Accept, Cookie'
-        
+
         elif request.path.startswith('/calculators/'):
             # Calculator results: cache for 10 minutes
             patch_cache_control(response, public=True, max_age=600)
             response['Vary'] = 'Accept'
-        
+
         elif request.user.is_authenticated:
             # Authenticated pages: private cache only
             patch_cache_control(response, private=True, max_age=0)
-        
+
         else:
             # Default: cache for 5 minutes
             patch_cache_control(response, public=True, max_age=300)
-        
+
         return response
 ```
 
@@ -825,7 +825,7 @@ class CacheHeadersTestCase(TestCase):
         """Test that search results have appropriate cache headers."""
         client = Client()
         response = client.get('/search/?q=Dallas')
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertIn('Cache-Control', response)
         self.assertIn('public', response['Cache-Control'])
@@ -835,7 +835,7 @@ class CacheHeadersTestCase(TestCase):
         """Test that calculator results have cache headers."""
         client = Client()
         response = client.get('/calculators/distance/')
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertIn('Cache-Control', response)
         self.assertIn('public', response['Cache-Control'])
@@ -844,7 +844,7 @@ class CacheHeadersTestCase(TestCase):
         """Test that Vary header is set for content negotiation."""
         client = Client()
         response = client.get('/search/?q=Dallas')
-        
+
         self.assertIn('Vary', response)
         self.assertIn('Accept', response['Vary'])
 
@@ -852,11 +852,11 @@ class CacheHeadersTestCase(TestCase):
         """Test that authenticated content is marked private."""
         # Create user
         user = User.objects.create_user('testuser', 'test@example.com', 'password')
-        
+
         client = Client()
         client.login(username='testuser', password='password')
         response = client.get('/profile/')
-        
+
         if response.status_code == 200:
             self.assertIn('Cache-Control', response)
             self.assertIn('private', response['Cache-Control'])
@@ -890,9 +890,9 @@ from django.core.cache import cache
 
 class Command(BaseCommand):
     """Clear application cache with optional pattern filtering."""
-    
+
     help = 'Clear application cache'
-    
+
     def add_arguments(self, parser):
         parser.add_argument(
             '--pattern',
@@ -904,30 +904,30 @@ class Command(BaseCommand):
             action='store_true',
             help='Show what would be cleared without actually clearing',
         )
-    
+
     def handle(self, *args, **options):
         pattern = options.get('pattern')
         dry_run = options.get('dry_run')
-        
+
         if dry_run:
             self.stdout.write(self.style.WARNING('DRY RUN - no changes will be made'))
-        
+
         if pattern:
             # Pattern-based clearing (requires Redis backend)
             self.stdout.write(f'Clearing cache keys matching: {pattern}')
-            
+
             # For locmem, we can't do pattern matching, just clear all
             if not dry_run:
                 cache.clear()
-            
+
             self.stdout.write(self.style.SUCCESS(f'✓ Cleared cache (pattern: {pattern})'))
         else:
             # Clear entire cache
             self.stdout.write('Clearing entire cache...')
-            
+
             if not dry_run:
                 cache.clear()
-            
+
             self.stdout.write(self.style.SUCCESS('✓ Cache cleared'))
 ```
 
@@ -974,16 +974,16 @@ class CachingIntegrationTestCase(TestCase):
     def test_search_caching_workflow(self):
         """Test complete search workflow with caching."""
         client = Client()
-        
+
         # First search (cache miss)
         response1 = client.get('/search/?q=Dallas')
         self.assertEqual(response1.status_code, 200)
-        
+
         # Same search (cache hit)
         response2 = client.get('/search/?q=Dallas')
         self.assertEqual(response2.status_code, 200)
         self.assertEqual(response1.content, response2.content)
-        
+
         # Different search (different cache key)
         response3 = client.get('/search/?q=Houston')
         self.assertEqual(response3.status_code, 200)
@@ -992,14 +992,14 @@ class CachingIntegrationTestCase(TestCase):
     def test_cache_invalidation(self):
         """Test that cache can be cleared."""
         client = Client()
-        
+
         # Cache a result
         response1 = client.get('/search/?q=Dallas')
         self.assertEqual(response1.status_code, 200)
-        
+
         # Clear cache
         cache.clear()
-        
+
         # Should work after clearing (fresh query)
         response2 = client.get('/search/?q=Dallas')
         self.assertEqual(response2.status_code, 200)
@@ -1007,17 +1007,17 @@ class CachingIntegrationTestCase(TestCase):
     def test_cache_key_variation(self):
         """Test that cache keys vary appropriately."""
         client = Client()
-        
+
         # Same path, different query params
         r1 = client.get('/search/?q=Dallas')
         r2 = client.get('/search/?q=Dallas&page=2')
         r3 = client.get('/search/?q=Houston')
-        
+
         # All should succeed
         self.assertEqual(r1.status_code, 200)
         self.assertEqual(r2.status_code, 200)
         self.assertEqual(r3.status_code, 200)
-        
+
         # All should be different
         self.assertNotEqual(r1.content, r2.content)
         self.assertNotEqual(r1.content, r3.content)
@@ -1045,7 +1045,7 @@ uv run python manage.py test apps.airports.tests.test_cache_utils
 
 Create `docs/travelmathlite/ops/caching.md`:
 
-```markdown
+````markdown
 # Caching Strategy and Operations
 
 ## Overview
@@ -1072,6 +1072,7 @@ CACHES = {
     }
 }
 ```
+````
 
 No setup required - works out of the box.
 
@@ -1109,7 +1110,7 @@ Expensive computations cached using Django's cache API:
 
 ### Cache Key Patterns
 
-```
+```text
 travelmathlite:airports:country:<code>
 travelmathlite:airports:filter:<params>
 travelmathlite:distance:haversine:<coords>
@@ -1256,21 +1257,19 @@ python manage.py clear_cache
 - [Redis Documentation](https://redis.io/documentation)
 - ADR-1.0.10: Caching Strategy
 
-```
-
 ---
 
 ## Summary
 
 You've successfully implemented Django's caching system for TravelMathLite:
 
-✅ **Configured cache backends** - locmem for dev, Redis for production  
-✅ **Applied per-view caching** - 5-10 minute TTLs on hot paths  
-✅ **Implemented low-level caching** - 15 minute TTLs for computed data  
-✅ **Added HTTP cache headers** - Browser and CDN caching support  
-✅ **Created management commands** - clear_cache, cache_stats  
-✅ **Wrote comprehensive tests** - Unit and integration test coverage  
-✅ **Documented operations** - Complete ops guide with troubleshooting  
+✅ **Configured cache backends** - locmem for dev, Redis for production
+✅ **Applied per-view caching** - 5-10 minute TTLs on hot paths
+✅ **Implemented low-level caching** - 15 minute TTLs for computed data
+✅ **Added HTTP cache headers** - Browser and CDN caching support
+✅ **Created management commands** - clear_cache, cache_stats
+✅ **Wrote comprehensive tests** - Unit and integration test coverage
+✅ **Documented operations** - Complete ops guide with troubleshooting
 
 ### Key Takeaways
 
@@ -1291,7 +1290,7 @@ You've successfully implemented Django's caching system for TravelMathLite:
 
 ---
 
-## References
+## External References
 
 - **Django Documentation:**
   - [Caching Framework](https://docs.djangoproject.com/en/stable/topics/cache/)
