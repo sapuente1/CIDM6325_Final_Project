@@ -60,3 +60,18 @@ Expected: HTTP 200 with `{"status": "ok"}` and `X-Request-ID` header.
 - Missing headers or prod flags: confirm `DJANGO_SETTINGS_MODULE=core.settings.prod` and required env vars are set.
 - Static 404s: ensure `collectstatic` ran and `STATIC_ROOT` is writable.
 - To roll back quickly: stop the gunicorn process, revert env changes, and restart with known-good settings.
+
+## Deploy checklist
+
+- [ ] Set required envs: `SECRET_KEY`, `ALLOWED_HOSTS`, `PORT` (platform), `DATABASE_URL` (if not sqlite).
+- [ ] Run `uv run python travelmathlite/manage.py collectstatic --noinput --clear`.
+- [ ] Start app with `DJANGO_SETTINGS_MODULE=core.settings.prod uv run gunicorn core.wsgi:application --bind 0.0.0.0:${PORT:-8000}`.
+- [ ] Smoke test: `curl -f http://localhost:${PORT:-8000}/health/` (expect 200 + `{"status": "ok"}` + `X-Request-ID`).
+- [ ] Tail logs for errors: `tail -f /tmp/logs.json | jq 'select(.level=="ERROR")'` (or your log path).
+
+## Rollback checklist
+
+- Stop gunicorn process.
+- Revert recent env changes (e.g., unset bad overrides).
+- If static is corrupted, rerun collectstatic or restore previous staticfiles.
+- Restart with known-good env; re-run health smoke.
