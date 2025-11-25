@@ -29,6 +29,13 @@ Links: ADR-1.0.12, PRD §4 (F-012/F-014), NF-003.
 - `RATE_LIMIT_AUTH_MAX_REQUESTS` (default: `5`)
 - `RATE_LIMIT_AUTH_WINDOW` (default: `60` seconds)
 
+## Operational toggles and quick actions
+- Disable login/signup rate limiting temporarily: `RATE_LIMIT_AUTH_ENABLED=0` (restart app).
+- Relax or tighten limits: set `RATE_LIMIT_AUTH_MAX_REQUESTS` and `RATE_LIMIT_AUTH_WINDOW` (seconds); defaults are 5 in 60s.
+- Enforce HTTPS redirects/HSTS: ensure `SECURE_SSL_REDIRECT=1` and `SECURE_HSTS_SECONDS>0`; set `SECURE_HSTS_INCLUDE_SUBDOMAINS=1` in prod.
+- Local dev without redirects: `SECURE_SSL_REDIRECT=0` in `core/settings/local.py`.
+- Adjust sanitization allowlist: override `BLEACH_ALLOWED_TAGS/ATTRIBUTES/PROTOCOLS`; defaults allow basic text and links only.
+
 ## Input sanitization
 - `apps/base/utils/sanitize.py` centralizes `sanitize_html` using bleach allowlists.
 - Template filter `{% load sanitize %} {{ value|sanitize_html }}` sanitizes user-provided HTML while preserving allowed tags.

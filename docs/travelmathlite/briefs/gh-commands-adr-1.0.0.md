@@ -117,3 +117,39 @@ gh issue create \
   -F <path-to-brief-markdown> \
   -l brief -l ADR -l travelmathlite
 ```
+
+## ADR-1.0.12 security briefs (issues-only)
+
+Run from repo root; adjust base branch if not `FALL2025`.
+
+```bash
+# 01 — Security settings hardening
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.12 — Security settings hardening" \
+  -F docs/travelmathlite/briefs/adr-1.0.12/brief-ADR-1.0.12-01-security-settings.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+
+# 02 — Auth rate limiting
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.12 — Auth rate limiting" \
+  -F docs/travelmathlite/briefs/adr-1.0.12/brief-ADR-1.0.12-02-auth-rate-limiting.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+
+# 03 — Input sanitization
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.12 — Input sanitization" \
+  -F docs/travelmathlite/briefs/adr-1.0.12/brief-ADR-1.0.12-03-input-sanitization.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+
+# 04 — Security tests
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.12 — Security tests" \
+  -F docs/travelmathlite/briefs/adr-1.0.12/brief-ADR-1.0.12-04-security-tests.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+
+# 05 — Security docs and toggles
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.12 — Security docs and toggles" \
+  -F docs/travelmathlite/briefs/adr-1.0.12/brief-ADR-1.0.12-05-security-docs-and-toggles.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+```

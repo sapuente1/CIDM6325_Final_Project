@@ -102,6 +102,8 @@ Task-level implementation guides organized by ADR:
 
 - **[Brief Template](briefs/copilot_brief_template_v1.0.0.md)**
   - Template for new task briefs
+- **[Security Controls Guide](../security.md)**
+  - Security headers/cookies, rate limits, sanitization toggles, and verification commands
 
 ### Calculators & Algorithms
 

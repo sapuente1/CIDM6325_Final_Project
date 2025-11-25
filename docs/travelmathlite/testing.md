@@ -6,6 +6,12 @@ This document describes the testing strategy and infrastructure for TravelMathLi
 
 TravelMathLite uses Django's built-in TestCase framework (no pytest) with custom base classes to provide deterministic, isolated tests across all apps.
 
+### Security-focused test entry points
+- Security headers/CSRF: `uv run python travelmathlite/manage.py test core.tests.test_security`
+- Auth rate limiting: `uv run python travelmathlite/manage.py test apps.accounts.tests.test_rate_limit`
+- Sanitization: `uv run python travelmathlite/manage.py test core.tests.test_sanitization apps.trips.tests.test_sanitization`
+- See `docs/security.md` for env toggles and manual verification steps.
+
 ## Test Infrastructure
 
 ### Base Test Classes
