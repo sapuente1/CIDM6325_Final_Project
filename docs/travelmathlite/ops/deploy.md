@@ -29,6 +29,7 @@ Notes:
 - Security (optional overrides): `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS`, etc. (see `docs/security.md`)
 - Logging (optional): `LOG_LEVEL`, `REQUEST_LOG_LEVEL`
 - Sentry (optional): `SENTRY_DSN`, `SENTRY_ENV`, `SENTRY_RELEASE`
+- Health endpoint check: `/health/` returns 200 with JSON `{"status": "ok"}` and `X-Request-ID` header.
 
 ## Static assets
 
