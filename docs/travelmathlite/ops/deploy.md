@@ -35,12 +35,14 @@ Notes:
 Run collectstatic before serving:
 
 ```bash
-uv run python travelmathlite/manage.py collectstatic --noinput
+# Optional: clear old files, then collect
+uv run python travelmathlite/manage.py collectstatic --noinput --clear
 ```
 
 Defaults:
 - `STATIC_ROOT` = `travelmathlite/staticfiles` (override via env)
 - Manifest/hashed assets enabled when `USE_MANIFEST_STATIC=1` or `DEBUG=False`
+- Storage: `ManifestStaticFilesStorage` when enabled; hashed filenames for cache busting.
 
 ## Smoke test
 
