@@ -153,3 +153,39 @@ ISSUE_URL=$(gh issue create \
   -F docs/travelmathlite/briefs/adr-1.0.12/brief-ADR-1.0.12-05-security-docs-and-toggles.md \
   -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
 ```
+
+## ADR-1.0.13 observability briefs (issues-only)
+
+Run from repo root; adjust base branch if not `FALL2025`.
+
+```bash
+# 01 — Structured logging
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.13 — Structured logging" \
+  -F docs/travelmathlite/briefs/adr-1.0.13/brief-ADR-1.0.13-01-structured-logging.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+
+# 02 — Custom error templates
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.13 — Custom error templates" \
+  -F docs/travelmathlite/briefs/adr-1.0.13/brief-ADR-1.0.13-02-error-templates.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+
+# 03 — Optional Sentry toggle
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.13 — Optional Sentry toggle" \
+  -F docs/travelmathlite/briefs/adr-1.0.13/brief-ADR-1.0.13-03-sentry-toggle.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+
+# 04 — Observability tests
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.13 — Observability tests" \
+  -F docs/travelmathlite/briefs/adr-1.0.13/brief-ADR-1.0.13-04-observability-tests.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+
+# 05 — Logging/error docs and runbook
+ISSUE_URL=$(gh issue create \
+  -t "BRIEF: ADR-1.0.13 — Logging/error docs and runbook" \
+  -F docs/travelmathlite/briefs/adr-1.0.13/brief-ADR-1.0.13-05-logging-docs-and-runbook.md \
+  -l brief -l ADR -l travelmathlite) && ISSUE_URL=$(echo "$ISSUE_URL" | tail -n1) && export ISSUE_NUM=${ISSUE_URL##*/} && echo "ISSUE_NUM=$ISSUE_NUM"
+```
