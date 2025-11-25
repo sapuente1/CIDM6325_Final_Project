@@ -10,6 +10,10 @@
 
 ## Logging
 - Format: JSON lines with `timestamp`, `level`, `module`, `message`, `request_id`, `duration_ms`, `path`, `method`, `status_code`, optional `exc_info`.
+  - Example request log:
+    ```json
+    {"timestamp": "...", "level": "INFO", "module": "middleware", "message": "request completed", "request_id": "abcd-1234", "duration_ms": 18.3, "path": "/accounts/login/", "method": "POST", "status_code": 429}
+    ```
 - Env toggles:
   - `LOG_LEVEL` (root, default INFO)
   - `DJANGO_LOG_LEVEL` (Django loggers, default INFO)
@@ -19,6 +23,9 @@
   uv run python travelmathlite/manage.py runserver 2>&1 | tee /tmp/logs.json
   tail -f /tmp/logs.json | jq 'select(.level=="ERROR")'
   ```
+- Notes:
+  - `RequestLoggingMiddleware` emits per-request logs; keep it after `RequestIDMiddleware`.
+  - To quiet noisy logs temporarily: `REQUEST_LOG_LEVEL=WARNING` (see Rollback below).
 - Tests: `uv run python travelmathlite/manage.py test core.tests.test_logging core.tests.test_health`
 
 ## Error pages (404/500)
