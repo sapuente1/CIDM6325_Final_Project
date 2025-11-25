@@ -6,6 +6,8 @@ for deterministic, isolated testing across all apps.
 Follows ADR-1.0.11 testing strategy: Django TestCase only, no pytest.
 """
 
+import sys
+from types import SimpleNamespace
 from typing import Any
 from unittest.mock import Mock, patch
 
@@ -111,6 +113,22 @@ class MockingTestCase(BaseTestCase):
     and other I/O operations to ensure deterministic tests.
     """
 
+    def _ensure_requests_module(self) -> Any:
+        """Ensure a requests-like module exists for patching.
+
+        If the real `requests` package is not installed, we create a lightweight
+        stand-in so patch() has a target to attach to.
+        """
+        if "requests" not in sys.modules:
+            sys.modules["requests"] = SimpleNamespace(get=lambda *args, **kwargs: None, post=lambda *args, **kwargs: None)
+
+        requests_module = sys.modules["requests"]
+        if not hasattr(requests_module, "get"):
+            requests_module.get = lambda *args, **kwargs: None  # type: ignore[attr-defined]
+        if not hasattr(requests_module, "post"):
+            requests_module.post = lambda *args, **kwargs: None  # type: ignore[attr-defined]
+        return requests_module
+
     def mock_http_get(self, url: str, response_data: Any, status_code: int = 200) -> Mock:
         """Mock an HTTP GET request.
 
@@ -122,6 +140,7 @@ class MockingTestCase(BaseTestCase):
         Returns:
             Mock object for further customization
         """
+        self._ensure_requests_module()
         mock_response = Mock()
         mock_response.status_code = status_code
         mock_response.json.return_value = response_data
@@ -143,6 +162,7 @@ class MockingTestCase(BaseTestCase):
         Returns:
             Mock object for further customization
         """
+        self._ensure_requests_module()
         mock_response = Mock()
         mock_response.status_code = status_code
         mock_response.json.return_value = response_data

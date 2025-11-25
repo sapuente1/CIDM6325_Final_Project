@@ -49,6 +49,7 @@ Extends BaseTestCase with utilities for mocking external calls.
 - Mock HTTP GET/POST requests
 - Mock external APIs and functions
 - Automatic mock cleanup after each test
+- Examples: `apps/base/tests/test_mocking_examples.py` shows HTTP mocking and time freezing patterns.
 
 **Example Usage:**
 
@@ -264,11 +265,18 @@ For behavioral validation, use Playwright scripts alongside unit tests:
 uv run python manage.py test
 
 # Run visual checks (optional)
-uvx playwright install
-uvx python scripts/visual_check.py
+uvx playwright install chromium
+
+# Calculators HTMX visual checks
+uv run python travelmathlite/scripts/visual_check_htmx_calculators.py
+
+# Search flow visual checks
+uv run python travelmathlite/scripts/visual_check_search.py
 ```
 
 Visual checks capture screenshots and verify UI flows but do NOT replace unit tests.
+
+Screenshots: `travelmathlite/screenshots/calculators/` (created by the HTMX script).
 
 ## Continuous Integration
 

@@ -12,6 +12,9 @@ DEBUG = True
 # Useful local defaults: allow all hosts for convenience
 ALLOWED_HOSTS = ["*"]
 
+# Disable HTTPS redirects locally even when DJANGO_DEBUG is unset.
+SECURE_SSL_REDIRECT = False
+
 # When developing locally, prefer an on-disk sqlite DB unless overridden.
 # Use BASE_DIR from base.py for consistent paths.
 DATABASES = {
