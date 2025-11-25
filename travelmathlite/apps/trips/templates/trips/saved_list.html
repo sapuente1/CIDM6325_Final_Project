@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load sanitize %}
 
 {% block title %}Saved Calculations - TravelMathLite{% endblock %}
 
@@ -32,7 +33,7 @@
                     {% with inputs=calc.get_inputs %}
                       {% if inputs %}
                         {% for key, value in inputs.items %}
-                          <strong>{{ key }}:</strong> {{ value }}{% if not forloop.last %}, {% endif %}
+                          <strong>{{ key }}:</strong> {{ value|sanitize_html }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                       {% else %}
                         No data

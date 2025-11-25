@@ -20,6 +20,17 @@ Links: ADR-1.0.12, PRD §4 (F-012/F-014), NF-003.
 - `SECURE_REFERRER_POLICY` (default: `strict-origin-when-cross-origin`)
 - `X_FRAME_OPTIONS` (default: `DENY`)
 - `USE_WHITENOISE` (prod default: `true`)
+- `BLEACH_ALLOWED_TAGS` (default: `p, br, strong, em, b, i, u, a, ul, ol, li`)
+- `BLEACH_ALLOWED_ATTRIBUTES` (default: `{"a": ["href", "title", "rel"]}`)
+- `BLEACH_ALLOWED_PROTOCOLS` (default: `http, https, mailto`)
+- `BLEACH_STRIP` (default: `true`)
+- `BLEACH_STRIP_COMMENTS` (default: `true`)
+
+## Input sanitization
+- `apps/base/utils/sanitize.py` centralizes `sanitize_html` using bleach allowlists.
+- Template filter `{% load sanitize %} {{ value|sanitize_html }}` sanitizes user-provided HTML while preserving allowed tags.
+- Applied in `trips/templates/trips/saved_list.html` for saved calculation inputs; search/results rely on Django autoescape + safe highlight filter.
+- Tests: `core/tests/test_sanitization.py` (utility/filter) and `apps/trips/tests/test_sanitization.py` (saved calculations render sanitized).
 
 ## Verification
 - Automated: `core.tests.test_settings_prod.ProdSettingsTest` checks secure cookie flags and header defaults.

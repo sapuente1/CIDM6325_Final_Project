@@ -173,6 +173,19 @@ SECURE_HSTS_SECONDS = int(env("SECURE_HSTS_SECONDS", default="31536000" if not D
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=not DEBUG)
 SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=False)
 
+# Input sanitization allowlists
+BLEACH_ALLOWED_TAGS = env.list(
+    "BLEACH_ALLOWED_TAGS",
+    default=["p", "br", "strong", "em", "b", "i", "u", "a", "ul", "ol", "li"],
+)
+BLEACH_ALLOWED_ATTRIBUTES = env.json(
+    "BLEACH_ALLOWED_ATTRIBUTES",
+    default={"a": ["href", "title", "rel"]},
+)
+BLEACH_ALLOWED_PROTOCOLS = env.list("BLEACH_ALLOWED_PROTOCOLS", default=["http", "https", "mailto"])
+BLEACH_STRIP = env.bool("BLEACH_STRIP", default=True)
+BLEACH_STRIP_COMMENTS = env.bool("BLEACH_STRIP_COMMENTS", default=True)
+
 
 # Logging configuration
 # Structured JSON logging with request metadata per ADR-1.0.9
