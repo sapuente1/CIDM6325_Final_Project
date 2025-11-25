@@ -12,6 +12,10 @@ TravelMathLite uses Django's built-in TestCase framework (no pytest) with custom
 - Sanitization: `uv run python travelmathlite/manage.py test core.tests.test_sanitization apps.trips.tests.test_sanitization`
 - See `docs/security.md` for env toggles and manual verification steps.
 
+### Observability-focused test entry points
+- Logging/health: `uv run python travelmathlite/manage.py test core.tests.test_logging core.tests.test_health`
+- See `docs/travelmathlite/ops/logging-and-errors.md` for log fields and error page guidance.
+
 ## Test Infrastructure
 
 ### Base Test Classes

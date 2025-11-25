@@ -104,6 +104,8 @@ Task-level implementation guides organized by ADR:
   - Template for new task briefs
 - **[Security Controls Guide](../security.md)**
   - Security headers/cookies, rate limits, sanitization toggles, and verification commands
+- **[Logging and Error Handling Guide](ops/logging-and-errors.md)**
+  - JSON log fields, request_id correlation, 404/500 preview steps, optional Sentry toggle guidance
 
 ### Calculators & Algorithms
 
