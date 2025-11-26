@@ -66,7 +66,7 @@
         </ul>
 
         {% if page_obj.paginator.num_pages > 1 %}
-          {% include "includes/pagination.html" %}
+          {% with q_encoded=query|urlencode %}{% include "includes/pagination.html" with querystring='q='|add:q_encoded %}{% endwith %}
         {% endif %}
       {% else %}
         <p class="text-muted" aria-live="polite">No results.</p>
