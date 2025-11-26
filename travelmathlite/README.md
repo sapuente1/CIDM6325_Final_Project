@@ -47,6 +47,7 @@ Visit <http://127.0.0.1:8000> to see the application.
 - **[ADRs](../docs/travelmathlite/adr/)** - Architecture Decision Records
 - **[PRD](../docs/travelmathlite/prd/)** - Product Requirements Document
 - **[Briefs](../docs/travelmathlite/briefs/)** - Task-level implementation guides
+- **[UI Stack (Bootstrap + HTMX)](../docs/ux/ui-stack.md)** - Asset pins, includes, patterns, and screenshots
 
 ### Calculators
 
