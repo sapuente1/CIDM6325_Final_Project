@@ -45,6 +45,7 @@ This guide describes how TravelMathLite uses Bootstrap 5 + HTMX, where shared in
   - `search.png` — Search results list + pagination
   - `nearest.png` — Nearest airports form + results
 - Replace placeholders with real captures during manual verification.
+- Attestation notes and checklist live in `docs/travelmathlite/ui/attestation.md` (what to capture and what to check).
 
 ## Component catalogue
 
