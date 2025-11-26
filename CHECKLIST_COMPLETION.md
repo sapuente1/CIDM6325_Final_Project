@@ -1,6 +1,6 @@
-# Django Blog PRD Alignment Checklist — Completed with Notes
+# TravelMathLite PRD Alignment Checklist — Completed with Notes
 
-This document is a filled-in copy of `LAYMAN_CHECKLIST_01.md`, marked against the current repository state (branch FALL2025) and annotated with brief notes pointing to code, tests, and any gaps/TODOs.
+This document is a filled-in, travelmathlite-focused copy of `LAYMAN_CHECKLIST_01.md`, marked against the current repository state (`travelmathlite/` app suite) and annotated with brief notes pointing to code, tests, and gaps/TODOs.
 
 Legend
 
@@ -11,296 +11,233 @@ Legend
 
 ## 1. From Browser to Django (Introductory Context)
 
-- [x] HTTP request/response flow — URLs → CBV views → templates are wired: `blog/urls.py` maps to CBVs in `blog/views.py`, rendering templates under `blog/templates/blog/`.
-- [ ] Runserver demonstration — Pending screenshots/asciinema; can run via `python blog_site/manage.py runserver` and visit `/blog/`.
-- [ ] Console inspection — No explicit logging added; add debug logging middleware or view prints if desired.
-- [x] Code commentary — CBVs include concise docstrings describing purpose and flow in `blog/views.py`.
-- [ ] Visual diagram (optional) — Not included (optional teaching aid).
+- [x] HTTP request/response flow — `core/urls.py` wires calculators/airports/search/accounts/trips to CBVs in `apps/*/views.py`, returning templates/partials.
+- [ ] Runserver demonstration — Not recorded; run `uv run python manage.py runserver` from `travelmathlite/` to capture screenshots/asciinema.
+- [x] Console inspection — `core.middleware.RequestLoggingMiddleware` emits JSON logs with request_id/duration; validated in `core/tests/test_observability.py`.
+- [x] Code commentary — Views/models carry concise docstrings (e.g., `apps/calculators/views.py`, `apps/airports/models.py`).
+- [ ] Visual diagram (optional) — No request/response diagram checked in.
 
 ---
 
 ## 2. URLs Lead the Way
 
-- [x] urls.py created — App URLs in `blog/urls.py` with names: `post_list`, `post_detail`, `post_create`, `post_update`, `post_delete` (implemented as CBVs per repo norms).
-- [x] Namespace clarity — Project URLs include `blog/` with `include('blog.urls', namespace='blog')` in `myblog/urls.py`.
-- [x] URL naming discipline — All routes use `name=` and are reversed in templates/tests.
-- [x] Canonical link alignment — Detail pattern `post/<slug:slug>/` matches PRD intent; slugs are unique.
-- [x] Test coverage (resolve) — `resolve()` asserted in tests (see `test_new_route_not_captured_by_slug`); guards route ordering and pattern collisions.
+- [x] urls.py created — Namespaced app URLs under `core/urls.py`; app routes in `apps/*/urls.py`.
+- [x] Namespace clarity — `include(..., namespace=...)` used for calculators, airports, search, accounts, trips, base.
+- [x] URL naming discipline — All routes named and reversed in templates/tests (see `apps/base/tests/test_namespaces.py`, `apps/calculators/tests.py`).
+- [x] Canonical link alignment — Canonical tags on search results (`apps/search/templates/search/results.html`); SEO endpoints `sitemap.xml`/`robots.txt` wired.
+- [x] Test coverage (resolve/reverse) — URL reverse/resolve tests across apps (e.g., `apps/airports/tests/tests_views.py`, `apps/search/tests/test_root.py`).
 
 ---
 
 ## 3. Views on Views
 
-- [x] Views defined — Implemented directly as CBVs (List/Detail/Create/Update/Delete) in `blog/views.py`.
-- [x] Proper rendering — CBVs render templates (Django’s `render()` under the hood).
-- [x] View docstrings — Present in CBVs; align with Layman’s “views mediate between model and template.”
-- [x] Error handling — `DetailView` with filtered queryset 404s when not found; `get_queryset()` restricts to published posts.
-- [x] Unit tests — `blog/tests.py` covers list/detail 200s and CRUD redirects.
+- [x] Views defined — CBVs for calculators (FormView), airports (FormView/JSON), search (TemplateView), auth/trips (Template/List/Delete).
+- [x] Proper rendering — Views return templates or HTMX partials with fallbacks for non-HTMX POSTs.
+- [x] View docstrings — Present on custom middleware, models, and views for intent/context.
+- [x] Error handling — Form validation and queryset scoping (e.g., `SavedCalculationDeleteView` filters by user) ensure 404/validation paths.
+- [x] Unit tests — Extensive view/form tests in `apps/calculators/tests`, `apps/airports/tests/tests_views.py`, `apps/search/tests/test_views.py`.
 
 ---
 
 ## 4. Templates for User Interfaces
 
-- [x] Templates configured — `APP_DIRS=True` in `myblog/settings.py`; app templates under `blog/templates/blog/`.
-- [x] Base template — `blog/base.html` with `{% block content %}` and `{% block extra_js %}`; pages extend `"blog/base.html"`.
-- [x] List/detail render — Titles, dates, and body rendered; body uses `markdown_safe|safe` sanitization.
-- [x] Template tags — `{% url 'blog:post_detail' slug=post.slug %}` used in list/detail navigation.
-- [x] Markdown rendering verified — Custom filter `blog/templatetags/markdown_extras.py` plus tests sanitize `<script>`.
-- [ ] Accessibility compliance — Not audited yet; recommend heading order, landmarks, and link contrast check.
+- [x] Templates configured — `core/settings/base.py` includes project `templates/` and app directories.
+- [x] Base template — `templates/base.html` with navbar/footer/includes; pages extend base and use Bootstrap 5 + HTMX pins.
+- [x] Feature templates — Calculators, nearest airports, search results, auth, and trips render structured layouts with partials for HTMX swaps.
+- [x] Template tags — Safe highlight filter (`apps/search/templatetags/highlight.py`) and sanitize filter (`apps/base/templatetags/sanitize.py`) used for user text.
+- [ ] Accessibility compliance — ARIA labels/focus scripting exist, but no formal a11y audit/contrast report checked in.
 
 ---
 
 ## 5. User Interaction with Forms
 
-- [x] Form created — `PostForm` (ModelForm) in `blog/forms.py` with Bootstrap widgets and `.markdown-editor` class.
-- [x] CSRF token — Included in `blog/templates/blog/post_form.html`.
-- [ ] Validation hooks — Relying on model/field validation; no custom `clean_` methods currently (can add for title rules).
-- [x] Form lifecycle — CBVs demonstrate GET form, POST process, redirect; verified by 302s in tests.
-- [x] Optional enrichment — ModelForm used; `commit=False` example not included (optional for teaching).
+- [x] Forms created — Calculator and nearest-airport forms with custom validators (`apps/calculators/forms.py`, `apps/airports/forms.py`).
+- [x] CSRF token — Present across templates.
+- [x] Validation handled — Clean methods resolve city/IATA/latlon and enforce ranges/units.
+- [x] Form lifecycle — GET shows form; POST/HTMX renders partial results; non-HTMX POST falls back to full template.
+- [ ] Persistence — Session helpers exist (`core/session.py`) but calculators do not yet persist last inputs for reuse.
 
 ---
 
 ## 6. Store Data with Models
 
-- [x] Post model — `title`, `slug` (editable=False), `body`, `publish_date`, `tags` in `blog/models.py`.
-- [x] Migrations applied — Initial migration present under `blog/migrations/`.
-- [x] Admin entry — `blog/admin.py` registers `Post` with custom admin config.
-- [x] Slug uniqueness — Enforced via custom `save()` generating unique slugs.
-- [ ] Model methods — `get_absolute_url()` not yet implemented (quick add possible; currently reversed in views).
-- [x] ORM queries — Views use `Post.objects.filter(...)` with `publish_date__lte=timezone.now()`.
-- [x] Persistence tests — CRUD flow covered in `blog/tests.py`.
+- [x] Domain models — Country/City (normalized), Airport, Profile, SavedCalculation implemented with indexes and managers.
+- [x] Migrations applied — Initial migrations under each app.
+- [x] Admin entry — ModelAdmins for base/airports/trips with search/filter (`apps/base/admin.py`, `apps/airports/admin.py`, `apps/trips/admin.py`).
+- [ ] Model methods — No `get_absolute_url()` on public models (not needed yet).
+- [x] ORM queries — Views rely on QuerySets (nearest search, search results) with tests covering CRUD (`apps/airports/tests/tests_import.py`, `apps/trips/tests/test_saved_calculation.py`).
 
 ---
 
 ## 7. Administer All the Things
 
-- [ ] Admin site enabled — Superuser creation not documented here (run `createsuperuser` when needed).
-- [x] Custom ModelAdmin — `list_display`, `search_fields`; note: no `prepopulated_fields` because `slug` is `editable=False` (slug is auto-generated in model to avoid the admin KeyError observed earlier).
-- [x] Markdown preview integration — EasyMDE enabled on `body` in custom `change_form.html`.
-- [ ] Permissions model — Public authoring route exists; no staff-only restriction implemented yet.
-- [ ] Screenshots/docs — Not included yet; suggested for teaching alignment with Layman’s chapter.
-- [ ] Admin tests — No auth-protected admin tests currently.
+- [x] Admin site enabled — `core/urls.py: admin/`; custom ModelAdmins registered.
+- [ ] Admin usage docs — Superuser creation and screenshots not documented.
+- [x] Custom ModelAdmin — List/search/filter configs for Airport/Country/City/SavedCalculation; select_related in trips admin queryset.
+- [ ] Permissions model — No staff-only customization beyond defaults; calculators remain public.
+- [x] Admin tests — See `apps/airports/tests/test_admin.py`, `apps/base/tests/test_admin.py`.
 
 ---
 
 ## 8. Anatomy of an Application
 
-- [x] App layout — Matches Django convention (blog app contains admin/forms/models/templates/tests/urls/views).
-- [ ] Settings modularization — Single `settings.py` only; could split into `base/dev/prod` if desired.
-- [x] INSTALLED_APPS — Includes `'blog'` and `'taggit'`.
-- [ ] Static files pipeline — No Whitenoise/collectstatic setup (not required for local dev).
-- [ ] README mapping — No explicit “Anatomy” mapping section in `README.MD` yet.
-- [x] Navigability — URLs → Views → Templates → Models → Admin are discoverable and consistent.
+- [x] App layout — Conventional Django app structure under `travelmathlite/apps/`.
+- [x] Settings modularization — `core/settings/{base,local,prod}.py` with env-driven config.
+- [x] INSTALLED_APPS — Domain apps plus contrib apps declared in `core/settings/base.py`.
+- [x] Static files pipeline — WhiteNoise middleware plus `STATICFILES_DIRS`; CSS overrides in `static/css/`.
+- [x] README mapping — `travelmathlite/README.md` documents structure and quickstart.
 
 ---
 
 ## 9. User Authentication
 
-- [x] Authentication system enabled — `django.contrib.auth` in `INSTALLED_APPS`; `AuthenticationMiddleware` in middleware stack.
-- [ ] Login/Logout views — Not yet configured; recommend adding `LoginView`/`LogoutView` from `django.contrib.auth.views`.
-- [ ] User registration — Not implemented; consider adding signup form or document third-party packages.
-- [ ] Login required decorator — Not yet applied to any views; recommend protecting create/update/delete views with `@login_required` or `LoginRequiredMixin`.
-- [ ] User permissions — No permission checks currently; all CRUD operations are public.
-- [ ] Password management — Django's built-in password validators configured in settings; reset flow not implemented.
-- [ ] Templates — No login/logout templates created yet.
-- [ ] Tests — No authentication tests; recommend adding tests for login redirects and protected views.
+- [x] Authentication system enabled — Django auth in INSTALLED_APPS/middleware.
+- [x] Login/Logout views — `RateLimitedLoginView` + Logout wired; password reset routes configured.
+- [x] User registration — `SignupView` uses `UserCreationForm`; templates under `apps/accounts/templates/registration/`.
+- [ ] Permissions — No role/permission gating beyond LoginRequired for saved calculations; calculators open to anonymous users.
+- [x] Tests — Auth templates/rate limiting/profile upload covered (`apps/accounts/tests/test_rate_limit.py`, `test_profile.py`).
 
 ---
 
 ## 10. Middleware Do You Go?
 
-- [x] Middleware stack reviewed — Standard middleware in `myblog/settings.py`: SecurityMiddleware, SessionMiddleware, CommonMiddleware, CsrfViewMiddleware, AuthenticationMiddleware, MessagesMiddleware, XFrameOptionsMiddleware.
-- [ ] Custom middleware created — No custom middleware; optional example (logging, request timer) could be added for teaching.
-- [ ] Middleware order documented — Order follows Django defaults; no explicit documentation in README.
-- [x] Common middleware explained — Standard Django middleware stack present and configured correctly.
-- [ ] Process request/response hooks — Not demonstrated; could add custom middleware example.
-- [ ] Exception handling — No custom exception middleware; relying on Django defaults.
-- [ ] Tests — No middleware-specific tests.
+- [x] Middleware stack reviewed — RequestID, RequestLogging, CacheHeader, WhiteNoise, security/auth stack in `core/settings/base.py`.
+- [x] Custom middleware created — Request ID/timing and cache headers in `core/middleware.py` with tests in `core/tests/test_observability.py`.
+- [x] Common middleware explained — Cache policies per ADR-1.0.10 applied to calculators/search.
+- [ ] Middleware ordering docs — No README narrative; GZip not enabled (rely on platform).
+- [x] Tests — Caching and request logging verified (`apps/calculators/test_caching.py`, `apps/search/tests/test_caching.py`).
 
 ---
 
 ## 11. Serving Static Files
 
-- [x] Static files configuration — `STATIC_URL = "static/"` in settings; `django.contrib.staticfiles` in `INSTALLED_APPS`.
-- [ ] Static directory structure — No `blog/static/blog/` directory currently; static assets not yet added.
-- [ ] Template integration — No `{% load static %}` usage yet; would be needed when adding CSS/JS.
-- [x] Development serving — `django.contrib.staticfiles` enabled for dev serving.
-- [ ] Production strategy — No `STATIC_ROOT` or `collectstatic` configuration yet; not documented.
-- [ ] Whitenoise integration — Not configured; recommend for production deployment.
-- [ ] Assets verified — No CSS/JS assets to verify yet.
-- [ ] Tests — No static file tests.
+- [x] Static files configuration — `STATIC_URL`, `STATICFILES_DIRS`, optional ManifestStaticFilesStorage via env; WhiteNoise middleware active.
+- [x] Template integration — `{% load static %}` and Bootstrap/HTMX pins in `templates/includes/head.html`.
+- [x] Assets verified — CSS overrides and screenshots for calculators under `travelmathlite/screenshots/calculators/`.
+- [ ] Production strategy — CDN/cache headers not documented; STATIC_ROOT/collectstatic steps not recorded.
+- [ ] Tests — No static asset tests.
 
 ---
 
 ## 12. Test Your Apps
 
-- [x] Test suite created — `blog/tests.py` contains test classes.
-- [x] Django TestCase used — All tests use `django.test.TestCase` (not pytest, per project norms).
-- [x] Model tests — Slug generation and uniqueness tested implicitly through CRUD tests.
-- [x] View tests — Status codes (200, 302), template rendering, CRUD operations all tested.
-- [x] Form tests — Form submission tested through CBV POST tests.
-- [x] URL tests — `resolve()` tested for route ordering (`test_new_route_not_captured_by_slug`).
-- [ ] Coverage target — No coverage report run yet; recommend using `coverage.py` to measure.
-- [ ] Test data — Tests create data in `setUp()`; no fixtures or factories yet.
-- [ ] CI integration — No GitHub Actions workflow yet; recommend adding test automation.
-- [x] Documentation — Test run instructions in main README; could be expanded.
+- [x] Test suite created — Django TestCase suites across calculators, airports, base, search, accounts, trips.
+- [x] Model/view/form tests — Coverage for nearest lookup, calculators (HTMX), search pagination/highlight, auth rate limiting, saved calculations.
+- [x] CI integration — `.github/workflows/travelmathlite-tests.yml` runs lint/format/check/migrations/tests on push/PR.
+- [ ] Coverage target — No coverage report; tests not rerun locally in this session.
+- [ ] CI scope — Workflow currently runs app subset (airports/base); full suite relies on local runs.
 
 ---
 
 ## 13. Deploy A Site Live
 
-- [ ] Deployment target selected — Not yet deployed; document target platform when ready.
-- [ ] Environment variables — `SECRET_KEY` hardcoded in settings (insecure); recommend moving to environment variables.
-- [ ] Database configured — Using SQLite (dev only); need PostgreSQL or similar for production.
-- [ ] Static files served — No `STATIC_ROOT` or `collectstatic` setup yet.
-- [ ] ALLOWED_HOSTS — Currently empty list (only works for localhost); needs production domain.
-- [x] DEBUG mode — Set to `True` in dev; needs `DEBUG = False` for production.
-- [ ] HTTPS enforced — No SSL settings configured yet; recommend `SECURE_SSL_REDIRECT = True` for prod.
-- [ ] Deployment checklist — Not run yet; recommend `python manage.py check --deploy`.
-- [ ] Monitoring — No error tracking (Sentry, etc.) configured.
-- [ ] Documentation — No deployment documentation yet.
+- [x] Production settings — `core/settings/prod.py` enforces SECRET_KEY/ALLOWED_HOSTS, secure cookies, HSTS, SSL redirect.
+- [ ] Deployment target — No platform/ALB/CDN docs or rollback plan.
+- [ ] Static/media serving — WhiteNoise ready, but CDN/collectstatic steps and monitoring not documented.
+- [ ] HTTPS enforcement — No cert/ingress setup captured; deploy checklist not run.
 
 ---
 
 ## 14. Per-visitor Data With Sessions
 
-- [x] Session middleware — `SessionMiddleware` enabled in middleware stack (default).
-- [x] Session backend — Database-backed sessions (default Django configuration).
-- [ ] Session data usage — No example views using `request.session` yet; optional teaching example.
-- [x] Session expiration — Using Django defaults; not customized (`SESSION_COOKIE_AGE` not set).
-- [ ] Security settings — `SESSION_COOKIE_SECURE` and `SESSION_COOKIE_HTTPONLY` not configured yet (needed for production).
-- [ ] Session cleanup — `clearsessions` command not documented; recommend adding to maintenance docs.
-- [ ] Use cases demonstrated — No session-based features (cart, preferences) implemented yet.
-- [ ] Tests — No session-specific tests.
+- [x] Session middleware — Enabled with default DB backend.
+- [ ] Session data usage — Calculator views do not persist last inputs; helpers in `core/session.py` unused by views.
+- [x] Session binding — Login signal marks session user-bound (`apps/accounts/signals.py`); tests in `apps/accounts/tests/test_session_migration.py`.
+- [ ] Session security/cleanup — No `clearsessions`/rotation docs; secure flags rely on env defaults.
 
 ---
 
 ## 15. Making Sense Of Settings
 
-- [x] Settings organization — Single `myblog/settings.py`; no split into base/dev/prod yet.
-- [ ] Environment-specific configs — Hardcoded values; recommend `os.environ.get()` or `django-environ`.
-- [ ] Secret key management — **INSECURE**: Secret key is hardcoded and committed; must move to environment variable.
-- [x] Database configuration — SQLite for dev; needs PostgreSQL config for production.
-- [x] Debug mode — `DEBUG = True` appropriate for dev; document need to set `False` for prod.
-- [ ] Logging configuration — No `LOGGING` dict configured; using Django defaults.
-- [ ] Email backend — Not configured; recommend console backend for dev, SMTP for prod.
-- [ ] Settings documentation — No documentation of custom settings yet.
-- [ ] Validation — No custom settings validation with `check` framework.
+- [x] Settings organization — base/local/prod split; django-environ for env parsing.
+- [x] Environment-specific configs — DB/cache/settings driven by env vars; SECRET_KEY required in prod.
+- [x] Logging configuration — Structured JSON logging with request_id/duration in `core/logging.py`.
+- [ ] Email backend — Not configured per environment; README lacks mail guidance.
+- [ ] Validation — No custom `check` hooks for settings; limited documentation of required env vars.
 
 ---
 
 ## 16. User File Use (Media Files)
 
-- [ ] Media files configuration — No `MEDIA_URL` or `MEDIA_ROOT` configured yet.
-- [ ] File upload field — No FileField or ImageField in models yet.
-- [ ] Development serving — No media file serving configured in dev URLs.
-- [ ] Production serving — Not applicable yet; document CDN strategy when needed.
-- [ ] File validation — Not applicable yet; recommend size/type validation when implemented.
-- [ ] Storage backends — Using default file storage; no django-storages configuration.
-- [ ] Security — Not applicable yet; recommend UUID filenames and extension validation.
-- [ ] User experience — Not applicable yet.
-- [ ] Tests — No file upload tests.
+- [x] Media configuration — `MEDIA_URL`/`MEDIA_ROOT` set; default FileSystemStorage.
+- [x] File upload field — Profile avatar upload form/template (`apps/accounts/forms.py`, `accounts/profile_form.html`) with tests in `test_profile.py`.
+- [ ] Development serving — `core/urls.py` does not mount `MEDIA_URL` for DEBUG; needs doc or URL helper.
+- [ ] Production serving — No CDN/storage backend plan; file validation limited to accept=image/*.
 
 ---
 
 ## 17. Command Your App (Management Commands)
 
-- [ ] Custom management command — No custom commands in `blog/management/commands/` yet.
-- [ ] Command structure — Not applicable; recommend adding example command (data import, cleanup).
-- [ ] Command arguments — Not applicable yet.
-- [ ] Use cases — Could add: import posts from JSON, generate sample data, cleanup old sessions.
-- [ ] Output styling — Not applicable yet.
-- [ ] Error handling — Not applicable yet.
-- [ ] Documentation — Not applicable yet.
-- [ ] Tests — Not applicable yet.
-- [ ] Automation — Not applicable yet.
+- [x] Custom management command — `import_airports`, `update_airports`, `validate_airports` with dry-run/limit/URL options.
+- [x] Command structure — Uses BaseCommand with arguments; idempotent upsert and location linking (`apps/airports/management/commands/import_airports.py`).
+- [x] Tests — Import/update/validate commands covered in `apps/airports/tests/tests_import.py`, `tests_update_command.py`, `tests_validate_command.py`.
+- [ ] Automation — Scheduling/cron docs not present.
 
 ---
 
 ## 18. Go Fast With Django (Performance)
 
-- [ ] Database query optimization — No `select_related()` or `prefetch_related()` usage yet; check for N+1 queries.
-- [ ] Query analysis — Django Debug Toolbar not installed; recommend adding for dev.
-- [x] Indexing strategy — No custom database indexes; relying on auto-indexed primary keys and ForeignKeys.
-- [ ] Caching implemented — No caching configured (view, template fragment, or queryset caching).
-- [ ] Cache backend configured — No Redis or Memcached configuration.
-- [ ] Static file optimization — No minification or CDN configuration yet.
-- [ ] Database connection pooling — Not configured; using default Django database connections.
-- [ ] Pagination — `ListView` uses Django's default pagination (25 items); could customize.
-- [ ] Performance testing — No profiling tools (django-silk) installed yet.
-- [ ] Documentation — No performance optimization documentation.
+- [x] Database query optimization — Bounding-box filters and haversine in `AirportQuerySet.nearest`; indexes on hot fields.
+- [x] Caching implemented — `@cache_page` on calculators/search; CacheHeaderMiddleware sets cache-control; cache backend configurable via env.
+- [x] Pagination — Search results paginated; saved calculations paginated.
+- [ ] Profiling — No Debug Toolbar/profiling tools; nearest JSON endpoint not cached.
+- [ ] Documentation — No performance benchmarks/notes.
 
 ---
 
 ## 19. Security And Django
 
-- [ ] Security settings enabled — Production security settings not configured yet (SECURE_SSL_REDIRECT, SECURE_HSTS_SECONDS, SESSION_COOKIE_SECURE, CSRF_COOKIE_SECURE).
-- [x] XSS protection — Template auto-escaping enabled; markdown sanitization via bleach in `markdown_extras.py`.
-- [x] CSRF protection — CsrfViewMiddleware enabled; tokens in forms (via Django form rendering).
-- [x] SQL injection prevention — Using ORM exclusively; no raw SQL with string interpolation.
-- [x] Clickjacking protection — `XFrameOptionsMiddleware` enabled in middleware stack.
-- [ ] Content Security Policy — No CSP headers configured; optional enhancement.
-- [ ] Dependency management — No automated security updates or vulnerability scanning.
-- [x] Password strength — Django's password validators configured in settings (similarity, minimum length, common passwords, numeric).
-- [x] User input validation — Django form validation handles user input; markdown sanitization prevents XSS.
-- [ ] Security audit — `python manage.py check --deploy` not run yet; recommend running and addressing warnings.
-- [ ] Penetration testing — Not performed; optional for production applications.
-- [x] Documentation — Security measures documented in code comments (bleach sanitization); formal security doc recommended.
+- [x] Security settings enabled — Secure cookies, HSTS, SSL redirect, referrer/XFO headers in base/prod settings.
+- [x] CSRF protection — Middleware active; forms include CSRF tokens.
+- [x] Input sanitization — `sanitize_html` filter and highlight escaping; saved calculations sanitized in templates/tests.
+- [ ] CSP/rate limiting breadth — CSP not configured; rate limiting only on auth; dependency scanning not automated.
+- [ ] Deploy check — `manage.py check --deploy` not documented in CI/readme.
 
 ---
 
 ## 20. Debugging Tips And Techniques
 
-- [ ] Django Debug Toolbar installed — Not installed yet; highly recommended for development.
-- [ ] Logging configured — No custom logging configuration; using Django defaults.
-- [ ] Error pages — No custom 404/500 templates yet; using Django defaults.
-- [ ] Development debugging — Can use `breakpoint()` or `pdb`; not documented.
-- [ ] VS Code debugging — No launch.json configuration for Django debugging.
-- [ ] print debugging — Not documented; recommend migrating to logging module.
-- [x] Django shell — Available via `python manage.py shell`; not documented in README.
-- [ ] Template debugging — `{% debug %}` tag not used; could demonstrate for teaching.
-- [ ] Query debugging — No SQL query logging configured; recommend for development.
-- [ ] Error tracking — No Sentry or error monitoring configured.
-- [ ] Reproduction steps — No bug reproduction documentation; recommend adding to CONTRIBUTING.md.
-- [ ] Documentation — No debugging workflows documented yet.
+- [x] Logging configured — Request logging with request_id/duration; JSON formatter; health endpoint.
+- [x] Error pages — Custom 404/500 templates tested in `core/tests/test_observability.py`.
+- [x] Error tracking toggle — Optional Sentry init guarded by env (`core/sentry.py`).
+- [ ] Tooling — No Debug Toolbar/VS Code launch configs or query logging guidance.
+- [ ] Reproduction docs — Debug how-to and bug reproduction steps not documented.
 
 ---
 
 ## 21. Validation with PRD Alignment
 
-- [ ] FR coverage — Core blog slice (list/detail/create/update/delete, markdown render) is implemented; full PRD trace table pending.
-- [ ] NFRs — Accessibility/security/performance documentation not formalized (security: XSS mitigated via Bleach in markdown filter).
-- [ ] Pedagogical notes — Additional commentary tying code to Layman chapters would be helpful.
-- [ ] Lint/style — Markdownlint/DJLint not run; code follows PEP 8 in new/edited files.
-- [ ] Acceptance traceability — Add a brief matrix mapping PRD items to files/tests.
+- [x] FR coverage — Calculators, nearest lookup, search, auth, and saved-calculation scaffolding align with PRD §4; ADRs under `docs/travelmathlite/adr/`.
+- [ ] Traceability — No matrix mapping PRD → ADR → tests/files; acceptance tracked loosely in feature checklist.
+- [ ] NFRs — Accessibility/performance/security documentation partial; no lint/coverage badges.
 
 ---
 
 ## 22. Deliverables
 
-- [x] CHECKLIST_COMPLETION.md — This file.
-- [ ] Screenshots/asciinema — Not yet added.
-- [ ] Summary table (PRD → Layman → Artifact) — Not yet added.
-- [ ] All 20 chapters from *Understand Django* — Now assessed with chapters 9-20 added to checklist.
+- [x] CHECKLIST_COMPLETION.md — This file (travelmathlite edition).
+- [x] Screenshots/asciinema — Calculator screenshots in `travelmathlite/screenshots/calculators/`.
+- [ ] Summary table (PRD → ADR → Tests) — Not yet created.
+- [ ] Additional media — Search/nearest/auth flows and deployment evidence not captured.
 
 ---
 
 ### Notes and pointers
 
-- Markdown rendering and sanitization
-  - Filter: `blog/templatetags/markdown_extras.py` combines python-markdown and bleach; tests confirm `<script>` stripped and links preserved.
-  - Templates apply `{{ post.body|markdown_safe|safe }}`; admin uses EasyMDE via custom change form.
+- Caching and observability
+  - Cache directives for calculators/search via `@cache_page` and `CacheHeaderMiddleware`; cache backend/env toggles in `core/settings/base.py`.
+  - Request ID + structured logging in `core/middleware.py` and `core/logging.py`; tested in `core/tests/test_observability.py`.
+  - Health endpoint returns status (and optional commit SHA) at `/health/`.
 
-- Slug handling
-  - `slug` is non-editable and auto-generated in `Post.save()`; we removed admin `prepopulated_fields` to avoid KeyError when slug isn’t in the form.
+- Data/imports
+  - OurAirports import pipeline with location linking in `apps/airports/management/commands/import_airports.py`; dry-run and limit flags covered by tests.
+  - Normalized Country/City models (`apps/base/models.py`) back Airport foreign keys; search uses select_related for pagination efficiency.
 
-- Publishing filter
-  - Views restrict to `publish_date <= now`; future-dated posts are hidden from list/detail.
+- Auth/trips
+  - Auth views/templates live under `apps/accounts/`; login rate limiting toggled via env in `RateLimitMixin`.
+  - SavedCalculation list/delete flows and sanitization are implemented, but calculators do not yet persist submissions into SavedCalculation or sessions. Action item: hook calculators to `core/session.py` helpers and persist to trips when logged in.
 
-- Tests
-  - `blog/tests.py` covers CRUD, list/detail 200s, and markdown sanitization.
-
-- Optional quick wins (low risk)
-  - Add `Post.get_absolute_url()` and use it in templates/redirects.
-  - Add a `resolve()` URL test for one route.
-  - Add a short accessibility checklist pass (headings, labels, contrast).
+- Quick wins (low risk)
+  - Add `MEDIA_URL` serving in DEBUG, plus storage/CDN note for prod.
+  - Add deployment/runbook steps (collectstatic, ALLOWED_HOSTS, certs, rollback) and map PRD → ADR → tests.
+  - Enable full test matrix in CI (accounts/calculators/search/trips) and add coverage badge/report.
