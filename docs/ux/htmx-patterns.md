@@ -17,13 +17,15 @@ TravelMathLite uses HTMX to enhance forms with partial updates while maintaining
 HTMX is loaded globally via CDN in `templates/base.html`:
 
 ```html
-<script src="https://unpkg.com/htmx.org@2.0.3" 
-        integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" 
-        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.min.js"
+        integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq"
+        crossorigin="anonymous"
+        defer></script>
 ```
 
 **Version:** 2.0.3 (latest stable as of implementation)  
 **CDN:** unpkg.com  
+**Placement:** Deferred before `</body>` to avoid blocking rendering  
 **Fallback:** All forms work with standard POST/GET when HTMX is unavailable
 
 ### Content Security Policy (CSP)
