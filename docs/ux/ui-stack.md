@@ -45,3 +45,7 @@ This guide describes how TravelMathLite uses Bootstrap 5 + HTMX, where shared in
   - `search.png` — Search results list + pagination
   - `nearest.png` — Nearest airports form + results
 - Replace placeholders with real captures during manual verification.
+
+## Component catalogue
+
+- See `docs/ux/templates-bootstrap-catalogue.md` for the Bootstrap examples and patterns to reuse (navbars, sticky footer, cards, list groups, forms, pagination).
