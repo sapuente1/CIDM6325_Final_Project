@@ -3,7 +3,43 @@
 {% block title %}Search — travelmathlite{% endblock %}
 
 {% block content %}
-  <h1>Search</h1>
-  <p>Welcome to the Search app scaffolding.</p>
-  {% include 'search/partials/_welcome.html' %}
+  <h1 class="mb-3">Search</h1>
+  <p class="lead">Look up airports and cities by name or code. Use the quick form below to jump into results.</p>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="get" action="{% url 'search:index' %}" class="row g-3 align-items-end" role="search" aria-describedby="search-help">
+        <div class="col-md-8">
+          <label for="q" class="form-label">Airport or city</label>
+          <input type="text" id="q" name="q" class="form-control" placeholder="e.g., Dallas, JFK, LHR" aria-describedby="search-help">
+          <p id="search-help" class="form-text mb-0">Search by city, airport name, IATA code, or ICAO ident.</p>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+          <button type="submit" class="btn btn-primary flex-fill">Search</button>
+          <a class="btn btn-outline-secondary flex-fill" href="{% url 'airports:nearest' %}">Nearest airports</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row g-3 mt-3">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5">Browse airports</h2>
+          <p class="mb-3">Use the search form to browse airports by name or code. Pagination is provided for longer lists.</p>
+          <a class="btn btn-outline-primary" href="{% url 'search:index' %}?q=LAX">Try a sample search</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5">Find nearby airports</h2>
+          <p class="mb-3">Jump to the nearest-airports tool to find options by city, code, or coordinates.</p>
+          <a class="btn btn-outline-secondary" href="{% url 'airports:nearest' %}">Open nearest search</a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
