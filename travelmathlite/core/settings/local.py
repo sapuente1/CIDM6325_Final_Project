@@ -14,6 +14,11 @@ ALLOWED_HOSTS = ["*"]
 
 # Disable HTTPS redirects locally even when DJANGO_DEBUG is unset.
 SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_HSTS_SECONDS = 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 
 # When developing locally, prefer an on-disk sqlite DB unless overridden.
 # Use BASE_DIR from base.py for consistent paths.

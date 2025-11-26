@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Fly or Drive — travelmathlite{% endblock %}
+
+{% block content %}
+  <h1 class="mb-3">Fly or Drive</h1>
+  <p class="lead">Compare flight and driving distance, time, and cost from one form.</p>
+
+  <form method="post" class="mb-4" hx-post="{% url 'calculators:fly_or_drive' %}" hx-target="#fly-drive-results" hx-swap="innerHTML">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger" role="alert" aria-live="assertive">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="{{ form.origin.id_for_label }}" class="form-label">From</label>
+        {{ form.origin }}
+        <p id="{{ form.origin.id_for_label }}-help" class="form-text">{{ form.origin.help_text }}</p>
+        {% if form.origin.errors %}
+          <div id="{{ form.origin.id_for_label }}-error" class="invalid-feedback d-block">
+            {{ form.origin.errors }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.destination.id_for_label }}" class="form-label">To</label>
+        {{ form.destination }}
+        <p id="{{ form.destination.id_for_label }}-help" class="form-text">{{ form.destination.help_text }}</p>
+        {% if form.destination.errors %}
+          <div id="{{ form.destination.id_for_label }}-error" class="invalid-feedback d-block">
+            {{ form.destination.errors }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row g-3 mt-2">
+      <div class="col-md-3">
+        <label for="{{ form.trip_type.id_for_label }}" class="form-label">Trip type</label>
+        {{ form.trip_type }}
+        <p id="{{ form.trip_type.id_for_label }}-help" class="form-text">{{ form.trip_type.help_text }}</p>
+      </div>
+      <div class="col-md-3">
+        <label for="{{ form.passengers.id_for_label }}" class="form-label">Passengers</label>
+        {{ form.passengers }}
+        <p id="{{ form.passengers.id_for_label }}-help" class="form-text">{{ form.passengers.help_text }}</p>
+      </div>
+      <div class="col-md-3">
+        <label for="{{ form.unit.id_for_label }}" class="form-label">Unit</label>
+        {{ form.unit }}
+      </div>
+      <div class="col-md-3">
+        <label for="{{ form.route_factor.id_for_label }}" class="form-label">Route factor</label>
+        {{ form.route_factor }}
+        <p id="{{ form.route_factor.id_for_label }}-help" class="form-text">{{ form.route_factor.help_text }}</p>
+      </div>
+    </div>
+
+    <div class="row g-3 mt-2">
+      <div class="col-md-4">
+        <label for="{{ form.avg_speed_kmh.id_for_label }}" class="form-label">Avg driving speed (km/h)</label>
+        {{ form.avg_speed_kmh }}
+        <p id="{{ form.avg_speed_kmh.id_for_label }}-help" class="form-text">{{ form.avg_speed_kmh.help_text }}</p>
+      </div>
+      <div class="col-md-4">
+        <label for="{{ form.fuel_economy_l_per_100km.id_for_label }}" class="form-label">Fuel economy (L/100km)</label>
+        {{ form.fuel_economy_l_per_100km }}
+        <p id="{{ form.fuel_economy_l_per_100km.id_for_label }}-help" class="form-text">{{ form.fuel_economy_l_per_100km.help_text }}</p>
+      </div>
+      <div class="col-md-4">
+        <label for="{{ form.fuel_price_per_liter.id_for_label }}" class="form-label">Fuel price (/L)</label>
+        {{ form.fuel_price_per_liter }}
+        <p id="{{ form.fuel_price_per_liter.id_for_label }}-help" class="form-text">{{ form.fuel_price_per_liter.help_text }}</p>
+      </div>
+    </div>
+
+    <div class="row g-3 mt-2">
+      <div class="col-md-4">
+        <label for="{{ form.fare_per_km.id_for_label }}" class="form-label">Flight fare per km</label>
+        {{ form.fare_per_km }}
+        <p id="{{ form.fare_per_km.id_for_label }}-help" class="form-text">{{ form.fare_per_km.help_text }}</p>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Compare</button>
+  </form>
+
+  <div id="fly-drive-results" aria-live="polite">
+    {% include "calculators/partials/fly_or_drive_result.html" %}
+  </div>
+{% endblock %}

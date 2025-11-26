@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 from django import forms
 from django.conf import settings
@@ -67,7 +67,7 @@ def _lookup_city(term: str) -> Coordinates:
 class DistanceCalculatorForm(forms.Form):
     origin = forms.CharField(help_text="City name, IATA code, or 'lat,lon'.")
     destination = forms.CharField(help_text="City name, IATA code, or 'lat,lon'.")
-    unit = forms.ChoiceField(choices=UNITS, initial="km")
+    unit = forms.ChoiceField(choices=UNITS, initial="km", help_text="Choose kilometers or miles.")
     route_factor = forms.FloatField(
         min_value=0.5,
         max_value=3.0,
@@ -80,6 +80,14 @@ class DistanceCalculatorForm(forms.Form):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.fields["route_factor"].initial = float(getattr(settings, "ROUTE_FACTOR", 1.2))
+        # Ensure widgets carry consistent classes and aria-describedby ids for help/error text.
+        for name, field in self.fields.items():
+            base_id = field.widget.attrs.get("id") or name
+            if isinstance(field, forms.ChoiceField):
+                field.widget.attrs.setdefault("class", "form-select")
+            else:
+                field.widget.attrs.setdefault("class", "form-control")
+            field.widget.attrs["aria-describedby"] = f"{base_id}-help {base_id}-error"
 
     def _resolve(self, value: str) -> Coordinates:
         # Priority: lat,lon -> IATA -> city name
@@ -123,3 +131,28 @@ class CostCalculatorForm(DistanceCalculatorForm):
         super().__init__(*args, **kwargs)
         self.fields["fuel_economy_l_per_100km"].initial = float(getattr(settings, "FUEL_ECONOMY_L_PER_100KM", 7.5))
         self.fields["fuel_price_per_liter"].initial = float(getattr(settings, "FUEL_PRICE_PER_LITER", 1.50))
+
+
+class FlyOrDriveForm(DistanceCalculatorForm):
+    """Combined form for fly-vs-drive comparison."""
+
+    trip_type = forms.ChoiceField(
+        choices=(("one-way", "One-way"), ("round-trip", "Round trip")),
+        initial="one-way",
+        help_text="Applies a return leg when round-trip is selected.",
+    )
+    passengers = forms.IntegerField(min_value=1, initial=1, help_text="Number of passengers for flight cost.")
+    avg_speed_kmh = forms.FloatField(
+        min_value=10,
+        initial=float(getattr(settings, "AVG_SPEED_KMH", 80.0)),
+        help_text="Average driving speed used to estimate driving time.",
+    )
+    fare_per_km = forms.FloatField(
+        min_value=0.01,
+        initial=0.15,
+        help_text="Heuristic fare per km for flights (applied to great-circle distance).",
+    )
+
+    def clean_trip_type(self) -> Literal["one-way", "round-trip"]:
+        value = self.cleaned_data["trip_type"]
+        return "round-trip" if value == "round-trip" else "one-way"

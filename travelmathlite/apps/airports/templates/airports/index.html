@@ -3,7 +3,27 @@
 {% block title %}Airports — travelmathlite{% endblock %}
 
 {% block content %}
-  <h1>Airports</h1>
-  <p>Welcome to the Airports app scaffolding.</p>
-  {% include 'airports/partials/_welcome.html' %}
+  <h1 class="mb-3">Airports</h1>
+  <p class="lead">Find nearby airports or search our directory by city, IATA/ICAO code, or coordinates.</p>
+
+  <div class="row g-4 mt-4">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5">Nearest airports</h2>
+          <p class="mb-3">Enter a city, code, or lat,lon pair to see the closest options with distances.</p>
+          <a class="btn btn-primary" href="{% url 'airports:nearest' %}">Open nearest search</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5">Browse airports &amp; cities</h2>
+          <p class="mb-3">Use the global search to look up airports and cities by name or code.</p>
+          <a class="btn btn-outline-primary" href="{% url 'search:index' %}">Go to search</a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

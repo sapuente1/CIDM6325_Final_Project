@@ -1,6 +1,13 @@
 from django.urls import path
 
-from .views import CostCalculatorView, CostPartialView, DistanceCalculatorView, DistancePartialView, IndexView
+from .views import (
+    CostCalculatorView,
+    CostPartialView,
+    DistanceCalculatorView,
+    DistancePartialView,
+    FlyOrDriveView,
+    IndexView,
+)
 
 app_name = "calculators"
 
@@ -11,4 +18,5 @@ urlpatterns = [
     path("distance/partial/", DistancePartialView.as_view(), name="distance-partial"),
     path("cost/", CostCalculatorView.as_view(), name="cost"),
     path("cost/partial/", CostPartialView.as_view(), name="cost-partial"),
+    path("fly-or-drive/", FlyOrDriveView.as_view(), name="fly_or_drive"),
 ]

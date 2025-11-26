@@ -7,6 +7,7 @@
     {% block canonical %}{% endblock %}
     {% load static %}
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/accessibility.css' %}" rel="stylesheet">
     <!-- HTMX for progressive enhancement -->
     <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
   </head>
@@ -59,8 +60,17 @@
             {% endif %}
           </ul>
           <form class="d-flex" role="search" method="get" action="{% url 'search:index' %}">
-            <input class="form-control me-2" type="search" name="q" placeholder="Search airports or cities" aria-label="Search" value="{{ request.GET.q }}">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+            <label class="visually-hidden" for="navbar-search">Search airports or cities</label>
+            <input
+              id="navbar-search"
+              class="form-control me-2"
+              type="search"
+              name="q"
+              placeholder="Search airports or cities"
+              aria-describedby="navbar-search-hint"
+              value="{{ request.GET.q }}">
+            <span id="navbar-search-hint" class="visually-hidden">Enter an airport or city name and press search</span>
+            <button class="btn btn-outline-primary" type="submit">Search</button>
           </form>
         </div>
       </div>

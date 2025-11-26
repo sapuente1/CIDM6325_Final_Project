@@ -36,6 +36,16 @@ class NearestAirportForm(forms.Form):
 
     resolved_coords: tuple[float, float] | None = None
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            base_id = field.widget.attrs.get("id") or name
+            if isinstance(field, forms.ChoiceField):
+                field.widget.attrs.setdefault("class", "form-select")
+            else:
+                field.widget.attrs.setdefault("class", "form-control")
+            field.widget.attrs["aria-describedby"] = f"{base_id}-help {base_id}-error"
+
     def clean_iso_country(self) -> str:
         """Normalize ISO country code to uppercase when provided."""
         code = (self.cleaned_data.get("iso_country") or "").strip()

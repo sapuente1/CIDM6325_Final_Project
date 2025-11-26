@@ -25,6 +25,8 @@ class SearchView(TemplateView):
         context = super().get_context_data(**kwargs)
         raw_q = self.request.GET.get("q", "")
         q = (raw_q or "").strip()
+        q_is_iata = len(q) == 3 and q.isalpha()
+        q_upper = q.upper()
 
         context["query"] = q
         context["had_query"] = bool(q)
@@ -38,9 +40,27 @@ class SearchView(TemplateView):
             context["page_obj"] = None
             return context
 
-        # Basic icontains search using existing queryset helpers; limit until pagination lands
+        # Exact IATA match gets priority, then general search results.
+        exact_airports: QuerySet[Airport] = Airport.objects.none()
+        if q_is_iata:
+            exact_airports = (
+                Airport.objects.active()
+                .filter(iata_code__iexact=q_upper)
+                .select_related("country", "city")
+                .only(
+                    "name",
+                    "iata_code",
+                    "ident",
+                    "municipality",
+                    "iso_country",
+                    "country__name",
+                    "city__name",
+                )
+            )
+
         airports: QuerySet[Airport] = (
             Airport.objects.search(q)
+            .exclude(pk__in=exact_airports.values_list("pk", flat=True))
             .select_related("country", "city")
             .only(
                 "name",
@@ -63,8 +83,12 @@ class SearchView(TemplateView):
             )
         )
 
-        # Combine into a single list for pagination; airports first, then cities (simple deterministic grouping)
-        combined: list[tuple[str, object]] = [("airport", a) for a in airports] + [("city", c) for c in cities]
+        # Combine into a single list for pagination; exact IATA matches first, then other airports, then cities.
+        combined: list[tuple[str, object]] = (
+            [("airport", a) for a in exact_airports]
+            + [("airport", a) for a in airports]
+            + [("city", c) for c in cities]
+        )
 
         paginator = Paginator(combined, 20)
         page_number = self.request.GET.get("page")
