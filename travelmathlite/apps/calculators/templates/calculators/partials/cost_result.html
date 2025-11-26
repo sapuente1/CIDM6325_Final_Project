@@ -1,4 +1,4 @@
-<div id="cost-results" class="card mt-3" aria-live="polite" aria-atomic="true" tabindex="-1">
+<div id="cost-results" class="card mt-3 shadow-sm" aria-live="polite" aria-atomic="true" tabindex="-1">
   <div class="card-body">
     {% if form.errors %}
       <div class="alert alert-danger" role="alert">
@@ -11,20 +11,25 @@
         {% endfor %}
       </div>
     {% elif fuel_cost is not None %}
-      <h5 class="card-title">Cost Estimate Results</h5>
-      <dl class="row">
-        <dt class="col-sm-6">Flight distance:</dt>
-        <dd class="col-sm-6">{{ flight_distance|floatformat:2 }} {{ unit }}</dd>
-        
-        <dt class="col-sm-6">Estimated driving distance:</dt>
-        <dd class="col-sm-6">{{ driving_distance|floatformat:2 }} {{ unit }}</dd>
-        
-        <dt class="col-sm-6">Estimated driving time:</dt>
-        <dd class="col-sm-6">{{ driving_time_hours|floatformat:2 }} hours</dd>
-        
-        <dt class="col-sm-6">Estimated fuel cost:</dt>
-        <dd class="col-sm-6">${{ fuel_cost|floatformat:2 }}</dd>
-      </dl>
+      <h5 class="card-title mb-3">Cost Estimate Results</h5>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="fw-semibold">Flight distance</span>
+          <span>{{ flight_distance|floatformat:2 }} {{ unit }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="fw-semibold">Estimated driving distance</span>
+          <span>{{ driving_distance|floatformat:2 }} {{ unit }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="fw-semibold">Estimated driving time</span>
+          <span>{{ driving_time_hours|floatformat:2 }} hours</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="fw-semibold">Estimated fuel cost</span>
+          <span>${{ fuel_cost|floatformat:2 }}</span>
+        </li>
+      </ul>
     {% else %}
       <p class="text-muted">Enter trip details to calculate cost estimate.</p>
     {% endif %}

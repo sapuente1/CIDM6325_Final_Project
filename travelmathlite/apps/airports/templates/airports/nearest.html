@@ -1,71 +1,79 @@
 {% extends "base.html" %}
 {% block title %}Nearest Airports{% endblock %}
 {% block content %}
-  <h1>Nearest Airports</h1>
-  <form
-    method="post"
-    hx-post="{% url 'airports:nearest' %}"
-    hx-target="#results-container"
-    hx-swap="innerHTML"
-    aria-describedby="nearest-form-help">
-    {% csrf_token %}
+  <h1 class="mb-3">Nearest Airports</h1>
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form
+        method="post"
+        hx-post="{% url 'airports:nearest' %}"
+        hx-target="#results-container"
+        hx-swap="innerHTML"
+        aria-describedby="nearest-form-help">
+        {% csrf_token %}
 
-    <p id="nearest-form-help" class="form-text">Provide a city name, IATA/ICAO code, or lat,lon to find nearby airports. Country and limit are optional filters.</p>
+        <p id="nearest-form-help" class="form-text">Provide a city name, IATA/ICAO code, or lat,lon to find nearby airports. Country and limit are optional filters.</p>
 
-    {% if form.non_field_errors %}
-      <div class="alert alert-danger" role="alert" aria-live="assertive">
-        {{ form.non_field_errors }}
-      </div>
-    {% endif %}
-
-    {% with query_error_id="id_query-error" iso_error_id="id_iso_country-error" unit_error_id="id_unit-error" limit_error_id="id_limit-error" %}
-      <div class="mb-3">
-        <label for="{{ form.query.id_for_label }}" class="form-label">Query (city, IATA, or lat,lon)</label>
-        {{ form.query }}
-        <p id="{{ form.query.id_for_label }}-help" class="form-text">Enter a city, IATA/ICAO code, or coordinates (lat,lon).</p>
-        {% if form.query.errors %}
-          <div id="{{ query_error_id }}" class="invalid-feedback d-block">
-            {{ form.query.errors }}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger" role="alert" aria-live="assertive">
+            {{ form.non_field_errors }}
           </div>
         {% endif %}
-      </div>
 
-      <div class="mb-3">
-        <label for="{{ form.iso_country.id_for_label }}" class="form-label">Country (ISO 2)</label>
-        {{ form.iso_country }}
-        <p id="{{ form.iso_country.id_for_label }}-help" class="form-text">Optional two-letter country code (e.g., US).</p>
-        {% if form.iso_country.errors %}
-          <div id="{{ iso_error_id }}" class="invalid-feedback d-block">
-            {{ form.iso_country.errors }}
+        {% with query_error_id="id_query-error" iso_error_id="id_iso_country-error" unit_error_id="id_unit-error" limit_error_id="id_limit-error" %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="{{ form.query.id_for_label }}" class="form-label">Query (city, IATA, or lat,lon)</label>
+              {{ form.query }}
+              <p id="{{ form.query.id_for_label }}-help" class="form-text">Enter a city, IATA/ICAO code, or coordinates (lat,lon).</p>
+              {% if form.query.errors %}
+                <div id="{{ query_error_id }}" class="invalid-feedback d-block">
+                  {{ form.query.errors }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.iso_country.id_for_label }}" class="form-label">Country (ISO 2)</label>
+              {{ form.iso_country }}
+              <p id="{{ form.iso_country.id_for_label }}-help" class="form-text">Optional two-letter country code (e.g., US).</p>
+              {% if form.iso_country.errors %}
+                <div id="{{ iso_error_id }}" class="invalid-feedback d-block">
+                  {{ form.iso_country.errors }}
+                </div>
+              {% endif %}
+            </div>
           </div>
-        {% endif %}
-      </div>
 
-      <div class="mb-3">
-        <label for="{{ form.unit.id_for_label }}" class="form-label">Unit</label>
-        {{ form.unit }}
-        <p id="{{ form.unit.id_for_label }}-help" class="form-text">Choose kilometers or miles.</p>
-        {% if form.unit.errors %}
-          <div id="{{ unit_error_id }}" class="invalid-feedback d-block">
-            {{ form.unit.errors }}
+          <div class="row g-3 mt-1">
+            <div class="col-md-4">
+              <label for="{{ form.unit.id_for_label }}" class="form-label">Unit</label>
+              {{ form.unit }}
+              <p id="{{ form.unit.id_for_label }}-help" class="form-text">Choose kilometers or miles.</p>
+              {% if form.unit.errors %}
+                <div id="{{ unit_error_id }}" class="invalid-feedback d-block">
+                  {{ form.unit.errors }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="col-md-4">
+              <label for="{{ form.limit.id_for_label }}" class="form-label">Limit</label>
+              {{ form.limit }}
+              <p id="{{ form.limit.id_for_label }}-help" class="form-text">How many airports to return (1–10).</p>
+              {% if form.limit.errors %}
+                <div id="{{ limit_error_id }}" class="invalid-feedback d-block">
+                  {{ form.limit.errors }}
+                </div>
+              {% endif %}
+            </div>
           </div>
-        {% endif %}
-      </div>
+        {% endwith %}
 
-      <div class="mb-3">
-        <label for="{{ form.limit.id_for_label }}" class="form-label">Limit</label>
-        {{ form.limit }}
-        <p id="{{ form.limit.id_for_label }}-help" class="form-text">How many airports to return (1–10).</p>
-        {% if form.limit.errors %}
-          <div id="{{ limit_error_id }}" class="invalid-feedback d-block">
-            {{ form.limit.errors }}
-          </div>
-        {% endif %}
-      </div>
-    {% endwith %}
-
-    <button type="submit" class="btn btn-primary">Search</button>
-  </form>
+        <div class="mt-3">
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <div id="results-container" class="mt-4" role="region" aria-label="Nearest airport results" aria-live="polite">
     {% if results %}
