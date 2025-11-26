@@ -9,6 +9,7 @@ from django.core.management import call_command
 from django.test import TestCase
 
 from apps.airports.models import Airport
+from apps.base.models import City, Country
 
 
 class ImportAirportsCommandTests(TestCase):
@@ -190,6 +191,29 @@ class ImportAirportsCommandTests(TestCase):
             output = out.getvalue()
             self.assertIn("Errors: 1", output)
             self.assertEqual(Airport.objects.count(), 0)
+        finally:
+            csv_file.unlink()
+
+    def test_import_links_country_and_city(self):
+        """Importer should link or create Country/City and report linkage."""
+        csv_file = self._create_test_csv()
+
+        try:
+            out = StringIO()
+            call_command("import_airports", file=str(csv_file), stdout=out)
+
+            output = out.getvalue()
+            self.assertIn("Country links:", output)
+            self.assertIn("City links:", output)
+
+            # Country created
+            self.assertTrue(Country.objects.filter(iso_code="US").exists())
+            # City created for municipality
+            self.assertTrue(City.objects.filter(search_name="testcity", country__iso_code="US").exists())
+
+            airport1 = Airport.objects.get(ident="TEST1")
+            self.assertIsNotNone(airport1.country)
+            self.assertIsNotNone(airport1.city)
         finally:
             csv_file.unlink()
 

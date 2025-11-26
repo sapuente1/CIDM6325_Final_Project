@@ -111,6 +111,7 @@ class Command(BaseCommand):
             "countries_created": 0,
             "city_links": 0,
             "cities_created": 0,
+            "countries_linked": set(),
         }
 
         try:
@@ -190,6 +191,8 @@ class Command(BaseCommand):
                 f"Country links: {stats['country_links']}/{processed_rows} ({country_pct:.1f}%) (created {stats['countries_created']})"
             )
             self.stdout.write(f"City links: {stats['city_links']}/{processed_rows} ({city_pct:.1f}%) (created {stats['cities_created']})")
+            if stats["countries_linked"]:
+                self.stdout.write(f"Countries linked: {', '.join(sorted(stats['countries_linked']))}")
         elif dry_run:
             self.stdout.write(self.style.WARNING("Location linking skipped during dry-run"))
 

@@ -28,6 +28,8 @@ class AirportQuerySet(models.QuerySet["Airport"]):
             | models.Q(ident__icontains=normalized)
             | models.Q(municipality__icontains=normalized)
             | models.Q(country__name__icontains=normalized)
+            | models.Q(country__iso_code__icontains=normalized)
+            | models.Q(iso_country__icontains=normalized)
         )
 
     def _bounding_box_filters(self, latitude: float, longitude: float, radius_km: float) -> dict[str, float]:
