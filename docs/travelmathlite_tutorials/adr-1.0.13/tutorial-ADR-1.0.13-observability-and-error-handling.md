@@ -235,25 +235,31 @@ uv run python travelmathlite/manage.py runserver
   - Sentry init runs only when DSN is present.
 
 ### Key code
+
 - Formatter test:
+
 ```python
 payload = json.loads(formatter.format(record))
 self.assertEqual(payload["request_id"], "req-123")
 self.assertEqual(payload["path"], "/health/")
 self.assertEqual(payload["status_code"], 200)
 ```
+
 - Error templates:
+
 ```python
 resp = self.client.get("/does-not-exist/")
 self.assertTemplateUsed(resp, "404.html")
 ```
 
 ### Commands
+
 ```bash
 uv run python travelmathlite/manage.py test core.tests.test_observability
 ```
 
 ### Verification
+
 - Expect 6 tests passing; console shows WARNING/ERROR for simulated 404/500 (expected).
 - Manual: `curl -I http://localhost:8000/does-not-exist/` → 404 + `X-Request-ID`; induce a temporary 500 to view template.
 
@@ -271,6 +277,7 @@ uv run python travelmathlite/manage.py test core.tests.test_observability
 **Why it matters:** NF-003 requires operational guidance and rollback steps.
 
 ### Steps
+
 - Maintain `docs/travelmathlite/ops/logging-and-errors.md` with:
   - Log field definitions, sample entry, and tail commands.
   - Error-page preview steps (DEBUG off).
@@ -278,15 +285,19 @@ uv run python travelmathlite/manage.py test core.tests.test_observability
   - Rollback (quiet request logger, remove middleware, unset SENTRY_DSN).
 
 ### Commands
+
 - Docs only. Validation via observability suite:
+
 ```bash
 uv run python travelmathlite/manage.py test core.tests.test_observability
 ```
 
 ### Verification
+
 - Runbook lists toggles and sample log. Links to tests and manual previews.
 
 ### Troubleshooting / Rollback
+
 - If settings change (new fields/toggles), update runbook + tests in sync.
 
 ---
