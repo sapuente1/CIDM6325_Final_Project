@@ -64,7 +64,7 @@
                                     {{ form.unit|as_crispy_field }}
                                 </div>
                                 <div class="col-md-6">
-                                    {{ form.expiration_date|as_crispy_field }}
+                                    {{ form.expiry_date|as_crispy_field }}
                                 </div>
                             </div>
                         </div>
@@ -102,7 +102,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{ form.image|as_crispy_field }}
+                                <!-- Image field removed - not in current model -->
                             </div>
                             <div class="form-text">
                                 <i class="bi bi-info-circle me-1"></i>
@@ -115,7 +115,7 @@
                             <h6 class="text-primary mb-3">
                                 <i class="bi bi-geo-alt me-2"></i>Pickup Information
                             </h6>
-                            {{ form.pickup_location|as_crispy_field }}
+                            {{ form.location|as_crispy_field }}
                             {{ form.pickup_instructions|as_crispy_field }}
                             <div class="form-text">
                                 <i class="bi bi-exclamation-circle me-1"></i>

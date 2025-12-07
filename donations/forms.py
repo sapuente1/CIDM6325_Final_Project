@@ -8,7 +8,7 @@ class DonationForm(forms.ModelForm):
     
     class Meta:
         model = Donation
-        fields = ['food_type', 'description', 'quantity', 'unit', 'location', 'expiry_date']
+        fields = ['food_type', 'description', 'quantity', 'unit', 'location', 'expiry_date', 'pickup_instructions']
         widgets = {
             'expiry_date': forms.DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-control'}
@@ -28,6 +28,9 @@ class DonationForm(forms.ModelForm):
             'food_type': forms.Select(
                 attrs={'class': 'form-control'}
             ),
+            'pickup_instructions': forms.Textarea(
+                attrs={'rows': 3, 'class': 'form-control', 'placeholder': 'Any special pickup instructions...'}
+            ),
         }
         labels = {
             'food_type': 'Type of Food',
@@ -36,6 +39,7 @@ class DonationForm(forms.ModelForm):
             'unit': 'Unit of Measurement',
             'location': 'Pickup Location',
             'description': 'Description',
+            'pickup_instructions': 'Pickup Instructions',
         }
     
     def clean_expiry_date(self):
