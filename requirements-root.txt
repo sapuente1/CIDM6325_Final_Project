@@ -1,0 +1,4 @@
+# Root requirements file for Railway deployment
+# This installs the requirements from the Django project
+
+-r "My Project/requirements.txt"
