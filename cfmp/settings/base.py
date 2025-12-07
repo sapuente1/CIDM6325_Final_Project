@@ -26,6 +26,17 @@ environ.Env.read_env(BASE_DIR / '.env')
 # Security warning: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-)cf5ovg721yym1fb2jm61*lz&7f58h@o_+lpub+do!@#p#d$%_')
 
+# ALLOWED_HOSTS - Base configuration for Railway compatibility
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    '.railway.app',
+    'healthcheck.railway.app',
+    # Allow all subdomains for Railway
+    '*.railway.app',
+]
+
 # Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
