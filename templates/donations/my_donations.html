@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_title %}My Donations{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-donate text-primary me-2"></i>My Donations</h1>
+        <a href="{% url 'donations:create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Create New Donation
+        </a>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ total_donations }}</h3>
+                    <p class="card-text">Total Donations</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">{{ available_count }}</h3>
+                    <p class="card-text">Available</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ claimed_count }}</h3>
+                    <p class="card-text">Claimed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-info">{{ fulfilled_count }}</h3>
+                    <p class="card-text">Fulfilled</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if donations %}
+        <div class="row">
+            {% for donation in donations %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title">{{ donation.food_type }}</h5>
+                            <span class="badge {% if donation.status == 'available' %}bg-success{% elif donation.status == 'claimed' %}bg-warning{% elif donation.status == 'fulfilled' %}bg-info{% else %}bg-secondary{% endif %}">
+                                {{ donation.get_status_display }}
+                            </span>
+                        </div>
+                        <p class="card-text">{{ donation.description|truncatewords:15 }}</p>
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-weight me-1"></i> {{ donation.quantity }} {{ donation.unit }}
+                        </p>
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-clock me-1"></i> Expires {{ donation.expiry_date|date:"M d, Y" }}
+                        </p>
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-map-marker-alt me-1"></i> {{ donation.location|truncatewords:3 }}
+                        </p>
+                        
+                        {% if donation.claimed_by %}
+                        <p class="text-success mb-2">
+                            <i class="fas fa-hand-holding-heart me-1"></i>
+                            Claimed by {{ donation.claimed_by.organization_name }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100" role="group">
+                            <a href="{% url 'donations:detail' donation.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            {% if donation.status == 'available' %}
+                            <a href="{% url 'donations:update' donation.pk %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'donations:delete' donation.pk %}" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if is_paginated %}
+        <nav aria-label="Donations pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center mt-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h3 class="text-muted">No donations yet</h3>
+            <p class="text-muted">Create your first donation to help feed the community!</p>
+            <a href="{% url 'donations:create' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus me-2"></i> Create Your First Donation
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

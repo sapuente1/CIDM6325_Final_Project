@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block page_title %}Search Donations{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1><i class="fas fa-search text-primary me-2"></i>Search Donations</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Search Filters</h5>
+        </div>
+        <div class="card-body">
+            <form method="get">
+                {{ search_form|crispy }}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i> Search
+                    </button>
+                    <a href="{% url 'donations:search' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if donations %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Search Results ({{ donations|length }} found)</h4>
+            <a href="{% url 'donations:list' %}" class="btn btn-outline-primary">
+                <i class="fas fa-list me-1"></i> View All Donations
+            </a>
+        </div>
+        
+        <div class="row">
+            {% for donation in donations %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title">{{ donation.food_type }}</h5>
+                            <span class="badge bg-success">Available</span>
+                        </div>
+                        <p class="card-text">{{ donation.description|truncatewords:15 }}</p>
+                        
+                        <div class="row text-muted mb-3">
+                            <div class="col-6">
+                                <i class="fas fa-weight me-1"></i> {{ donation.quantity }} {{ donation.unit }}
+                            </div>
+                            <div class="col-6">
+                                <i class="fas fa-clock me-1"></i> Expires {{ donation.expiry_date|date:"M d" }}
+                            </div>
+                        </div>
+                        
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i> {{ donation.location|truncatewords:3 }}
+                        </p>
+                        
+                        <p class="text-muted small">
+                            <i class="fas fa-building me-1"></i> {{ donation.donor.organization_name }}
+                        </p>
+                        
+                        {% if donation.pickup_instructions %}
+                        <div class="alert alert-info alert-sm mt-2">
+                            <small><strong>Pickup:</strong> {{ donation.pickup_instructions|truncatewords:10 }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100" role="group">
+                            <a href="{% url 'donations:detail' donation.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                            {% if user.is_authenticated and hasattr user, 'pantry' %}
+                            <a href="{% url 'donations:claim' donation.pk %}" class="btn btn-success btn-sm">
+                                <i class="fas fa-hand-holding-heart"></i> Claim
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if is_paginated %}
+        <nav aria-label="Search results pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.food_type %}&food_type={{ request.GET.food_type }}{% endif %}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.food_type %}&food_type={{ request.GET.food_type }}{% endif %}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.food_type %}&food_type={{ request.GET.food_type }}{% endif %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.food_type %}&food_type={{ request.GET.food_type }}{% endif %}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center mt-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h3 class="text-muted">No donations found</h3>
+            <p class="text-muted">Try adjusting your search criteria or browse all available donations.</p>
+            <a href="{% url 'donations:list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-list me-2"></i> View All Donations
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

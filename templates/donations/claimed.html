@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_title %}My Claimed Donations{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-hand-holding-heart text-success me-2"></i>My Claimed Donations</h1>
+        <a href="{% url 'donations:list' %}" class="btn btn-primary">
+            <i class="fas fa-search me-1"></i> Find More Donations
+        </a>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">{{ total_claimed }}</h3>
+                    <p class="card-text">Total Claimed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ pending_pickup }}</h3>
+                    <p class="card-text">Pending Pickup</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-info">{{ fulfilled_count }}</h3>
+                    <p class="card-text">Fulfilled</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if donations %}
+        <div class="row">
+            {% for donation in donations %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title">{{ donation.food_type }}</h5>
+                            <span class="badge {% if donation.status == 'claimed' %}bg-warning{% elif donation.status == 'fulfilled' %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ donation.get_status_display }}
+                            </span>
+                        </div>
+                        <p class="card-text">{{ donation.description|truncatewords:15 }}</p>
+                        
+                        <div class="row text-muted mb-3">
+                            <div class="col-6">
+                                <i class="fas fa-weight me-1"></i> {{ donation.quantity }} {{ donation.unit }}
+                            </div>
+                            <div class="col-6">
+                                <i class="fas fa-clock me-1"></i> Expires {{ donation.expiry_date|date:"M d" }}
+                            </div>
+                        </div>
+                        
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i> {{ donation.location }}
+                        </p>
+                        
+                        <div class="border-top pt-3">
+                            <h6 class="text-muted mb-2">Donor Information</h6>
+                            <p class="mb-1"><strong>{{ donation.donor.organization_name }}</strong></p>
+                            <p class="text-muted mb-1">{{ donation.donor.contact_phone }}</p>
+                            <p class="text-muted small">Claimed {{ donation.claimed_at|date:"M d, Y g:i A" }}</p>
+                        </div>
+                        
+                        {% if donation.pickup_instructions %}
+                        <div class="alert alert-info mt-2">
+                            <strong>Pickup Instructions:</strong> {{ donation.pickup_instructions }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100" role="group">
+                            <a href="{% url 'donations:detail' donation.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                            {% if donation.status == 'claimed' %}
+                            <a href="{% url 'donations:fulfill' donation.pk %}" class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i> Mark Fulfilled
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if is_paginated %}
+        <nav aria-label="Claimed donations pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center mt-5">
+            <i class="fas fa-hand-holding fa-3x text-muted mb-3"></i>
+            <h3 class="text-muted">No claimed donations yet</h3>
+            <p class="text-muted">Browse available donations and claim items for your pantry!</p>
+            <a href="{% url 'donations:list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-search me-2"></i> Browse Donations
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

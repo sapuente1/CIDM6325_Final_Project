@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block page_title %}Claim Donation{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-hand-holding-heart text-success me-2"></i>
+                        Claim Donation
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>{{ donation.food_type }}</h5>
+                            <p class="text-muted">{{ donation.description }}</p>
+                            <p><strong>Quantity:</strong> {{ donation.quantity }} {{ donation.unit }}</p>
+                            <p><strong>Location:</strong> {{ donation.location }}</p>
+                            <p><strong>Expires:</strong> {{ donation.expiry_date|date:"M d, Y g:i A" }}</p>
+                            {% if donation.pickup_instructions %}
+                            <p><strong>Pickup Instructions:</strong> {{ donation.pickup_instructions }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Donor Information</h6>
+                            <p><strong>Organization:</strong> {{ donation.donor.organization_name }}</p>
+                            <p><strong>Phone:</strong> {{ donation.donor.contact_phone }}</p>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'donations:list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Donations
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check me-1"></i> Claim This Donation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
