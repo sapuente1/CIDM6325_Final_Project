@@ -147,6 +147,12 @@ SESSION_COOKIE_HTTPONLY = True
 
 # Logging configuration for observability
 import os
+
+# Create logs directory if it doesn't exist (for local development)
+if DEBUG:
+    logs_dir = os.path.join(BASE_DIR, 'logs')
+    os.makedirs(logs_dir, exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -161,12 +167,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'cfmp.log'),
-            'formatter': 'json',
-        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -175,17 +175,17 @@ LOGGING = {
     },
     'loggers': {
         'cfmp': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
         'cfmp.metrics': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
         'django.request': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': 'WARNING',
             'propagate': False,
         },
@@ -194,10 +194,6 @@ LOGGING = {
 
 # Application version for health checks
 VERSION = '1.0.0'
-
-# Media files (uploads)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
 # Media files (uploads)
 MEDIA_URL = '/media/'
