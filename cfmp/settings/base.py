@@ -37,6 +37,14 @@ ALLOWED_HOSTS = [
     '*.railway.app',
 ]
 
+# CSRF trusted origins for Railway deployment
+CSRF_TRUSTED_ORIGINS = [
+    'https://localhost',
+    'https://127.0.0.1',
+    'https://*.railway.app',
+    'https://cidm6325finalproject-production.up.railway.app',
+]
+
 # Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
