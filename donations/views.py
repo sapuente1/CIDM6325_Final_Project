@@ -30,7 +30,7 @@ class HomeView(TemplateView):
 class DonationListView(ListView):
     """Public list of available donations"""
     model = Donation
-    template_name = 'donations/list.html'
+    template_name = 'donations/donation_list.html'
     context_object_name = 'donations'
     paginate_by = 20
     
@@ -70,7 +70,7 @@ class DonationListView(ListView):
 class DonationDetailView(DetailView):
     """Detailed view of a single donation"""
     model = Donation
-    template_name = 'donations/detail.html'
+    template_name = 'donations/donation_detail.html'
     context_object_name = 'donation'
     
     def get_queryset(self):
@@ -94,7 +94,7 @@ class DonationUpdateView(DonorRequiredMixin, OwnerRequiredMixin, UpdateView):
     """Edit existing donation (owner only)"""
     model = Donation
     form_class = DonationForm
-    template_name = 'donations/update.html'
+    template_name = 'donations/donation_edit.html'
     success_url = reverse_lazy('donations:my_donations')
     
     def form_valid(self, form):
