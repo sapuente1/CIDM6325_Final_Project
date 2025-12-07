@@ -56,6 +56,7 @@
                         {% csrf_token %}
                         
                         <!-- Current image display -->
+                        {% comment %}
                         {% if donation.image %}
                         <div class="current-image mb-4">
                             <h6 class="text-primary mb-3">
@@ -67,6 +68,7 @@
                             </div>
                         </div>
                         {% endif %}
+                        {% endcomment %}
 
                         <!-- Food Type Section -->
                         <div class="form-section mb-4">
@@ -86,7 +88,7 @@
                                     {{ form.unit|as_crispy_field }}
                                 </div>
                                 <div class="col-md-6">
-                                    {{ form.expiration_date|as_crispy_field }}
+                                    {{ form.expiry_date|as_crispy_field }}
                                 </div>
                             </div>
                         </div>
@@ -99,36 +101,7 @@
                             {{ form.description|as_crispy_field }}
                         </div>
 
-                        <!-- Image Update Section -->
-                        <div class="form-section mb-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="bi bi-image me-2"></i>Update Photo
-                            </h6>
-                            <div class="image-upload-area border rounded-3 p-4 text-center mb-3" 
-                                 id="image-upload-area" 
-                                 style="border: 2px dashed #dee2e6; background-color: #f8f9fa;">
-                                <div class="upload-content" id="upload-content">
-                                    <i class="bi bi-cloud-upload text-muted" style="font-size: 2rem;"></i>
-                                    <h6 class="mt-2 mb-2">
-                                        {% if donation.image %}Replace photo{% else %}Add a photo{% endif %}
-                                    </h6>
-                                    <p class="text-muted mb-2">Drag and drop an image here, or click to browse</p>
-                                    <div class="d-none" id="image-preview">
-                                        <img id="preview-img" class="img-fluid rounded" style="max-height: 200px;" alt="Preview">
-                                        <div class="mt-2">
-                                            <button type="button" class="btn btn-sm btn-outline-danger" id="remove-image">
-                                                <i class="bi bi-trash me-1"></i>Remove
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{ form.image|as_crispy_field }}
-                            </div>
-                            <div class="form-text">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Leave empty to keep the current photo. Upload a new image to replace it.
-                            </div>
-                        </div>
+                        <!-- Image Section Removed - not available in form -->
 
                         <!-- Pickup Information Section -->
                         <div class="form-section mb-4">
