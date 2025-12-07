@@ -81,7 +81,7 @@ class DonationCreateView(DonorRequiredMixin, CreateView):
     """Create a new donation (donor only)"""
     model = Donation
     form_class = DonationForm
-    template_name = 'donations/create.html'
+    template_name = 'donations/donation_form.html'
     success_url = reverse_lazy('donations:my_donations')
     
     def form_valid(self, form):
