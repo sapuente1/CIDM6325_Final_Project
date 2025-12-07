@@ -11,5 +11,7 @@ startCommand = "python manage.py migrate && python manage.py collectstatic --noi
 [environments.production]
 [environments.production.variables]
 DJANGO_SETTINGS_MODULE = "cfmp.settings"
+DJANGO_ENVIRONMENT = "production"
 DEBUG = "False"
 SECRET_KEY = "your-production-secret-key-here"
+ALLOWED_HOSTS = "localhost,127.0.0.1,.railway.app,healthcheck.railway.app"
