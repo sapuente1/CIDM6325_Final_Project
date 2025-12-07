@@ -84,7 +84,10 @@ class DonationAdmin(admin.ModelAdmin):
     def days_until_expiry(self, obj):
         """Display expiry status with color coding"""
         if obj.expiry_date:
-            delta = obj.expiry_date - timezone.now().date()
+            # Convert both to dates for comparison
+            expiry_date = obj.expiry_date.date() if hasattr(obj.expiry_date, 'date') else obj.expiry_date
+            current_date = timezone.now().date()
+            delta = expiry_date - current_date
             days = delta.days
             if days < 0:
                 return format_html(
