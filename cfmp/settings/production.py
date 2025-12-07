@@ -13,7 +13,14 @@ import logging
 # Security settings
 DEBUG = False
 SECRET_KEY = os.environ['SECRET_KEY']
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+
+# Parse ALLOWED_HOSTS from environment with fallbacks for Railway
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '')
+if allowed_hosts_env:
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',') if host.strip()]
+else:
+    # Fallback for Railway deployment
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.railway.app', 'healthcheck.railway.app']
 
 # Database configuration with Railway automatic setup
 DATABASES = {
