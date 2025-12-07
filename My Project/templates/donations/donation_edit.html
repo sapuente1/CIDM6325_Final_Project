@@ -1,0 +1,460 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Donation - CFMP{% endblock %}
+
+{% block content %}
+<div class="donation-edit">
+    <!-- Page Header -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'donations:list' %}">
+                            <i class="bi bi-house me-1"></i>Donations
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'donations:detail' donation.pk %}">{{ donation.get_food_type_display }}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <div class="icon-circle bg-warning text-white mx-auto mb-3" 
+                     style="width: 80px; height: 80px; font-size: 2rem;">
+                    <i class="bi bi-pencil"></i>
+                </div>
+                <h1 class="h2 mb-2">Edit Donation</h1>
+                <p class="text-muted">Update your donation details</p>
+            </div>
+
+            <!-- Status Alert -->
+            {% if donation.status != 'available' %}
+            <div class="alert alert-warning mb-4">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>Notice:</strong> This donation has status "{{ donation.get_status_display }}". 
+                {% if donation.status == 'claimed' %}
+                    Contact the claiming pantry before making significant changes.
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Form card -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data me-2"></i>Donation Details
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" id="edit-form">
+                        {% csrf_token %}
+                        
+                        <!-- Current image display -->
+                        {% if donation.image %}
+                        <div class="current-image mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-image me-2"></i>Current Photo
+                            </h6>
+                            <div class="text-center">
+                                <img src="{{ donation.image.url }}" class="img-fluid rounded shadow-sm" 
+                                     style="max-height: 200px;" alt="Current donation image">
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Food Type Section -->
+                        <div class="form-section mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-tag me-2"></i>Food Information
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.food_type|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.quantity|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.unit|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.expiration_date|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description Section -->
+                        <div class="form-section mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-text-paragraph me-2"></i>Description
+                            </h6>
+                            {{ form.description|as_crispy_field }}
+                        </div>
+
+                        <!-- Image Update Section -->
+                        <div class="form-section mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-image me-2"></i>Update Photo
+                            </h6>
+                            <div class="image-upload-area border rounded-3 p-4 text-center mb-3" 
+                                 id="image-upload-area" 
+                                 style="border: 2px dashed #dee2e6; background-color: #f8f9fa;">
+                                <div class="upload-content" id="upload-content">
+                                    <i class="bi bi-cloud-upload text-muted" style="font-size: 2rem;"></i>
+                                    <h6 class="mt-2 mb-2">
+                                        {% if donation.image %}Replace photo{% else %}Add a photo{% endif %}
+                                    </h6>
+                                    <p class="text-muted mb-2">Drag and drop an image here, or click to browse</p>
+                                    <div class="d-none" id="image-preview">
+                                        <img id="preview-img" class="img-fluid rounded" style="max-height: 200px;" alt="Preview">
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-danger" id="remove-image">
+                                                <i class="bi bi-trash me-1"></i>Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{ form.image|as_crispy_field }}
+                            </div>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Leave empty to keep the current photo. Upload a new image to replace it.
+                            </div>
+                        </div>
+
+                        <!-- Pickup Information Section -->
+                        <div class="form-section mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-geo-alt me-2"></i>Pickup Information
+                            </h6>
+                            {{ form.pickup_location|as_crispy_field }}
+                            {{ form.pickup_instructions|as_crispy_field }}
+                        </div>
+
+                        <!-- Status section (for claimed donations) -->
+                        {% if donation.status == 'claimed' and donation.claimed_by %}
+                        <div class="form-section mb-4">
+                            <h6 class="text-warning mb-3">
+                                <i class="bi bi-info-circle me-2"></i>Claim Information
+                            </h6>
+                            <div class="alert alert-info">
+                                <strong>Claimed by:</strong> {{ donation.claimed_by.user.get_full_name|default:donation.claimed_by.organization }}<br>
+                                <strong>Claimed on:</strong> {{ donation.claimed_at|date:"F j, Y g:i A" }}<br>
+                                {% if donation.pickup_notes %}
+                                <strong>Pickup notes:</strong> {{ donation.pickup_notes }}
+                                {% endif %}
+                            </div>
+                            <div class="form-text">
+                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                Please coordinate any changes with the pantry that claimed this donation.
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Form Actions -->
+                        <div class="form-actions d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                                <i class="bi bi-check-circle me-2"></i>Save Changes
+                            </button>
+                            <a href="{% url 'donations:detail' donation.pk %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Donation
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Danger Zone -->
+                    {% if donation.status == 'available' %}
+                    <hr class="my-5">
+                    <div class="danger-zone">
+                        <h6 class="text-danger mb-3">
+                            <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
+                        </h6>
+                        <p class="text-muted mb-3">Once you delete a donation, there is no going back. Please be certain.</p>
+                        <button type="button" class="btn btn-outline-danger" 
+                                data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="bi bi-trash me-2"></i>Delete Donation
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Change History (if you track it) -->
+            <div class="card mt-4 border-0">
+                <div class="card-body">
+                    <h6 class="text-muted mb-3">
+                        <i class="bi bi-clock-history me-2"></i>Donation Timeline
+                    </h6>
+                    <div class="timeline">
+                        <div class="timeline-item d-flex align-items-start mb-3">
+                            <div class="timeline-dot bg-primary rounded-circle me-3 mt-1" 
+                                 style="width: 12px; height: 12px;"></div>
+                            <div>
+                                <strong>Created</strong><br>
+                                <small class="text-muted">{{ donation.created_at|date:"F j, Y g:i A" }}</small>
+                            </div>
+                        </div>
+                        {% if donation.claimed_at %}
+                        <div class="timeline-item d-flex align-items-start mb-3">
+                            <div class="timeline-dot bg-warning rounded-circle me-3 mt-1" 
+                                 style="width: 12px; height: 12px;"></div>
+                            <div>
+                                <strong>Claimed</strong><br>
+                                <small class="text-muted">{{ donation.claimed_at|date:"F j, Y g:i A" }} by {{ donation.claimed_by.organization|default:donation.claimed_by.user.get_full_name }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if donation.completed_at %}
+                        <div class="timeline-item d-flex align-items-start">
+                            <div class="timeline-dot bg-success rounded-circle me-3 mt-1" 
+                                 style="width: 12px; height: 12px;"></div>
+                            <div>
+                                <strong>Completed</strong><br>
+                                <small class="text-muted">{{ donation.completed_at|date:"F j, Y g:i A" }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+{% if donation.status == 'available' %}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Delete Donation
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>This action cannot be undone.</strong></p>
+                <p>Are you sure you want to permanently delete this donation?</p>
+                <div class="border rounded p-3 bg-light">
+                    <strong>{{ donation.get_food_type_display }}</strong><br>
+                    {{ donation.description }}<br>
+                    <small class="text-muted">{{ donation.quantity }} {{ donation.unit|default:"items" }}</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="{% url 'donations:delete' donation.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Delete Permanently
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Custom styles -->
+<style>
+.icon-circle {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-section {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 1.5rem;
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.image-upload-area {
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.image-upload-area:hover {
+    border-color: #007bff !important;
+    background-color: #f0f8ff !important;
+}
+
+.image-upload-area.dragover {
+    border-color: #007bff !important;
+    background-color: #e7f3ff !important;
+}
+
+.image-upload-area input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.timeline-item {
+    position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 20px;
+    height: calc(100% - 8px);
+    width: 2px;
+    background-color: #dee2e6;
+}
+
+.danger-zone {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+</style>
+
+<!-- JavaScript for image upload -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('edit-form');
+    const imageInput = form.querySelector('input[type="file"]');
+    const uploadArea = document.getElementById('image-upload-area');
+    const uploadContent = document.getElementById('upload-content');
+    const imagePreview = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    const removeBtn = document.getElementById('remove-image');
+
+    // Image upload handling
+    if (imageInput && uploadArea) {
+        uploadArea.addEventListener('click', () => imageInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                imageInput.files = files;
+                previewImage(files[0]);
+            }
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                previewImage(e.target.files[0]);
+            }
+        });
+
+        removeBtn.addEventListener('click', () => {
+            imageInput.value = '';
+            imagePreview.classList.add('d-none');
+            uploadContent.children[0].classList.remove('d-none');
+            uploadContent.children[1].classList.remove('d-none');
+            uploadContent.children[2].classList.remove('d-none');
+        });
+    }
+
+    function previewImage(file) {
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                uploadContent.children[0].classList.add('d-none');
+                uploadContent.children[1].classList.add('d-none');
+                uploadContent.children[2].classList.add('d-none');
+                imagePreview.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Expiration date validation
+    const expirationField = form.querySelector('input[type="date"]');
+    if (expirationField) {
+        const today = new Date().toISOString().split('T')[0];
+        expirationField.min = today;
+    }
+
+    // Character count for textarea
+    const descriptionField = form.querySelector('textarea');
+    if (descriptionField) {
+        const maxLength = 500;
+        const counter = document.createElement('div');
+        counter.className = 'form-text text-end mt-1';
+        counter.innerHTML = `<span id="char-count">${descriptionField.value.length}</span>/${maxLength} characters`;
+        descriptionField.parentNode.appendChild(counter);
+
+        const charCount = document.getElementById('char-count');
+        
+        descriptionField.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = length;
+            
+            if (length > maxLength * 0.9) {
+                counter.classList.add('text-warning');
+            } else {
+                counter.classList.remove('text-warning');
+            }
+            
+            if (length > maxLength) {
+                counter.classList.add('text-danger');
+                counter.classList.remove('text-warning');
+            } else {
+                counter.classList.remove('text-danger');
+            }
+        });
+    }
+
+    // Unsaved changes warning
+    let formChanged = false;
+    const formElements = form.querySelectorAll('input, select, textarea');
+    
+    formElements.forEach(element => {
+        element.addEventListener('change', () => {
+            formChanged = true;
+        });
+    });
+
+    window.addEventListener('beforeunload', (e) => {
+        if (formChanged) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    form.addEventListener('submit', () => {
+        formChanged = false;
+    });
+});
+</script>
+{% endblock %}

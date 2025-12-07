@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Join CFMP{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient rounded-circle mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-people-fill fs-2"></i>
+                </div>
+                <h1 class="display-5 fw-bold">Join CFMP</h1>
+                <p class="lead text-muted">Choose how you'd like to participate in our community food network</p>
+            </div>
+
+            <!-- Registration Options -->
+            <div class="row g-4">
+                <!-- Donor Registration -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0 registration-card">
+                        <div class="card-body p-5 text-center">
+                            <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient rounded-3 mb-4" style="width: 70px; height: 70px;">
+                                <i class="bi bi-building fs-2"></i>
+                            </div>
+                            <h3 class="fw-bold mb-3">Food Donor</h3>
+                            <p class="text-muted mb-4">
+                                Register as a food donor if you represent a business, restaurant, grocery store, or organization that has surplus food to donate.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Post food donations
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Manage pickup schedules
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Track donation impact
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Connect with pantries
+                                </li>
+                            </ul>
+                            <a href="{% url 'auth:donor_register' %}" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-plus-circle me-2"></i>Register as Donor
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pantry Registration -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0 registration-card">
+                        <div class="card-body p-5 text-center">
+                            <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-success bg-gradient rounded-3 mb-4" style="width: 70px; height: 70px;">
+                                <i class="bi bi-house-heart fs-2"></i>
+                            </div>
+                            <h3 class="fw-bold mb-3">Food Pantry</h3>
+                            <p class="text-muted mb-4">
+                                Register as a food pantry if you represent a nonprofit, community organization, or food bank that serves people in need.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Claim available donations
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Schedule pickups
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Manage inventory
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Serve your community
+                                </li>
+                            </ul>
+                            <a href="{% url 'auth:pantry_register' %}" class="btn btn-success btn-lg w-100">
+                                <i class="bi bi-plus-circle me-2"></i>Register as Pantry
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Already have account -->
+            <div class="text-center mt-5">
+                <div class="card bg-light border-0">
+                    <div class="card-body py-4">
+                        <h5 class="mb-3">Already have an account?</h5>
+                        <a href="{% url 'auth:login' %}" class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Home -->
+            <div class="text-center mt-4">
+                <a href="{% url 'home' %}" class="text-muted text-decoration-none">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.registration-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.registration-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.registration-card:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Donation - CFMP{% endblock %}
+
+{% block content %}
+<div class="donation-create">
+    <!-- Page Header -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'donations:list' %}">
+                            <i class="bi bi-house me-1"></i>Donations
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Donation</li>
+                </ol>
+            </nav>
+
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <div class="icon-circle bg-primary text-white mx-auto mb-3" 
+                     style="width: 80px; height: 80px; font-size: 2rem;">
+                    <i class="bi bi-plus-circle"></i>
+                </div>
+                <h1 class="h2 mb-2">Create a New Donation</h1>
+                <p class="text-muted">Share your surplus food with local pantries and help reduce waste</p>
+            </div>
+
+            <!-- Progress indicator -->
+            <div class="progress mb-4" style="height: 6px;">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: 33%"></div>
+            </div>
+
+            <!-- Form card -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data me-2"></i>Donation Details
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" id="donation-form">
+                        {% csrf_token %}
+                        
+                        <!-- Food Type Section -->
+                        <div class="form-section mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-tag me-2"></i>Food Information
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.food_type|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.quantity|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.unit|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.expiration_date|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description Section -->
+                        <div class="form-section mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-text-paragraph me-2"></i>Description
+                            </h6>
+                            {{ form.description|as_crispy_field }}
+                            <div class="form-text">
+                                <i class="bi bi-lightbulb me-1"></i>
+                                <strong>Tips:</strong> Include specific details like brand, freshness, packaging type, and any special handling instructions.
+                            </div>
+                        </div>
+
+                        <!-- Image Upload Section -->
+                        <div class="form-section mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-image me-2"></i>Photo (Optional)
+                            </h6>
+                            <div class="image-upload-area border rounded-3 p-4 text-center mb-3" 
+                                 id="image-upload-area" 
+                                 style="border: 2px dashed #dee2e6; background-color: #f8f9fa;">
+                                <div class="upload-content" id="upload-content">
+                                    <i class="bi bi-cloud-upload text-muted" style="font-size: 3rem;"></i>
+                                    <h6 class="mt-2 mb-2">Add a photo of your donation</h6>
+                                    <p class="text-muted mb-3">Drag and drop an image here, or click to browse</p>
+                                    <div class="d-none" id="image-preview">
+                                        <img id="preview-img" class="img-fluid rounded" style="max-height: 200px;" alt="Preview">
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-danger" id="remove-image">
+                                                <i class="bi bi-trash me-1"></i>Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{ form.image|as_crispy_field }}
+                            </div>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Photos help pantries identify and prioritize your donation. Max file size: 5MB.
+                            </div>
+                        </div>
+
+                        <!-- Pickup Information Section -->
+                        <div class="form-section mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-geo-alt me-2"></i>Pickup Information
+                            </h6>
+                            {{ form.pickup_location|as_crispy_field }}
+                            {{ form.pickup_instructions|as_crispy_field }}
+                            <div class="form-text">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <strong>Important:</strong> Provide clear instructions for easy pickup. Include building numbers, parking info, and any access codes if needed.
+                            </div>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="form-section mb-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bi bi-shield-check me-2"></i>Donation Agreement
+                                    </h6>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="terms_agreement" required>
+                                        <label class="form-check-label" for="terms_agreement">
+                                            I confirm that this food is safe for consumption and has been properly stored. I understand that food pantries will pick up this donation at their own discretion.
+                                        </label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input type="checkbox" class="form-check-input" id="contact_agreement" required>
+                                        <label class="form-check-label" for="contact_agreement">
+                                            I agree to be contacted by food pantries regarding this donation and to provide reasonable pickup times.
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                                <i class="bi bi-plus-circle me-2"></i>Create Donation
+                            </button>
+                            <a href="{% url 'donations:list' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help section -->
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card border-0 text-center">
+                        <div class="card-body">
+                            <div class="icon-circle bg-success text-white mx-auto mb-3" 
+                                 style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <h6>Safe & Secure</h6>
+                            <p class="text-muted small">Your donation information is secure and only shared with verified food pantries.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 text-center">
+                        <div class="card-body">
+                            <div class="icon-circle bg-info text-white mx-auto mb-3" 
+                                 style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                <i class="bi bi-clock"></i>
+                            </div>
+                            <h6>Quick Pickup</h6>
+                            <p class="text-muted small">Local pantries will respond quickly to claim and pick up your donation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 text-center">
+                        <div class="card-body">
+                            <div class="icon-circle bg-warning text-white mx-auto mb-3" 
+                                 style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                <i class="bi bi-heart"></i>
+                            </div>
+                            <h6>Make an Impact</h6>
+                            <p class="text-muted small">Your donation directly helps local families and reduces food waste.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom styles -->
+<style>
+.icon-circle {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-section {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 1.5rem;
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.image-upload-area {
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.image-upload-area:hover {
+    border-color: #007bff !important;
+    background-color: #f0f8ff !important;
+}
+
+.image-upload-area.dragover {
+    border-color: #007bff !important;
+    background-color: #e7f3ff !important;
+}
+
+/* Hide the default file input */
+.image-upload-area input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Form field enhancements */
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+/* Progress bar styling */
+.progress {
+    border-radius: 6px;
+}
+
+.progress-bar {
+    border-radius: 6px;
+}
+</style>
+
+<!-- JavaScript for image upload and form enhancements -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('donation-form');
+    const imageInput = form.querySelector('input[type="file"]');
+    const uploadArea = document.getElementById('image-upload-area');
+    const uploadContent = document.getElementById('upload-content');
+    const imagePreview = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    const removeBtn = document.getElementById('remove-image');
+    const progressBar = document.querySelector('.progress-bar');
+
+    // Image upload handling
+    if (imageInput && uploadArea) {
+        uploadArea.addEventListener('click', () => imageInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                imageInput.files = files;
+                previewImage(files[0]);
+            }
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                previewImage(e.target.files[0]);
+            }
+        });
+
+        removeBtn.addEventListener('click', () => {
+            imageInput.value = '';
+            imagePreview.classList.add('d-none');
+            uploadContent.children[0].classList.remove('d-none');
+            uploadContent.children[1].classList.remove('d-none');
+            uploadContent.children[2].classList.remove('d-none');
+        });
+    }
+
+    function previewImage(file) {
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                uploadContent.children[0].classList.add('d-none'); // Hide icon
+                uploadContent.children[1].classList.add('d-none'); // Hide title
+                uploadContent.children[2].classList.add('d-none'); // Hide description
+                imagePreview.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Form progress tracking
+    const formFields = form.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), select, textarea');
+    let completedFields = 0;
+
+    function updateProgress() {
+        completedFields = 0;
+        formFields.forEach(field => {
+            if (field.value.trim() !== '') {
+                completedFields++;
+            }
+        });
+        const progress = Math.min((completedFields / formFields.length) * 100, 100);
+        progressBar.style.width = progress + '%';
+    }
+
+    formFields.forEach(field => {
+        field.addEventListener('input', updateProgress);
+        field.addEventListener('change', updateProgress);
+    });
+
+    // Initial progress check
+    updateProgress();
+
+    // Form validation enhancements
+    form.addEventListener('submit', function(e) {
+        const requiredCheckboxes = form.querySelectorAll('input[type="checkbox"][required]');
+        let allChecked = true;
+        
+        requiredCheckboxes.forEach(checkbox => {
+            if (!checkbox.checked) {
+                allChecked = false;
+                checkbox.classList.add('is-invalid');
+            } else {
+                checkbox.classList.remove('is-invalid');
+            }
+        });
+
+        if (!allChecked) {
+            e.preventDefault();
+            const firstInvalid = form.querySelector('.is-invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.focus();
+            }
+        }
+    });
+
+    // Expiration date validation
+    const expirationField = form.querySelector('input[type="date"]');
+    if (expirationField) {
+        const today = new Date().toISOString().split('T')[0];
+        expirationField.min = today;
+    }
+
+    // Character count for textarea
+    const descriptionField = form.querySelector('textarea');
+    if (descriptionField) {
+        const maxLength = 500;
+        const counter = document.createElement('div');
+        counter.className = 'form-text text-end mt-1';
+        counter.innerHTML = `<span id="char-count">0</span>/${maxLength} characters`;
+        descriptionField.parentNode.appendChild(counter);
+
+        const charCount = document.getElementById('char-count');
+        
+        descriptionField.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = length;
+            
+            if (length > maxLength * 0.9) {
+                counter.classList.add('text-warning');
+            } else {
+                counter.classList.remove('text-warning');
+            }
+            
+            if (length > maxLength) {
+                counter.classList.add('text-danger');
+                counter.classList.remove('text-warning');
+            } else {
+                counter.classList.remove('text-danger');
+            }
+        });
+
+        // Trigger initial count
+        descriptionField.dispatchEvent(new Event('input'));
+    }
+});
+</script>
+{% endblock %}

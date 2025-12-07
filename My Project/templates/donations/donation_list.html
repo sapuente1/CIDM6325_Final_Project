@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Available Donations - CFMP{% endblock %}
+
+{% block content %}
+<!-- Professional Header Section -->
+<section class="donations-header-professional py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <div class="header-content-professional">
+                    <div class="header-badge mb-3">
+                        <span class="badge bg-light text-primary px-4 py-2 rounded-pill shadow-sm">
+                            <i class="bi bi-gift me-2"></i>Community Food Network
+                        </span>
+                    </div>
+                    
+                    <h1 class="header-title-professional fw-bold mb-4">
+                        Discover Fresh Food
+                        <span class="text-primary">Donations</span>
+                    </h1>
+                    
+                    <p class="header-description mb-4">
+                        Connect with local food donors and help reduce waste while feeding communities. 
+                        Find fresh, quality food donations available for pickup.
+                    </p>
+                    
+                    <div class="header-stats-professional d-flex justify-content-center gap-4 mb-4">
+                        <div class="stat-badge">
+                            <span class="badge bg-success fs-6 px-3 py-2">
+                                <i class="bi bi-check-circle me-1"></i>{{ donations.count }} Available
+                            </span>
+                        </div>
+                        {% if user.is_authenticated and user.donor %}
+                        <a href="{% url 'donations:create' %}" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-plus-circle me-2"></i>Create Donation
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Professional Search Section -->
+<section class="donations-search-professional py-4 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <form method="GET" class="search-card-professional">
+                    <div class="row g-3 align-items-end">
+                        <!-- Search Input -->
+                        <div class="col-md-6">
+                            <label class="form-label text-dark fw-semibold mb-2">Search Donations</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="bi bi-search text-primary"></i>
+                                </span>
+                                <input type="search" name="search" class="form-control border-start-0 ps-0" 
+                                       placeholder="Search by food type, description..." 
+                                       value="{{ request.GET.search }}">
+                            </div>
+                        </div>
+                        
+                        <!-- Food Type Filter -->
+                        <div class="col-md-4">
+                            <label class="form-label text-dark fw-semibold mb-2">Food Category</label>
+                            <select name="food_type" class="form-select form-select-lg">
+                                <option value="">All Categories</option>
+                                <option value="produce" {% if request.GET.food_type == 'produce' %}selected{% endif %}>🥬 Fresh Produce</option>
+                            <option value="dairy" {% if request.GET.food_type == 'dairy' %}selected{% endif %}>🥛 Dairy Products</option>
+                            <option value="meat" {% if request.GET.food_type == 'meat' %}selected{% endif %}>🥩 Meat & Protein</option>
+                            <option value="bakery" {% if request.GET.food_type == 'bakery' %}selected{% endif %}>🍞 Bakery Items</option>
+                            <option value="pantry" {% if request.GET.food_type == 'pantry' %}selected{% endif %}>🥫 Pantry Items</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="col-md-2">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-funnel"></i>
+                            </button>
+                            {% if request.GET.search or request.GET.food_type %}
+                            <a href="{% url 'donations:list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Donations Section -->
+    {% if donations %}
+    <div class="container px-4 py-5">
+        <h2 class="pb-2 border-bottom">Featured Donations</h2>
+        <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+            {% for donation in donations %}
+            <div class="col">
+                <div class="card card-cover h-100 overflow-hidden rounded-4 shadow-lg position-relative donation-card-{{ donation.food_type }}" 
+                     style="min-height: 400px;">
+                    <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                        <!-- Status Badge -->
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge {% if donation.status == 'available' %}bg-success{% elif donation.status == 'claimed' %}bg-warning{% else %}bg-secondary{% endif %} fs-6">
+                                {% if donation.status == 'available' %}
+                                    <i class="bi bi-check-circle me-1"></i>Available
+                                {% elif donation.status == 'claimed' %}
+                                    <i class="bi bi-clock me-1"></i>Claimed
+                                {% else %}
+                                    <i class="bi bi-x-circle me-1"></i>{{ donation.get_status_display }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="pt-5 mt-5 mb-4">
+                            <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-white text-dark rounded-3 mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-{% if donation.food_type == 'produce' %}apple{% elif donation.food_type == 'dairy' %}cup-straw{% elif donation.food_type == 'meat' %}egg-fried{% elif donation.food_type == 'bakery' %}bread-slice{% else %}box-seam{% endif %} fs-3"></i>
+                            </div>
+                            <h3 class="display-6 lh-1 fw-bold mb-2">{{ donation.get_food_type_display }}</h3>
+                            <p class="mb-2 opacity-90">{{ donation.description|truncatechars:80 }}</p>
+                            <p class="small opacity-75">{{ donation.quantity }} {{ donation.unit }}</p>
+                        </div>
+                        
+                        <!-- Footer Info -->
+                        <ul class="d-flex list-unstyled mt-auto align-items-center">
+                            <li class="me-auto d-flex align-items-center">
+                                <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                    <i class="bi bi-person text-dark"></i>
+                                </div>
+                                <small>{{ donation.donor.user.get_full_name|default:"Anonymous" }}</small>
+                            </li>
+                            {% if donation.expiration_date %}
+                            <li class="d-flex align-items-center me-3">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                <small>{{ donation.expiration_date|date:"M j" }}</small>
+                            </li>
+                            {% endif %}
+                            <li class="d-flex align-items-center">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                <small>{{ donation.pickup_location|truncatechars:15 }}</small>
+                            </li>
+                        </ul>
+                        
+                        <!-- Actions -->
+                        <div class="d-flex gap-2 mt-3">
+                            <a href="{% url 'donations:detail' donation.pk %}" class="btn btn-light flex-grow-1">
+                                <i class="bi bi-eye me-1"></i>View Details
+                            </a>
+                            {% if user.is_authenticated and user.pantry and donation.status == 'available' %}
+                            <a href="{% url 'donations:claim' donation.pk %}" class="btn btn-success">
+                                <i class="bi bi-hand-thumbs-up"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Donations pagination" class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.food_type %}&food_type={{ request.GET.food_type }}{% endif %}">
+                            <i class="bi bi-chevron-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.food_type %}&food_type={{ request.GET.food_type }}{% endif %}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.food_type %}&food_type={{ request.GET.food_type }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.food_type %}&food_type={{ request.GET.food_type }}{% endif %}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.food_type %}&food_type={{ request.GET.food_type }}{% endif %}">
+                            <i class="bi bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="container px-4 py-5">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-secondary bg-gradient fs-2 mb-3 rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-gift"></i>
+                    </div>
+                    <h2 class="fw-bold text-body-emphasis">No donations available</h2>
+                    <p class="lead mb-4 text-muted">
+                        {% if request.GET.search or request.GET.food_type %}
+                            No donations match your current search criteria. Try adjusting your filters.
+                        {% else %}
+                            Be the first to make a donation and start building our community food sharing network.
+                        {% endif %}
+                    </p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        {% if request.GET.search or request.GET.food_type %}
+                            <a href="{% url 'donations:list' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Clear Filters
+                            </a>
+                        {% endif %}
+                        {% if user.is_authenticated and user.donor %}
+                            <a href="{% url 'donations:create' %}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-circle me-2"></i>Create First Donation
+                            </a>
+                        {% elif not user.is_authenticated %}
+                            <a href="{% url 'admin:login' %}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Additional Styles -->
+<style>
+.text-shadow-1 { 
+    text-shadow: 0 .125rem .25rem rgba(0, 0, 0, .25)!important; 
+}
+
+.card-cover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-cover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.card-cover:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Food type specific gradients */
+.donation-card-produce {
+    background: linear-gradient(135deg, #28a745, #20c997) !important;
+}
+
+.donation-card-dairy {
+    background: linear-gradient(135deg, #007bff, #6610f2) !important;
+}
+
+.donation-card-meat {
+    background: linear-gradient(135deg, #dc3545, #fd7e14) !important;
+}
+
+.donation-card-bakery {
+    background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
+}
+
+.donation-card-pantry, .donation-card- {
+    background: linear-gradient(135deg, #6c757d, #495057) !important;
+}
+</style>
+{% endblock %}

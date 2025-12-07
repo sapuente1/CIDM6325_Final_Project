@@ -1,1 +1,0 @@
-"""Trips app for travelmathlite."""

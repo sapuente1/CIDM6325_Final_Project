@@ -1,0 +1,179 @@
+<!-- Enhanced Sidebar for authenticated users -->
+{% if user.is_authenticated %}
+<div class="sidebar bg-white shadow-sm" id="sidebar">
+    <div class="sidebar-header p-4 bg-gradient-primary text-white">
+        <div class="d-flex align-items-center">
+            <div class="avatar-circle bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                 style="width: 48px; height: 48px; font-size: 1.4rem; font-weight: bold;">
+                {% if user.donor %}
+                    <i class="bi bi-heart-fill"></i>
+                {% elif user.pantry %}
+                    <i class="bi bi-building-fill"></i>
+                {% else %}
+                    <i class="bi bi-person-fill"></i>
+                {% endif %}
+            </div>
+            <div>
+                <div class="fw-bold fs-6">{{ user.get_full_name|default:user.username }}</div>
+                <div class="opacity-75 small">
+                    {% if user.donor %}
+                        <i class="bi bi-heart me-1"></i>Food Donor
+                    {% elif user.pantry %}
+                        <i class="bi bi-building me-1"></i>Food Pantry
+                    {% else %}
+                        <i class="bi bi-shield-check me-1"></i>Administrator
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation menu -->
+    <nav class="sidebar-nav p-3">
+        <ul class="nav flex-column">
+            <!-- Dashboard/Home -->
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded {% if request.resolver_match.url_name == 'dashboard' %}bg-primary text-white{% else %}text-dark{% endif %}" 
+                   href="{% url 'donations:list' %}">
+                    <i class="bi bi-house me-3"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <!-- Donor-specific menu -->
+            {% if user.donor %}
+            <li class="nav-item mb-1">
+                <h6 class="sidebar-heading text-muted text-uppercase small fw-bold px-3 mt-4 mb-2">
+                    Donor Actions
+                </h6>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded {% if request.resolver_match.url_name == 'create' %}bg-primary text-white{% else %}text-dark{% endif %}" 
+                   href="{% url 'donations:create' %}">
+                    <i class="bi bi-plus-circle me-3"></i>
+                    Create Donation
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded {% if request.resolver_match.url_name == 'my_donations' %}bg-primary text-white{% else %}text-dark{% endif %}" 
+                   href="{% url 'donations:my_donations' %}">
+                    <i class="bi bi-list-ul me-3"></i>
+                    My Donations
+                    {% if user.donor.active_donations_count %}
+                    <span class="badge bg-success ms-auto">{{ user.donor.active_donations_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded text-dark" 
+                   href="{% url 'donations:my_donations' %}">
+                    <i class="bi bi-clock-history me-3"></i>
+                    My Donations
+                </a>
+            </li>
+            {% endif %}
+
+            <!-- Pantry-specific menu -->
+            {% if user.pantry %}
+            <li class="nav-item mb-1">
+                <h6 class="sidebar-heading text-muted text-uppercase small fw-bold px-3 mt-4 mb-2">
+                    Pantry Actions
+                </h6>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded text-dark" 
+                   href="{% url 'donations:list' %}">
+                    <i class="bi bi-search me-3"></i>
+                    Browse Donations
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded {% if request.resolver_match.url_name == 'claimed' %}bg-primary text-white{% else %}text-dark{% endif %}" 
+                   href="{% url 'donations:claimed' %}">
+                    <i class="bi bi-box-seam me-3"></i>
+                    Claimed Items
+                    {% if user.pantry.pending_claims_count %}
+                    <span class="badge bg-warning ms-auto">{{ user.pantry.pending_claims_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            <!-- Pantry statistics feature coming soon -->
+            <!--
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded text-dark" 
+                   href="#" onclick="alert('Pantry statistics coming soon!'); return false;">
+                    <i class="bi bi-graph-up me-3"></i>
+                    Statistics
+                    <span class="badge bg-secondary ms-auto">Soon</span>
+                </a>
+            </li>
+            -->
+            {% endif %}
+
+            <!-- Common sections -->
+            <li class="nav-item mb-1">
+                <h6 class="sidebar-heading text-muted text-uppercase small fw-bold px-3 mt-4 mb-2">
+                    Account
+                </h6>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded text-dark" 
+                   href="{% url 'auth:profile' %}">
+                    <i class="bi bi-person me-3"></i>
+                    Profile Settings
+                </a>
+            </li>
+            <!-- Notifications feature coming soon -->
+            <!--
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded text-dark" 
+                   href="#" onclick="alert('Notifications feature coming soon!'); return false;">
+                    <i class="bi bi-bell me-3"></i>
+                    Notifications
+                    <span class="badge bg-secondary ms-auto">Soon</span>
+                </a>
+            </li>
+            -->
+
+            <!-- Admin section -->
+            {% if user.is_staff %}
+            <li class="nav-item mb-1">
+                <h6 class="sidebar-heading text-muted text-uppercase small fw-bold px-3 mt-4 mb-2">
+                    Administration
+                </h6>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded text-dark" 
+                   href="{% url 'admin:index' %}">
+                    <i class="bi bi-gear me-3"></i>
+                    Admin Panel
+                </a>
+            </li>
+            <!-- Reports feature coming soon -->
+            <!--
+            <li class="nav-item mb-2">
+                <a class="nav-link d-flex align-items-center px-3 py-2 rounded text-dark" 
+                   href="#" onclick="alert('Reports dashboard coming soon!'); return false;">
+                    <i class="bi bi-file-earmark-text me-3"></i>
+                    Reports
+                    <span class="badge bg-secondary ms-auto">Soon</span>
+                </a>
+            </li>
+            -->
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Sidebar footer -->
+    <div class="sidebar-footer border-top p-3 mt-auto">
+        <div class="d-grid gap-2">
+            <a href="{% url 'auth:logout' %}" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </a>
+        </div>
+        <div class="text-center mt-2">
+            <small class="text-muted">CFMP v1.0</small>
+        </div>
+    </div>
+</div>
+{% endif %}

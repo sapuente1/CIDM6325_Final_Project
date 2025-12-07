@@ -1,0 +1,250 @@
+/* Donation Card Component Styles */
+
+.donation-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--cfmp-spacing-lg);
+  margin: var(--cfmp-spacing-lg) 0;
+}
+
+.donation-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: var(--cfmp-spacing-sm);
+}
+
+.expiry-warning {
+  color: var(--cfmp-warning);
+  font-weight: 600;
+}
+
+.expiry-danger {
+  color: var(--cfmp-danger);
+  font-weight: 600;
+}
+
+/* Card image overlay effects */
+.donation-card .card-img-top {
+  position: relative;
+  overflow: hidden;
+}
+
+.donation-card .card-img-top img {
+  transition: transform 0.3s ease;
+}
+
+.donation-card:hover .card-img-top img {
+  transform: scale(1.05);
+}
+
+/* Status badges positioning */
+.donation-card .badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+}
+
+/* Card body enhancements */
+.donation-card .card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.donation-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--cfmp-spacing-sm);
+  line-height: 1.4;
+}
+
+.donation-card .card-text {
+  flex-grow: 1;
+  margin-bottom: var(--cfmp-spacing-md);
+}
+
+/* Donor info styling */
+.donor-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--cfmp-spacing-md);
+}
+
+.donor-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: var(--cfmp-light);
+  border: 1px solid var(--cfmp-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--cfmp-spacing-sm);
+  border-radius: 50%;
+}
+
+.donor-details {
+  flex-grow: 1;
+}
+
+.donor-name {
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-bottom: 0.125rem;
+}
+
+.donation-time {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Action buttons */
+.card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: var(--cfmp-spacing-sm);
+}
+
+.card-actions .btn {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+/* Card variants */
+.donation-card.featured {
+  border-color: var(--cfmp-accent);
+  box-shadow: 0 0 0 1px var(--cfmp-accent), var(--cfmp-shadow-sm);
+}
+
+.donation-card.urgent {
+  border-color: var(--cfmp-danger);
+  background-color: rgba(220, 38, 38, 0.02);
+}
+
+.donation-card.claimed {
+  opacity: 0.8;
+  filter: grayscale(20%);
+}
+
+/* List view styles */
+.donations-grid.list-view {
+  display: block;
+}
+
+.donations-grid.list-view .donation-card {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: var(--cfmp-spacing-md);
+  max-height: 200px;
+}
+
+.donations-grid.list-view .card-img-top {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.donations-grid.list-view .card-img-top img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.donations-grid.list-view .card-body {
+  flex: 1;
+  padding: var(--cfmp-spacing-md);
+}
+
+/* Placeholder image styling */
+.placeholder-image {
+  background: linear-gradient(45deg, #f1f5f9, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 2rem;
+}
+
+/* Food type colors */
+.food-type-produce { border-left: 4px solid #22c55e; }
+.food-type-dairy { border-left: 4px solid #3b82f6; }
+.food-type-meat { border-left: 4px solid #ef4444; }
+.food-type-bakery { border-left: 4px solid #f59e0b; }
+.food-type-pantry { border-left: 4px solid #8b5cf6; }
+
+/* Quantity and expiry indicators */
+.quantity-indicator {
+  background-color: rgba(37, 99, 235, 0.1);
+  color: var(--cfmp-primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.expiry-indicator {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.expiry-fresh {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.expiry-soon {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--cfmp-warning);
+}
+
+.expiry-urgent {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--cfmp-danger);
+}
+
+/* Card loading states */
+.donation-card.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.donation-card.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive card adjustments */
+@media (max-width: 576px) {
+  .donation-card-grid {
+    grid-template-columns: 1fr;
+    gap: var(--cfmp-spacing-md);
+  }
+  
+  .donations-grid.list-view .donation-card {
+    flex-direction: column;
+    max-height: none;
+  }
+  
+  .donations-grid.list-view .card-img-top {
+    width: 100%;
+    height: 150px;
+  }
+}

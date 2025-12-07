@@ -1,1 +1,0 @@
-"""Airports app for travelmathlite."""

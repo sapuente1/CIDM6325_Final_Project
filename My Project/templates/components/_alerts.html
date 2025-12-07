@@ -1,0 +1,145 @@
+<!-- Alert Messages System -->
+{% load crispy_forms_tags %}
+
+<div class="alerts-container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                <!-- Icon based on message type -->
+                {% if message.tags == 'success' %}
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                {% elif message.tags == 'error' or message.tags == 'danger' %}
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {% elif message.tags == 'warning' %}
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                {% elif message.tags == 'info' %}
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                {% else %}
+                    <i class="bi bi-chat-dots-fill me-2"></i>
+                {% endif %}
+
+                <!-- Message content -->
+                <strong>
+                    {% if message.tags == 'success' %}
+                        Success!
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                        Error!
+                    {% elif message.tags == 'warning' %}
+                        Warning!
+                    {% elif message.tags == 'info' %}
+                        Info:
+                    {% endif %}
+                </strong>
+                {{ message|safe }}
+
+                <!-- Dismiss button -->
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Form error alerts (for crispy forms integration) -->
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Form Error!</strong>
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+
+    <!-- Validation errors for individual fields -->
+    {% if form.errors and not form.non_field_errors %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            <strong>Please correct the following errors:</strong>
+            <ul class="mb-0 mt-2">
+                {% for field, errors in form.errors.items %}
+                    {% if field != '__all__' %}
+                        <li><strong>{{ field|capfirst }}:</strong> {{ errors.0 }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Auto-dismiss script for success messages -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-dismiss success messages after 5 seconds
+    const successAlerts = document.querySelectorAll('.alert-success');
+    successAlerts.forEach(function(alert) {
+        setTimeout(function() {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 5000);
+    });
+
+    // Auto-dismiss info messages after 7 seconds
+    const infoAlerts = document.querySelectorAll('.alert-info');
+    infoAlerts.forEach(function(alert) {
+        setTimeout(function() {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 7000);
+    });
+});
+</script>
+
+<style>
+.alerts-container {
+    position: relative;
+    z-index: 1040; /* Below modals but above most content */
+}
+
+/* Custom alert animations */
+.alert {
+    border-left: 4px solid;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alert-success {
+    border-left-color: #198754;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.alert-warning {
+    border-left-color: #fd7e14;
+}
+
+.alert-info {
+    border-left-color: #0dcaf0;
+}
+
+/* Toast-like positioning for floating alerts */
+.alerts-fixed {
+    position: fixed;
+    top: 80px; /* Below fixed navbar */
+    right: 20px;
+    z-index: 1050;
+    max-width: 400px;
+}
+
+.alerts-fixed .alert {
+    margin-bottom: 10px;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+</style>

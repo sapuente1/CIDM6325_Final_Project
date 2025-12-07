@@ -1,0 +1,27 @@
+<!-- Placeholder for donation photos when no image is uploaded -->
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="300" fill="#f8fafc"/>
+  
+  <!-- Border -->
+  <rect x="1" y="1" width="398" height="298" fill="none" stroke="#e5e7eb" stroke-width="2" stroke-dasharray="8,4"/>
+  
+  <!-- Food icon -->
+  <g transform="translate(175, 110)">
+    <circle cx="25" cy="25" r="35" fill="#e5e7eb" opacity="0.5"/>
+    <!-- Plate -->
+    <ellipse cx="25" cy="32" rx="20" ry="3" fill="#9ca3af"/>
+    <!-- Food items -->
+    <circle cx="20" cy="28" r="4" fill="#059669"/> <!-- Vegetables -->
+    <circle cx="30" cy="26" r="3" fill="#f59e0b"/> <!-- Fruit -->
+    <ellipse cx="25" cy="30" rx="8" ry="2" fill="#6b7280"/> <!-- Base -->
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#6b7280">
+    No Image Available
+  </text>
+  <text x="200" y="220" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#9ca3af">
+    Donation photo will appear here
+  </text>
+</svg>

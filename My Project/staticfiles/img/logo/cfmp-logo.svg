@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="120" height="40" rx="4" fill="#2563eb"/>
+  
+  <!-- Heart icon -->
+  <g transform="translate(8, 10)">
+    <path d="M10 18.5C10 18.5 4 12.5 4 8.5C4 6.5 5.5 5 7.5 5C8.5 5 9.5 5.5 10 6.5C10.5 5.5 11.5 5 12.5 5C14.5 5 16 6.5 16 8.5C16 12.5 10 18.5 10 18.5Z" 
+          fill="white" opacity="0.9"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="28" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="white">CFMP</text>
+  <text x="28" y="28" font-family="Inter, sans-serif" font-size="8" font-weight="400" fill="white" opacity="0.8">Community Food</text>
+  <text x="28" y="36" font-family="Inter, sans-serif" font-size="8" font-weight="400" fill="white" opacity="0.8">Management</text>
+</svg>
