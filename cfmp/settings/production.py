@@ -135,9 +135,8 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
-# Logging for production
-import tempfile
-LOGGING['handlers']['file']['filename'] = os.path.join(tempfile.gettempdir(), 'cfmp.log')  # noqa
+# Logging for production - use console only (Railway captures logs)
+# Remove file logging to avoid FileNotFoundError
 LOGGING['loggers']['cfmp']['level'] = 'WARNING'  # noqa
 
 # Performance settings

@@ -183,12 +183,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'cfmp.log',
-            'formatter': 'json',
-        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -197,11 +191,11 @@ LOGGING = {
     },
     'loggers': {
         'cfmp': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
             'level': 'INFO',
         },
         'cfmp.metrics': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
