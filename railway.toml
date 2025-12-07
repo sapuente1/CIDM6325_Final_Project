@@ -12,3 +12,4 @@ startCommand = "python manage.py migrate && python manage.py collectstatic --noi
 [environments.production.variables]
 DJANGO_SETTINGS_MODULE = "cfmp.settings"
 DEBUG = "False"
+SECRET_KEY = "your-production-secret-key-here"
